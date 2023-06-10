@@ -8,7 +8,7 @@ class User(models.Model):
     password = models.CharField(max_length=255)
     contact_no = models.CharField(max_length=255)
     role_id = models.CharField(max_length=255)
-    created_at = models.DateTimeField()
+    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         db_table = 'users'

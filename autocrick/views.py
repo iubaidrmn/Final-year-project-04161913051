@@ -28,14 +28,19 @@ def login(request):
     try:
         # Retrieve the user based on the provided username
         user = User.objects.get(username=username)
+        userInfo = {
+            'fullname': user.fullname,
+            'username': user.username,
+            'role_id': user.role_id,
+        }
         # Check if the password matches
         if user.password == password:
             # Credentials are valid, perform any necessary actions
-            return Response({'message': 'Login successful', 'user': list(user)}, status=200)
+            return Response({'response': True, 'message': 'Login successful', 'user': userInfo}, status=200)
         else:
-            return Response({'error': 'Invalid credentials'}, status=400)
+            return Response({'response': False, 'error': 'Invalid Credentials'})
     except User.DoesNotExist:
-        return Response({'error': 'User not found!'}, status=400)
+        return Response({'response': False, 'error': 'User not found!'})
 
 @api_view(['POST'])
 def signup(request):
@@ -48,23 +53,19 @@ def signup(request):
     role_id = request.data.get('role_id')
     created_at = request.data.get('created_at')
     try:
-        # Check if the username or email already exists
+        # Check if the username already exists
         if User.objects.filter(username=username).exists():
-            return Response({'error': 'Username already exists'}, status=400)
+            return Response({'response': False, 'error': 'Username already exists'}, status=400)
+        # Check if the email already exists
         if User.objects.filter(email=email).exists():
-            return Response({'error': 'Email already exists'}, status=400)
+            return Response({'response': False, 'error': 'Email already exists'}, status=400)
         # Create a new user
-        user = User(
-            fullname=fullname,
-            username=username,
-            email=email,
-            password=password,
-            contact_no=contact_no,
-            role_id=role_id,
-            created_at=created_at
-        )
+        user = User(fullname=fullname, username=username, email=email, password=password,
+            contact_no=contact_no, role_id=role_id, created_at=created_at,)
         # Save the user to the database
         user.save()
-        return Response({'message': 'Signup successful'}, status=200)
-    except:
-        return Response({'error': 'Invalid request method'}, status=400)
+        return Response({'response': True, 'message': 'Signup successful'}, status=200)
+    except Exception as e:
+        return Response({'response': False, 'error': 'Username / Email Exisit. Try Again!'})
+
+

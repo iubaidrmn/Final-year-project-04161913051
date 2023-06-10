@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { login } from '../services/api';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import '../assets/styles.css';
 
-class Login extends Component {
+export default class Login extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -25,12 +25,18 @@ class Login extends Component {
 
     login(userData)
       .then((data) => {
-        console.log("data",data)
-        // localStorage.setItem('id', data.token);
-        this.setState({ error: '' });
+        if(data.response === true){
+          this.setState({ error: data.message });
+          localStorage.setItem('fullname', data.user['fullname']);
+          localStorage.setItem('username', data.user['username']);
+          localStorage.setItem('role_id', data.user['role_id']);
+          return <Navigate to="/UserList" />;
+        } else {
+          this.setState({ error: data.error });
+        }
       })
       .catch((error) => {
-        this.setState({ error: 'Invalid login credentials' });
+        this.setState({ error: error.message });
       });
   };
 
@@ -70,5 +76,3 @@ class Login extends Component {
     );
   }
 }
-
-export default Login;

@@ -16,12 +16,11 @@ export const login = async (userData) => {
       }
     })
     .catch((error) => {
-      throw new Error('Failed to login');
+      throw new Error(error);
     });
 };
 
 export const signup = async (userData) => {
-  console.log("userData", userData);
   return fetch(`${API_BASE_URL}/signup`, {
     method: 'POST',
     headers: {
@@ -38,7 +37,7 @@ export const signup = async (userData) => {
       }
     })
     .catch((error) => {
-      throw new Error('Failed to Signup');
+      throw new Error(error.error);
     });
 };
 

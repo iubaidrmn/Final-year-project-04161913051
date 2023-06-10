@@ -42,13 +42,14 @@ class Signup extends Component {
 
     signup(userData)
       .then((data) => {
-        if (data.message) {
+        if (data.response === true) {
           this.setState({ error: data.message });
-          // this.props.history.push('/login');
+        } else {
+          this.setState({ error: data.error });
         }
       })
       .catch((error) => {
-        this.setState({ error: error });
+        this.setState({ error: error.message });
       });
   };
 
