@@ -30,7 +30,7 @@ export default class Login extends Component {
           localStorage.setItem('fullname', data.user['fullname']);
           localStorage.setItem('username', data.user['username']);
           localStorage.setItem('role_id', data.user['role_id']);
-          window.location.replace("/UserList")
+          window.location.replace("/NewsFeed")
         } else {
           this.setState({ error: data.error });
         }

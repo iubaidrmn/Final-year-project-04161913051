@@ -44,6 +44,7 @@ class Signup extends Component {
       .then((data) => {
         if (data.response === true) {
           this.setState({ error: data.message });
+          window.location.replace("/login")
         } else {
           this.setState({ error: data.error });
         }

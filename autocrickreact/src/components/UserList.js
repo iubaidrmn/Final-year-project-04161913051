@@ -1,5 +1,9 @@
 import React, { Component } from 'react';
 import { getUsers } from '../services/api';
+import HeaderBar from '../includes/header';
+import Sidebar from '../includes/sidebar';
+import Footer from '../includes/footer';
+import '../assets/styles.css';
 
 class UserList extends Component {
   constructor(props) {
@@ -32,13 +36,18 @@ class UserList extends Component {
     }
 
     return (
-      <div>
-        <h1>User List</h1>
-        <ul>
-          {users.map((user) => (
-            <li key={user.id}>{user.username}</li>
-          ))}
-        </ul>
+        <div className="news-feed">
+          <HeaderBar />
+          <div className="content">
+            <Sidebar />
+            <h1>User List</h1>
+            <ul>
+              {users.map((user) => (
+                <li key={user.id}>{user.username}</li>
+              ))}
+            </ul>
+          </div>
+          <Footer />
       </div>
     );
   }
