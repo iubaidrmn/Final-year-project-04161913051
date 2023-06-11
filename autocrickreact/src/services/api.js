@@ -29,7 +29,6 @@ export const signup = async (userData) => {
     body: JSON.stringify(userData),
   })
     .then((response) => {
-      console.log("response", response);
       if (response.ok) {
         return response.json();
       } else {

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { login } from '../services/api';
-import { Link, Navigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import '../assets/styles.css';
 
 export default class Login extends Component {
@@ -30,7 +30,7 @@ export default class Login extends Component {
           localStorage.setItem('fullname', data.user['fullname']);
           localStorage.setItem('username', data.user['username']);
           localStorage.setItem('role_id', data.user['role_id']);
-          return <Navigate to="/UserList" />;
+          window.location.replace("/UserList")
         } else {
           this.setState({ error: data.error });
         }
