@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaUserCircle, FaCog, FaSignOutAlt } from 'react-icons/fa';
+import { FaUserCircle, FaCog, FaSignOutAlt, FaBars } from 'react-icons/fa';
 import Sidebar from '../includes/sidebar';
 
 export default class HeaderBar extends React.Component {
@@ -27,22 +27,26 @@ export default class HeaderBar extends React.Component {
         const { isProfileMenuOpen, isDrawerOpen  } = this.state;
         return (
             <div className="header-bar">
+                <div className="menu-icon" onClick={this.toggleDrawer}>
+                    <FaBars size={24} />
+                </div>
                 <div className="logo">Cricket News</div>
                 <div className="profile-icon" onClick={this.handleProfileIconClick}>
-                <FaUserCircle size={30} />
-                {isProfileMenuOpen && (
-                    <ul className="profile-menu">
-                    <li>
-                        <FaCog />
-                        <span>Settings</span>
-                    </li>
-                    <li>
-                        <FaSignOutAlt />
-                        <span>Logout</span>
-                    </li>
-                </ul>
-                )}
+                    <FaUserCircle size={30} />
+                    {isProfileMenuOpen && (
+                        <ul className="profile-menu">
+                        <li>
+                            <FaCog />
+                            <span>Settings</span>
+                        </li>
+                        <li>
+                            <FaSignOutAlt />
+                            <span>Logout</span>
+                        </li>
+                    </ul>
+                    )}
               </div>
+              {isDrawerOpen && <Sidebar />}
             </div>
           );
     }

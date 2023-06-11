@@ -18,6 +18,33 @@ def roles_list(request):
     except:
         return Response({'error': 'Can Not Retrieve Roles List'}, status=400)
 
+@api_view(['GET'])
+def tournament_list(request):
+    try:
+        tournaments = Tournament.objects.all().values()
+        return Response({'tournaments': list(tournaments)})
+    except:
+        return Response({'error': 'Can Not Retrieve Tournament List'}, status=400)
+
+
+@api_view(['GET'])
+def matches_list(request):
+    try:
+        matches = Matches.objects.all().values()
+        return Response({'matches': list(matches)})
+    except:
+        return Response({'error': 'Can Not Retrieve Matches List'}, status=400)
+
+
+@api_view(['GET'])
+def player_in_match_list(request):
+    try:
+        players_in_match = Players_in_Match.objects.all().values()
+        return Response({'players_in_match': list(players_in_match)})
+    except:
+        return Response({'error': 'Can Not Retrieve Players_in_Match List'}, status=400)
+
+
 @api_view(['POST'])
 def login(request):
     # Extract username and password from request data
@@ -69,3 +96,76 @@ def signup(request):
         return Response({'response': False, 'error': 'Username / Email Exisit. Try Again!'})
 
 
+@api_view(['POST'])
+def tournamentSave(request):
+    # Extract data from request
+    title = request.data.get('title')
+    description = request.data.get('description')
+    no_of_matches = request.data.get('no_of_matches')
+    # lat , lon
+    venue = request.data.get('venue')
+    start_date = request.data.get('start_date')
+    end_date = request.data.get('end_date')
+    status = request.data.get('status')
+    created_at = request.data.get('created_at')
+    try:
+        # Create a new tournament
+        tournament = Tournament(
+            title = title,
+            description = description,
+            no_of_matches = no_of_matches,
+            venue = venue,
+            start_date = start_date,
+            end_date = end_date,
+            status = status,
+            created_at = created_at,)
+        
+        # Save the Tournament to the database
+        tournament.save()
+        return Response({'response': True, 'message': 'Tournament Saved Successfully'}, status=200)
+    except Exception as e:
+        return Response({'response': False, 'error': 'Something Went Wrong.. Try Again!'})
+
+@api_view(['POST'])
+def matchSave(request):
+    # Extract data from request
+    tournament_id = request.data.get('tournament_id')
+    title = request.data.get('title')
+    description = request.data.get('description')
+    start_date = request.data.get('start_date')
+    end_date = request.data.get('end_date')
+    status = request.data.get('status')
+    created_at = request.data.get('created_at')
+    try:
+        # Create a new Match
+        match = Matches(
+            tournament_id = tournament_id,
+            title = title,
+            description = description,
+            start_date = start_date,
+            end_date = end_date,
+            status = status,
+            created_at = created_at,)
+        
+        # Save the Match to the database
+        match.save()
+        return Response({'response': True, 'message': 'Match Saved Successfully'}, status=200)
+    except Exception as e:
+        return Response({'response': False, 'error': 'Something Went Wrong.. Try Again!'})
+    
+@api_view(['POST'])
+def playersInMatchSave(request):
+    # Extract data from request
+    user_id = request.data.get('user_id')
+    match_id = request.data.get('match_id')
+    try:
+        # Create a new Match
+        players_in_match = Players_in_Match(
+            user_id = user_id,
+            match_id = match_id,)
+        
+        # Save the Players in  Match to the database
+        players_in_match.save()
+        return Response({'response': True, 'message': 'Players in Match Saved Successfully'}, status=200)
+    except Exception as e:
+        return Response({'response': False, 'error': 'Something Went Wrong.. Try Again!'})

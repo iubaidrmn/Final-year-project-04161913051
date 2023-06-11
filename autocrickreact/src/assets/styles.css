@@ -119,6 +119,10 @@ label {
   padding: 10px;
 }
 
+.menu-icon {
+  cursor: pointer;
+}
+
 .logo {
   font-size: 20px;
   font-weight: bold;

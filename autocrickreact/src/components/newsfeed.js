@@ -10,8 +10,8 @@ export default class NewsFeed extends React.Component {
       <div className="news-feed">
         <HeaderBar />
         <div className="content">
-          <Sidebar />
-          {/* Place your main content here */}
+          {/* <Sidebar /> */}
+          
         </div>
         <Footer />
       </div>
