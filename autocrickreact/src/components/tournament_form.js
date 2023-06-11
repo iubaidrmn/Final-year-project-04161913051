@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
-import { getRoles, signup, tournamentSave } from '../services/api';
+import { tournamentSave } from '../services/api';
+import HeaderBar from '../includes/header';
+import Sidebar from '../includes/sidebar';
+import Footer from '../includes/footer';
 import '../assets/styles.css';
 
 export default class Tournament extends Component {
@@ -47,9 +49,14 @@ export default class Tournament extends Component {
     render() {
         const { title, description, no_of_matches, latitude, longitude, venue, start_date, end_date, status, created_at } = this.state;
         return (
-            <>
-            {/* Frontend Part Starts Here */}
-            </>
+          <div className="news-feed">
+            <HeaderBar />
+            <div className="content">
+              {/* <Sidebar /> */}
+                
+            </div>
+            <Footer />
+        </div>
         );
     }
 }  

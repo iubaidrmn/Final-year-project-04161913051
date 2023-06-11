@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
-import { matchSave, tournamentSave } from '../services/api';
+import { matchSave } from '../services/api';
+import HeaderBar from '../includes/header';
+import Sidebar from '../includes/sidebar';
+import Footer from '../includes/footer';
 import '../assets/styles.css';
 
 export default class Match extends Component {
@@ -43,9 +46,14 @@ export default class Match extends Component {
     render() {
       const {tournament_id, title, description, start_date, end_date, status, created_at } = this.state;
       return (
-            <>
-            {/* Frontend Part Starts Here */}
-            </>
+        <div className="news-feed">
+          <HeaderBar />
+          <div className="content">
+            {/* <Sidebar /> */}
+              
+          </div>
+          <Footer />
+        </div>
         );
     }
 }  
