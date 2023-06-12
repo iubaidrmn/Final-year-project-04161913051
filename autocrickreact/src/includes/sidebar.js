@@ -8,6 +8,8 @@ export default class Sidebar extends React.Component {
         <ul className="menu">
           <li className="menu-item"><Link to="/UserList">User List</Link></li>
           <li className="menu-item"><Link to="/NewsFeed">News Feed</Link></li>
+          <li className="menu-item"><Link to="/Tournament">Tournament</Link></li>
+          <li className="menu-item"><Link to="/Match">Match</Link></li>
         </ul>
       </div>
     );
