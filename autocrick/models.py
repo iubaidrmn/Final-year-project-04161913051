@@ -1,7 +1,10 @@
+import uuid
+from bson import ObjectId
 from django.db import models
 
 # Create your models here.
 class User(models.Model):
+    _id = models.CharField(max_length=24, primary_key=True, default=str(ObjectId()), editable=False)
     fullname = models.CharField(max_length=255)
     username = models.CharField(max_length=255)
     email = models.EmailField()
@@ -14,6 +17,7 @@ class User(models.Model):
         db_table = 'users'
 
 class Role(models.Model):
+    _id = models.CharField(max_length=24, primary_key=True, default=str(ObjectId()), editable=False)
     role_id = models.CharField(max_length=2)
     role = models.CharField(max_length=30)
     status = models.CharField(max_length=2)
@@ -22,25 +26,28 @@ class Role(models.Model):
         db_table = 'roles'
 
 class Matches(models.Model):
-    tournament_id = models.CharField(max_length=3)
+    _id = models.CharField(max_length=24, primary_key=True, default=str(ObjectId()), editable=False)
+    tournament_id = models.CharField(max_length=24, primary_key=False)
     title = models.CharField(max_length=30)
     description = models.CharField(max_length=255)
     start_date = models.DateField()
-    end_date = models.DateField()
     status = models.CharField(max_length=2)
     created_at = models.DateTimeField(auto_now_add=True)
+    start_time = models.TimeField()
     
     class Meta:
         db_table = 'matches'
 
 class Players_in_Match(models.Model):
-    user_id = models.CharField(max_length=3)
-    match_id = models.CharField(max_length=3)
+    _id = models.CharField(max_length=24, primary_key=True, default=str(ObjectId()), editable=False)
+    user_id = models.CharField(max_length=24, primary_key=False)
+    match_id = models.CharField(max_length=24, primary_key=False)
 
     class Meta:
         db_table = 'players_in_match'
 
 class Tournament(models.Model):
+    _id = models.CharField(max_length=24, primary_key=True, default=str(ObjectId()), editable=False)
     title = models.CharField(max_length=30)
     description = models.CharField(max_length=255)
     no_of_matches = models.CharField(max_length=3)

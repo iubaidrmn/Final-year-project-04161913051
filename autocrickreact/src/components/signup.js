@@ -13,7 +13,7 @@ class Signup extends Component {
       password: '',
       contact_no: '',
       role_id: '',
-      created_at: '2023-06-10 12:00:00',
+      created_at: '',
       error: '',
       roles: [],
       isError: false,
