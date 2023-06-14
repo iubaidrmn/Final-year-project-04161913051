@@ -29,6 +29,7 @@ export default class HeaderBar extends React.Component {
             <div className="header-bar">
                 <div className="menu-icon" onClick={this.toggleDrawer}>
                     <FaBars size={24} />
+                    {isDrawerOpen && (<Sidebar />)}
                 </div>
                 <div className="logo">Cricket News</div>
                 <div className="profile-icon" onClick={this.handleProfileIconClick}>
@@ -46,7 +47,6 @@ export default class HeaderBar extends React.Component {
                     </ul>
                     )}
               </div>
-              {isDrawerOpen && <Sidebar />}
             </div>
           );
     }

@@ -9,6 +9,7 @@ import NewsFeed from './components/newsfeed';
 import Tournament from './components/tournament_form';
 import PlayerInMatch from './components/player_in_match_form';
 import Match from './components/match_form';
+import TeamDashboard from './components/team_dashboard';
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
         <Route path="/Tournament" element={<Tournament />} />
         <Route path="/PlayerInMatch" element={<PlayerInMatch />} />
         <Route path="/Match" element={<Match />} />
+        <Route path="/TeamDashboard" element={<TeamDashboard />} />
       </Routes>
     </Router>
   );

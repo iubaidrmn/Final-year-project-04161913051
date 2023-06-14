@@ -180,11 +180,11 @@ label {
 }
 
 .drawer-icon {
-  display: flex;
+  /* display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  cursor: pointer;
+  cursor: pointer; */
   margin-bottom: 10px;
 }
 
@@ -197,8 +197,14 @@ label {
 
 .menu {
   list-style-type: none;
-  padding: 0;
+  position: relative;
+  top: 100%;
+  right: 0;
+  background-color: #333;
+  padding: 10px;
+  list-style-type: none;
   margin: 0;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
 }
 
 .menu-item {
@@ -207,11 +213,11 @@ label {
 
 .menu-item a {
   text-decoration: none;
-  color: #333;
+  color: #ffffff;
 }
 
 .menu-item a:hover {
-  color: #666;
+  color: #ff3636;
 }
 
 /* Footer bar */
