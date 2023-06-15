@@ -107,9 +107,8 @@ const styles = {
     justifyContent: 'center',
     cursor: 'pointer',
     transition: 'background-color 0.3s ease',
-    
-    
   },
+  
   text: {
     fontSize: 16,
     fontWeight: 'bold',
