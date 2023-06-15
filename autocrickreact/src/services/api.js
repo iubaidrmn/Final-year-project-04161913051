@@ -167,3 +167,43 @@ export const playersInMatchSave = async (playersInMatchData) => {
       throw new Error(error.error);
     });
 };
+
+export const postSave = async (matchData) => {
+  return fetch(`${API_BASE_URL}/postSave`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(matchData),
+  })
+    .then((response) => {
+      if (response.ok) {
+        return response.json();
+      } else {
+        throw new Error('Invalid Input');
+      }
+    })
+    .catch((error) => {
+      throw new Error(error.error);
+    });
+};
+
+export const teamSave = async (matchData) => {
+  return fetch(`${API_BASE_URL}/teamSave`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(matchData),
+  })
+    .then((response) => {
+      if (response.ok) {
+        return response.json();
+      } else {
+        throw new Error('Invalid Input');
+      }
+    })
+    .catch((error) => {
+      throw new Error(error.error);
+    });
+};

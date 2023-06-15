@@ -1,4 +1,3 @@
-import uuid
 from bson import ObjectId
 from django.db import models
 
@@ -61,3 +60,22 @@ class Tournament(models.Model):
 
     class Meta:
         db_table = 'tournament'
+
+class Post(models.Model):
+    _id = models.CharField(max_length=24, primary_key=True, default=str(ObjectId()), editable=False)
+    title = models.CharField(max_length=30)
+    description = models.CharField(max_length=255)
+    file_path = models.CharField(max_length=255)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'post'
+
+class Team(models.Model):
+    _id = models.CharField(max_length=24, primary_key=True, default=str(ObjectId()), editable=False)
+    title = models.CharField(max_length=30)
+    coach_id = models.CharField(max_length=24, primary_key=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'teams'

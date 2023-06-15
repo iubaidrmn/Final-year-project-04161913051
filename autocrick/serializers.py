@@ -21,7 +21,17 @@ class MatchSerializer(serializers.ModelSerializer):
         model = Matches
         fields = '__all__'
 
+class PostSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Post
+        fields = '__all__'
+
 class PlayersInMatchSerializer(serializers.ModelSerializer):
     class Meta:
         model = Players_in_Match
+        fields = '__all__'
+
+class TeamsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Team
         fields = '__all__'

@@ -38,6 +38,24 @@ def matches_list(request):
         return Response({'matches': serializer.data})
     except Exception as e:
         return Response({'error': str(e)}, status=400)
+    
+@api_view(['GET'])
+def post_list(request):
+    try:
+        posts = Post.objects.all()
+        serializer = PostSerializer(posts, many=True)
+        return Response({'posts': serializer.data})
+    except Exception as e:
+        return Response({'error': str(e)}, status=400)
+
+@api_view(['GET'])
+def team_list(request):
+    try:
+        teams = Team.objects.all()
+        serializer = TeamsSerializer(teams, many=True)
+        return Response({'teams': serializer.data})
+    except Exception as e:
+        return Response({'error': str(e)}, status=400)
 
 @api_view(['GET'])
 def player_in_match_list(request):
@@ -105,6 +123,27 @@ def matchSave(request):
     except Exception as e:
         return Response({'response': False, 'error': str(e)}, status=500)
 
+@api_view(['POST'])
+def postSave(request):
+    try:
+        serializer = PostSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'response': True, 'message': 'Post Saved Successfully'}, status=200)
+        return Response({'response': False, 'error': serializer.errors}, status=400)
+    except Exception as e:
+        return Response({'response': False, 'error': str(e)}, status=500)
+
+@api_view(['POST'])
+def teamSave(request):
+    try:
+        serializer = TeamsSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'response': True, 'message': 'Team Saved Successfully'}, status=200)
+        return Response({'response': False, 'error': serializer.errors}, status=400)
+    except Exception as e:
+        return Response({'response': False, 'error': str(e)}, status=500)
 
 @api_view(['POST'])
 def playersInMatchSave(request):

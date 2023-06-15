@@ -10,6 +10,9 @@ import Tournament from './components/tournament_form';
 import PlayerInMatch from './components/player_in_match_form';
 import Match from './components/match_form';
 import TeamDashboard from './components/team_dashboard';
+import Post from './components/post_form';
+import Team from './components/team_form';
+import TeamMemers from './components/team_members_form';
 
 function App() {
   return (
@@ -24,6 +27,9 @@ function App() {
         <Route path="/PlayerInMatch" element={<PlayerInMatch />} />
         <Route path="/Match" element={<Match />} />
         <Route path="/TeamDashboard" element={<TeamDashboard />} />
+        <Route path="/CreatePost" element={<Post />} />
+        <Route path="/CreateTeam" element={<Team />} />
+        <Route path="/CreateTeamMembers" element={<TeamMemers />} />
       </Routes>
     </Router>
   );

@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { tournamentSave } from '../services/api';
 import HeaderBar from '../includes/header';
-import Sidebar from '../includes/sidebar';
 import Footer from '../includes/footer';
 import '../assets/styles.css';
 
@@ -53,7 +52,6 @@ export default class Tournament extends Component {
           <div className="news-feed">
             <HeaderBar />
             <div className="content">
-              {/* <Sidebar /> */}
               <div className='container'>
               <h2>Create a Tournament</h2>
                 <form onSubmit={this.handleSubmit}>
