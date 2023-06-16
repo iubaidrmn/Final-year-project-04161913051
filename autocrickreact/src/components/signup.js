@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { getRoles, signup } from '../services/api';
 import '../assets/styles.css';
+import SuccessMessage from '../includes/success';
+import ErrorMessage from '../includes/error';
 
 class Signup extends Component {
   constructor(props) {
@@ -14,12 +16,31 @@ class Signup extends Component {
       contact_no: '',
       role_id: '',
       created_at: '',
-      error: '',
+      showSuccessModal: false,
+      showErrorModal: false,
+      successMessage: '',
+      errorMessage: '',
       roles: [],
       isError: false,
       isLoading: true,
     };
   }
+
+  showSuccessModal = (message) => {
+    this.setState({ successMessage: message, showSuccessModal: true });
+  };
+
+  hideSuccessModal = () => {
+    this.setState({ showSuccessModal: false });
+  };
+
+  showErrorModal = (message) => {
+    this.setState({ errorMessage: message, showErrorModal: true });
+  };
+
+  hideErrorModal = () => {
+    this.setState({ showErrorModal: false });
+  };
 
   async componentDidMount() {
     try {
@@ -43,19 +64,40 @@ class Signup extends Component {
     signup(userData)
       .then((data) => {
         if (data.response === true) {
-          this.setState({ error: data.message });
-          window.location.replace("/login")
+          this.showSuccessModal(data.message);
         } else {
-          this.setState({ error: data.error });
+          this.showErrorModal(data.error);
         }
       })
       .catch((error) => {
-        this.setState({ error: error.message });
+        this.showErrorModal(error.message);
       });
   };
 
+  renderSuccessModal() {
+    const { successMessage } = this.state;
+    return (
+      <SuccessMessage
+        message={successMessage}
+        onClose={this.hideSuccessModal}
+        onGoToHomepage={() => {
+          this.hideSuccessModal();
+          // Redirect to the Login Page
+          window.location.replace('/login');
+        }}
+      />
+    );
+  }
+
+  renderErrorModal() {
+    const { errorMessage } = this.state;
+    return (
+      <ErrorMessage message={errorMessage} onClose={this.hideErrorModal} />
+    );
+  }
+
   render() {
-    const { fullname, username, email, password, contact_no, error, role_id, roles, isError } = this.state;
+    const { fullname, username, email, password, contact_no, role_id, roles, isError } = this.state;
 
     if (isError) {
       return <div>Error loading roles.</div>;
@@ -125,7 +167,8 @@ class Signup extends Component {
               </div>
             </div>
           </div>
-          {error && <p className="error-message">{error}</p>}
+          {this.state.showSuccessModal && this.renderSuccessModal()}
+          {this.state.showErrorModal && this.renderErrorModal()}
           <button type="submit" className="submit-button">
             Register
           </button>

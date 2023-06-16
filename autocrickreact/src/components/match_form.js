@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import { getTournaments, matchSave } from '../services/api';
 import HeaderBar from '../includes/header';
-import Sidebar from '../includes/sidebar';
 import Footer from '../includes/footer';
 import '../assets/styles.css';
+import SuccessMessage from '../includes/success';
+import ErrorMessage from '../includes/error';
 
 export default class Match extends Component {
     constructor(props) {
@@ -19,8 +20,28 @@ export default class Match extends Component {
             tournaments : [],
             isError: false,
             isLoading: true,
+            showSuccessModal: false,
+            showErrorModal: false,
+            successMessage: '',
+            errorMessage: '',
         }
     }
+
+    showSuccessModal = (message) => {
+      this.setState({ successMessage: message, showSuccessModal: true });
+    };
+  
+    hideSuccessModal = () => {
+      this.setState({ showSuccessModal: false });
+    };
+  
+    showErrorModal = (message) => {
+      this.setState({ errorMessage: message, showErrorModal: true });
+    };
+  
+    hideErrorModal = () => {
+      this.setState({ showErrorModal: false });
+    };
 
     async componentDidMount() {
       try {
@@ -44,24 +65,50 @@ export default class Match extends Component {
         matchSave(matchData)
           .then((data) => {
             if (data.response === true) {
-              this.setState({ error: data.message });
-              window.location.replace("/NewsFeed")
+              this.showSuccessModal(data.message);
+              this.setState({ tournament_id: '', title: '', description : '', start_date: '', 
+                start_time: '', status: '1', created_at: '', });
             } else {
-              this.setState({ error: data.error });
+              this.showErrorModal(data.error);
             }
           })
           .catch((error) => {
-            this.setState({ error: error.message });
+            this.showErrorModal(error.message);
           });
     };
 
+    renderSuccessModal() {
+      const { successMessage } = this.state;
+      return (
+        <SuccessMessage
+          message={successMessage}
+          onClose={this.hideSuccessModal}
+          onAddAnother={() => {
+            this.hideSuccessModal();
+            // Perform additional actions for adding another team member
+          }}
+          onGoToHomepage={() => {
+            this.hideSuccessModal();
+            // Redirect to the homepage
+            window.location.replace('/NewsFeed');
+          }}
+        />
+      );
+    }
+  
+    renderErrorModal() {
+      const { errorMessage } = this.state;
+      return (
+        <ErrorMessage message={errorMessage} onClose={this.hideErrorModal} />
+      );
+    }
+
     render() {
-      const {tournament_id, title, description, start_date, start_time, error, tournaments } = this.state;
+      const {tournament_id, title, description, start_date, start_time, tournaments } = this.state;
       return (
         <div className="news-feed">
           <HeaderBar />
           <div className="content">
-            {/* <Sidebar /> */}
             <div className='container'>
             <h2>Create a Match</h2>
               <form onSubmit={this.handleSubmit}>
@@ -116,7 +163,8 @@ export default class Match extends Component {
                     </div>
                   </div>
                 </div>
-                {error && <p className="error-message">{error}</p>}
+                {this.state.showSuccessModal && this.renderSuccessModal()}
+                {this.state.showErrorModal && this.renderErrorModal()}
                 <button type="submit" className="submit-button">
                   Create Match
                 </button>

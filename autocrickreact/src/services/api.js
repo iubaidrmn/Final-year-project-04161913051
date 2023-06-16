@@ -42,9 +42,9 @@ export const signup = async (userData) => {
 };
 
 // Show list of Users APIs
-export const getUsers = async () => {
+export const getUsers = async (role_id) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/users/`);
+    const response = await fetch(`${API_BASE_URL}/users/?role_id=${role_id}`);
     if (!response.ok) {
       throw new Error('Error loading users.');
     }
@@ -52,6 +52,19 @@ export const getUsers = async () => {
     return data.users;
   } catch (error) {
     throw new Error('Error loading users.');
+  }
+};
+
+export const getCoachNameOfTeam = async (coach_id) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/getCoachNameOfTeam/?coach_id=${coach_id}`);
+    if (!response.ok) {
+      throw new Error('Error loading coach names.');
+    }
+    const data = await response.json();
+    return data.coachNames;
+  } catch (error) {
+    throw new Error('Error loading coach names.');
   }
 };
 
@@ -91,6 +104,19 @@ export const getMatches = async () => {
     return data.matches;
   } catch (error) {
     throw new Error('Error loading Matches.');
+  }
+};
+
+export const getTeams = async () => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/teams_list/`);
+    if (!response.ok) {
+      throw new Error('Error loading Teams.');
+    }
+    const data = await response.json();
+    return data.teams;
+  } catch (error) {
+    throw new Error('Error loading Teams.');
   }
 };
 
@@ -190,6 +216,26 @@ export const postSave = async (matchData) => {
 
 export const teamSave = async (matchData) => {
   return fetch(`${API_BASE_URL}/teamSave`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(matchData),
+  })
+    .then((response) => {
+      if (response.ok) {
+        return response.json();
+      } else {
+        throw new Error('Invalid Input');
+      }
+    })
+    .catch((error) => {
+      throw new Error(error.error);
+    });
+};
+
+export const teamMembersSave = async (matchData) => {
+  return fetch(`${API_BASE_URL}/teamMembersSave`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

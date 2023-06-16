@@ -2,15 +2,39 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from .models import *
 from .serializers import *
+from django.db.models import Q
+from bson import ObjectId
+
+# @api_view(['GET'])
+# def user_list(request):
+#     try:
+#         users = User.objects.all()
+#         serializer = UserSerializer(users, many=True)
+#         return Response({'users': serializer.data})
+#     except:
+#         return Response({'error': 'Can Not Retrieve User List'}, status=400)
 
 @api_view(['GET'])
 def user_list(request):
     try:
-        users = User.objects.all()
+        role_id = request.GET.get('role_id')  # Get the role_id from the request query parameters
+        users = User.objects.filter(Q(role_id=role_id) | Q(role_id__isnull=True))
         serializer = UserSerializer(users, many=True)
         return Response({'users': serializer.data})
     except:
         return Response({'error': 'Can Not Retrieve User List'}, status=400)
+
+@api_view(['GET'])
+def getCoachNameOfTeam(request):
+    try:
+        coach_id = request.GET.get('coach_id')  # Get the coach_id from the request query parameters
+        coach_id = ObjectId(coach_id)
+        coachNames = User.objects.filter(Q(_id=coach_id))
+        serializer = UserSerializer(coachNames, many=True)
+        return Response({'coachNames': serializer.data})
+    except:
+        return Response({'error': 'Can Not Retrieve Teams List'}, status=400)
+
 
 @api_view(['GET'])
 def roles_list(request):
@@ -49,7 +73,7 @@ def post_list(request):
         return Response({'error': str(e)}, status=400)
 
 @api_view(['GET'])
-def team_list(request):
+def teams_list(request):
     try:
         teams = Team.objects.all()
         serializer = TeamsSerializer(teams, many=True)
@@ -96,7 +120,7 @@ def signup(request):
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response({'response': True, 'message': 'user Saved Successfully'}, status=200)
+            return Response({'response': True, 'message': 'Registration Successful.'}, status=200)
         return Response({'response': False, 'error': serializer.errors}, status=400)
     except Exception as e:
         return Response({'response': False, 'error': str(e)}, status=500)
@@ -152,6 +176,17 @@ def playersInMatchSave(request):
         if serializer.is_valid():
             serializer.save()
             return Response({'response': True, 'message': 'player in match Saved Successfully'}, status=200)
+        return Response({'response': False, 'error': serializer.errors}, status=400)
+    except Exception as e:
+        return Response({'response': False, 'error': str(e)}, status=500)
+    
+@api_view(['POST'])
+def teamMembersSave(request):
+    try:
+        serializer = TeamMembersSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'response': True, 'message': 'Team Member Saved Successfully'}, status=200)
         return Response({'response': False, 'error': serializer.errors}, status=400)
     except Exception as e:
         return Response({'response': False, 'error': str(e)}, status=500)

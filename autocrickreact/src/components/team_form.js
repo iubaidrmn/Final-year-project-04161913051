@@ -3,6 +3,8 @@ import { teamSave, getUsers } from '../services/api';
 import HeaderBar from '../includes/header';
 import Footer from '../includes/footer';
 import '../assets/styles.css';
+import SuccessMessage from '../includes/success';
+import ErrorMessage from '../includes/error';
 
 export default class Team extends Component {
     constructor(props) {
@@ -12,7 +14,10 @@ export default class Team extends Component {
             coach_id: '',
             players: [],
             created_at: '',
-            error: '',
+            showSuccessModal: false,
+            showErrorModal: false,
+            successMessage: '',
+            errorMessage: '',
             isLoading: true,
             isError: false,
         }
@@ -20,7 +25,7 @@ export default class Team extends Component {
 
     async componentDidMount() {
       try {
-        const players = await getUsers();
+        const players = await getUsers(5);
         this.setState({ players, isLoading: false });
       } catch (error) {
         this.setState({ isError: true, isLoading: false });
@@ -40,19 +45,56 @@ export default class Team extends Component {
         teamSave(teamData)
           .then((data) => {
             if (data.response === true) {
-              this.setState({ error: data.message });
-              window.location.replace("/NewsFeed")
+              this.showSuccessModal(data.message);
             } else {
-              this.setState({ error: data.error });
+              this.showErrorModal(data.error);
             }
           })
           .catch((error) => {
-            this.setState({ error: error.message });
+            this.showErrorModal(error.message);
           });
     };
 
+    showSuccessModal = (message) => {
+      this.setState({ successMessage: message, showSuccessModal: true });
+    };
+  
+    hideSuccessModal = () => {
+      this.setState({ showSuccessModal: false });
+    };
+  
+    showErrorModal = (message) => {
+      this.setState({ errorMessage: message, showErrorModal: true });
+    };
+  
+    hideErrorModal = () => {
+      this.setState({ showErrorModal: false });
+    };
+
+    renderSuccessModal() {
+      const { successMessage } = this.state;
+      return (
+        <SuccessMessage
+          message={successMessage}
+          onClose={this.hideSuccessModal}
+          onGoToHomepage={() => {
+            this.hideSuccessModal();
+            // Redirect to the homepage
+            window.location.replace('/NewsFeed');
+          }}
+        />
+      );
+    }
+  
+    renderErrorModal() {
+      const { errorMessage } = this.state;
+      return (
+        <ErrorMessage message={errorMessage} onClose={this.hideErrorModal} />
+      );
+    }
+
     render() {
-        const { players, title, coach_id, error } = this.state;
+        const { players, title, coach_id } = this.state;
         return (
           <div className="news-feed">
             <HeaderBar />
@@ -80,15 +122,16 @@ export default class Team extends Component {
                             onChange={this.handleChange} >
                               <option value="">Select Coach</option>
                               {players.map((player) => (
-                                <option value={player._id}>{player.fullname}</option>
+                                <option key={player._id} value={player._id}>{player.fullname}</option>
                               ))}
                           </select>
                         </div>
                     </div>
                   </div>
-                  {error && <p className="error-message">{error}</p>}
+                  {this.state.showSuccessModal && this.renderSuccessModal()}
+                  {this.state.showErrorModal && this.renderErrorModal()}
                   <button type="submit" className="submit-button">
-                    Create Post
+                    Create Team
                   </button>
                 </form>
               </div>

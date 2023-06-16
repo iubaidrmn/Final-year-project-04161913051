@@ -3,6 +3,8 @@ import { tournamentSave } from '../services/api';
 import HeaderBar from '../includes/header';
 import Footer from '../includes/footer';
 import '../assets/styles.css';
+import SuccessMessage from '../includes/success';
+import ErrorMessage from '../includes/error';
 
 export default class Tournament extends Component {
     constructor(props) {
@@ -18,9 +20,28 @@ export default class Tournament extends Component {
             end_date: '',
             status: '1',
             created_at: '2023-06-10 12:00:00',
-            error: '',
+            showSuccessModal: false,
+            showErrorModal: false,
+            successMessage: '',
+            errorMessage: '',
         }
     }
+
+    showSuccessModal = (message) => {
+      this.setState({ successMessage: message, showSuccessModal: true });
+    };
+  
+    hideSuccessModal = () => {
+      this.setState({ showSuccessModal: false });
+    };
+  
+    showErrorModal = (message) => {
+      this.setState({ errorMessage: message, showErrorModal: true });
+    };
+  
+    hideErrorModal = () => {
+      this.setState({ showErrorModal: false });
+    };
 
     handleChange = (event) => {
         this.setState({ [event.target.name]: event.target.value });
@@ -35,19 +56,40 @@ export default class Tournament extends Component {
         tournamentSave(tournamentData)
           .then((data) => {
             if (data.response === true) {
-              this.setState({ error: data.message });
-              window.location.replace("/NewsFeed")
+              this.showSuccessModal(data.message);
             } else {
-              this.setState({ error: data.error });
+              this.showErrorModal(data.error);
             }
           })
           .catch((error) => {
-            this.setState({ error: error.message });
+            this.showErrorModal(error.message);
           });
     };
 
+    renderSuccessModal() {
+      const { successMessage } = this.state;
+      return (
+        <SuccessMessage
+          message={successMessage}
+          onClose={this.hideSuccessModal}
+          onGoToHomepage={() => {
+            this.hideSuccessModal();
+            // Redirect to the homepage
+            window.location.replace('/NewsFeed');
+          }}
+        />
+      );
+    }
+  
+    renderErrorModal() {
+      const { errorMessage } = this.state;
+      return (
+        <ErrorMessage message={errorMessage} onClose={this.hideErrorModal} />
+      );
+    }
+
     render() {
-        const { title, description, no_of_matches, latitude, longitude, venue, start_date, end_date, error } = this.state;
+        const { title, description, no_of_matches, venue, start_date, end_date } = this.state;
         return (
           <div className="news-feed">
             <HeaderBar />
@@ -115,7 +157,8 @@ export default class Tournament extends Component {
                       </div>
                     </div>
                   </div>
-                  {error && <p className="error-message">{error}</p>}
+                  {this.state.showSuccessModal && this.renderSuccessModal()}
+                  {this.state.showErrorModal && this.renderErrorModal()}
                   <button type="submit" className="submit-button">
                     Create Tournament
                   </button>
