@@ -41,10 +41,47 @@ export const signup = async (userData) => {
     });
 };
 
+
+//update users APIs
+export const updateUsers = async (userId, userData) => {
+  return fetch(`${API_BASE_URL}/updateUsers/?user_id=${userId}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(userData),
+  })
+    .then((response) => {
+      if (response.ok) {
+        return response.json();
+      } else {
+        throw new Error('Invalid Input');
+      }
+    })
+    .catch((error) => {
+      throw new Error(error.error);
+    });
+};
+
+
 // Show list of Users APIs
 export const getUsers = async (role_id) => {
   try {
     const response = await fetch(`${API_BASE_URL}/users/?role_id=${role_id}`);
+    if (!response.ok) {
+      throw new Error('Error loading users.');
+    }
+    const data = await response.json();
+    return data.users;
+  } catch (error) {
+    throw new Error('Error loading users.');
+  }
+};
+
+// Show list of Users APIs
+export const get_user_details = async (user_id) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/get_user_details/?user_id=${user_id}`);
     if (!response.ok) {
       throw new Error('Error loading users.');
     }
@@ -241,6 +278,26 @@ export const teamMembersSave = async (matchData) => {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(matchData),
+  })
+    .then((response) => {
+      if (response.ok) {
+        return response.json();
+      } else {
+        throw new Error('Invalid Input');
+      }
+    })
+    .catch((error) => {
+      throw new Error(error.error);
+    });
+};
+
+export const matchDetailsSave = async (matchDetails) => {
+  return fetch(`${API_BASE_URL}/matchDetailsSave`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(matchDetails),
   })
     .then((response) => {
       if (response.ok) {
