@@ -14,6 +14,7 @@ import Post from './components/post_form';
 import Team from './components/team_form';
 import TeamMemers from './components/team_members_form';
 import TournamentList from './components/TournamentList';
+import MatchUpdate from './components/match_update_form';
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
         <Route path="/CreateTeam" element={<Team />} />
         <Route path="/CreateTeamMembers" element={<TeamMemers />} />
         <Route path="/TournamentList" element={<TournamentList />} />
+        <Route path="/MatchUpdate" element={<MatchUpdate />} />
       </Routes>
     </Router>
   );

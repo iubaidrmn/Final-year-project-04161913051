@@ -89,3 +89,15 @@ class TeamMembers(models.Model):
 
     class Meta:
         db_table = 'team_members'
+
+class MatchDetails(models.Model):
+    _id = djongo_models.ObjectIdField(primary_key=True, default=ObjectId, editable=False)
+    match_id = models.CharField(max_length=24, primary_key=False)
+    batsman_id = models.CharField(max_length=24, primary_key=False)
+    bowler_id = models.CharField(max_length=24, primary_key=False)
+    runs = models.CharField(max_length=3)
+    wickets = models.CharField(max_length=3)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'match_details'

@@ -253,3 +253,23 @@ export const teamMembersSave = async (matchData) => {
       throw new Error(error.error);
     });
 };
+
+export const matchDetailsSave = async (matchDetails) => {
+  return fetch(`${API_BASE_URL}/matchDetailsSave`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(matchDetails),
+  })
+    .then((response) => {
+      if (response.ok) {
+        return response.json();
+      } else {
+        throw new Error('Invalid Input');
+      }
+    })
+    .catch((error) => {
+      throw new Error(error.error);
+    });
+};

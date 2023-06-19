@@ -190,3 +190,14 @@ def teamMembersSave(request):
         return Response({'response': False, 'error': serializer.errors}, status=400)
     except Exception as e:
         return Response({'response': False, 'error': str(e)}, status=500)
+
+@api_view(['POST'])
+def matchDetailsSave(request):
+    try:
+        serializer = MatchDetailsSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'response': True, 'message': 'Saved Successful.'}, status=200)
+        return Response({'response': False, 'error': serializer.errors}, status=400)
+    except Exception as e:
+        return Response({'response': False, 'error': str(e)}, status=500)

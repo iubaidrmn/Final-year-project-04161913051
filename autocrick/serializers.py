@@ -65,3 +65,11 @@ class TeamMembersSerializer(serializers.ModelSerializer):
         fields = ('_id', 'team_id', 'player_id', 'created_at')
     def get__id(self, obj):
         return str(obj._id)
+
+class MatchDetailsSerializer(serializers.ModelSerializer):
+    _id = serializers.SerializerMethodField()
+    class Meta:
+        model = MatchDetails
+        fields = ('_id', 'match_id', 'batsman_id', 'bowler_id', 'runs', 'wickets', 'created_at')
+    def get__id(self, obj):
+        return str(obj._id)
