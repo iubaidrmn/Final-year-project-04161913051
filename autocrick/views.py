@@ -15,6 +15,16 @@ from bson import ObjectId
 #         return Response({'error': 'Can Not Retrieve User List'}, status=400)
 
 @api_view(['GET'])
+def get_user_details(request):
+    try:
+        _id = request.GET.get('user_id')  # Get the role_id from the request query parameters
+        users = User.objects.filter(Q(_id=_id) | Q(_id__isnull=True))
+        serializer = UserSerializer(users, many=True)
+        return Response({'users': serializer.data})
+    except:
+        return Response({'error': 'Can Not Retrieve User List'}, status=400)
+
+@api_view(['GET'])
 def user_list(request):
     try:
         role_id = request.GET.get('role_id')  # Get the role_id from the request query parameters
@@ -101,6 +111,7 @@ def login(request):
         # Retrieve the user based on the provided username
         user = User.objects.get(username=username)
         userInfo = {
+            '_id': user._id,
             'fullname': user.fullname,
             'username': user.username,
             'role_id': user.role_id,
