@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import HeaderBar from '../includes/header';
 import Footer from '../includes/footer';
-import { get_user_details, getRoles, updateUsers } from '../services/api';
+import { get_user_details, updateUser } from '../services/api';
 import '../assets/styles.css';
 import SuccessMessage from '../includes/success';
 import ErrorMessage from '../includes/error';
@@ -15,7 +15,6 @@ class UpdateUser extends Component {
       email: '',
       password: '',
       contact_no: '',
-      role_id: '',
       created_at: '',
       showSuccessModal: false,
       showErrorModal: false,
@@ -42,14 +41,13 @@ class UpdateUser extends Component {
   hideErrorModal = () => {
     this.setState({ showErrorModal: false });
   };
-//this fuction will insert fields with all users data no this will not
+
   async componentDidMount() {
     try {
-      const userDetails = await get_user_details(localStorage.getItem('user_id'));
-      const roles = await getRoles();
-      this.setState({ roles, fullname:userDetails[0].fullname, username:userDetails[0].username,
-      role_id: userDetails[0].role_id, contact_no:userDetails[0].contact_no, email:userDetails[0].email,
-      password:userDetails[0].password });
+      const userDetails = await get_user_details(localStorage.getItem('username'));
+      // const userDetails = await get_user_details(localStorage.getItem('user_id'));
+      this.setState({ fullname:userDetails[0].fullname, username:userDetails[0].username,
+      contact_no:userDetails[0].contact_no, email:userDetails[0].email, password:userDetails[0].password });
     } catch (error) {
       this.setState({ isError: true });
     }
@@ -62,12 +60,13 @@ class UpdateUser extends Component {
   handleSubmit = (event) => {
     event.preventDefault();
   
-    const { fullname, username, email, password, contact_no, role_id } = this.state;
-    const userData = { fullname, username, email, password, contact_no, role_id };
+    const { fullname, username, email, password, contact_no } = this.state;
+    const userData = { fullname, username, email, password, contact_no };
   
-    const userId = 1; // Replace with the actual user ID to be updated
+    const userId = localStorage.getItem('username');
+    // const userId = localStorage.getItem('user_id');
   
-    updateUsers(userId, userData)
+    updateUser(userId, userData)
       .then((data) => {
         if (data.response === true) {
           this.showSuccessModal(data.message);
@@ -89,8 +88,7 @@ class UpdateUser extends Component {
         onClose={this.hideSuccessModal}
         onGoToHomepage={() => {
           this.hideSuccessModal();
-          // Redirect to the Login Page
-          window.location.replace('/login');
+          window.location.replace('/NewsFeed');
         }}
       />
     );
@@ -104,11 +102,7 @@ class UpdateUser extends Component {
   }
 
   render() {
-    const { fullname, username, email, password, contact_no, role_id, roles, isError } = this.state;
-
-    if (isError) {
-      return <div>Error loading roles.</div>;
-    }
+    const { fullname, username, email, password, contact_no } = this.state;
 
     return (
       <>
@@ -164,23 +158,12 @@ class UpdateUser extends Component {
                   value={password}
                   onChange={this.handleChange}
                 />
-              </div>              
-              <div className="form-group">
-                <label>Role:</label>
-                <select name="role_id" value={role_id} onChange={this.handleChange}>
-                  <option value="">Select Role</option>
-                  {roles.map((role) => (
-                    <option value={role.role_id}>{role.role}</option>
-                  ))}
-                </select>
               </div>
             </div>
           </div>
           {this.state.showSuccessModal && this.renderSuccessModal()}
           {this.state.showErrorModal && this.renderErrorModal()}
-          <button type="submit" className="submit-button">
-            Update User
-          </button>
+          <button type="submit" className="submit-button">Update Profile</button>
         </form>
       </div>
       <Footer />

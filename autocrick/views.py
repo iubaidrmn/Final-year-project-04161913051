@@ -18,12 +18,23 @@ from bson import ObjectId
 def get_user_details(request):
     try:
         _id = request.GET.get('user_id')  # Get the role_id from the request query parameters
-        users = User.objects.filter(Q(_id=_id) | Q(_id__isnull=True))
+        users = User.objects.filter(Q(username=_id) | Q(_id__isnull=True))
+        # users = User.objects.filter(Q(_id=_id) | Q(_id__isnull=True))
         serializer = UserSerializer(users, many=True)
         return Response({'users': serializer.data})
     except:
         return Response({'error': 'Can Not Retrieve User List'}, status=400)
 
+@api_view(['GET'])
+def get_tournament_details(request):
+    try:
+        _id = request.GET.get('_id')
+        tournament = Tournament.objects.get(Q(_id=_id) | Q(_id__isnull=True))
+        serializer = TournamentSerializer(tournament, many=True)
+        return Response({'tournament': serializer.data})
+    except Exception as e:
+        return Response({'response': False, 'error': str(e)}, status=500)
+    
 @api_view(['GET'])
 def user_list(request):
     try:
@@ -44,7 +55,6 @@ def getCoachNameOfTeam(request):
         return Response({'coachNames': serializer.data})
     except:
         return Response({'error': 'Can Not Retrieve Teams List'}, status=400)
-
 
 @api_view(['GET'])
 def roles_list(request):
@@ -111,7 +121,7 @@ def login(request):
         # Retrieve the user based on the provided username
         user = User.objects.get(username=username)
         userInfo = {
-            '_id': user._id,
+            # '_id': user._id,
             'fullname': user.fullname,
             'username': user.username,
             'role_id': user.role_id,
@@ -212,3 +222,23 @@ def matchDetailsSave(request):
         return Response({'response': False, 'error': serializer.errors}, status=400)
     except Exception as e:
         return Response({'response': False, 'error': str(e)}, status=500)
+
+@api_view(['PATCH'])
+def updateUser(request):
+    try:
+        user_id = request.data.get('username')
+        # user_id = request.data.get('user_id')
+        if not user_id:
+            return Response({'response': False, 'error': 'User ID not provided.'}, status=400)
+        
+        user = User.objects.get(username=user_id)
+        serializer = UserSerializer(user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'response': True, 'message': 'User information updated.'}, status=200)
+        return Response({'response': False, 'error': serializer.errors}, status=400)
+    except User.DoesNotExist:
+        return Response({'response': False, 'error': 'User not found.'}, status=404)
+    except Exception as e:
+        return Response({'response': False, 'error': str(e)}, status=500)
+

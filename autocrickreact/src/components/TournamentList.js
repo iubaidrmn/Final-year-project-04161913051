@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { getTournaments } from '../services/api';
+import { getTournaments, get_tournament_details } from '../services/api';
 import { FaEdit, FaTrash } from 'react-icons/fa';
 import HeaderBar from '../includes/header';
 import Footer from '../includes/footer';
@@ -24,10 +24,13 @@ export default class TournamentList extends Component {
     }
   }
 
-  handleEdit = (row) => {
-    this.props.onEdit(row);
-    this.setState({ selectedRow: row._id });
-
+  handleEdit = async (row) => {
+    try {
+      const tournamentDetails = await get_tournament_details(row._id);
+      console.log(tournamentDetails);
+    } catch (error) {
+      // this.showErrorModal(error.message);
+    }
   };
 
   handleDelete = (row) => {

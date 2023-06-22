@@ -43,9 +43,10 @@ export const signup = async (userData) => {
 
 
 //update users APIs
-export const updateUsers = async (userId, userData) => {
-  return fetch(`${API_BASE_URL}/updateUsers/?user_id=${userId}`, {
-    method: 'PUT',
+export const updateUser = async (userId, userData) => {
+  return fetch(`${API_BASE_URL}/updateUser`, {
+    // return fetch(`${API_BASE_URL}/updateUser/?user_id=${userId}`, {
+    method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
     },
@@ -87,6 +88,19 @@ export const get_user_details = async (user_id) => {
     }
     const data = await response.json();
     return data.users;
+  } catch (error) {
+    throw new Error('Error loading users.');
+  }
+};
+
+export const get_tournament_details = async (_id) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/get_tournament_details/?_id=${_id}`);
+    if (!response.ok) {
+      throw new Error('Error loading users.');
+    }
+    const data = await response.json();
+    return data.tournament;
   } catch (error) {
     throw new Error('Error loading users.');
   }

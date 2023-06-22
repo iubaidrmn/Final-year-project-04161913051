@@ -4,8 +4,10 @@ from autocrick.views import *
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    # Show List of all tables in Mongo DB APIs
+    # Show List of all tables in Mongo DB APIs Based on IDs
     path('api/get_user_details/', get_user_details, name='get_user_details'),
+    path('api/get_tournament_details/', get_tournament_details, name='get_tournament_details'),
+    # Show List of all tables in Mongo DB APIs
     path('api/users/', user_list, name='api_user_list'),
     path('api/roles/', roles_list, name='api_roles_list'),
     path('api/matches_list/', matches_list, name='matches_list'),
@@ -25,4 +27,6 @@ urlpatterns = [
     path('api/teamMembersSave', teamMembersSave, name='teamMembersSave'),
     path('api/playersInMatchSave', playersInMatchSave, name='playersInMatchSave'),
     path('api/matchDetailsSave', matchDetailsSave, name='matchDetailsSave'),
+    # Update Information APIs
+    path('api/updateUser', updateUser, name='updateUser'),
 ]
