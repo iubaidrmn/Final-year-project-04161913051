@@ -17,6 +17,7 @@ urlpatterns = [
     path('api/teams_list/', teams_list, name='teams_list'),
     path('api/getCoachNameOfTeam/', getCoachNameOfTeam, name='getCoachNameOfTeam'),
     path('api/getTournamentNameofMatch/', getTournamentNameofMatch, name='getTournamentNameofMatch'),
+    path('api/getTeamName/', getTeamName, name='getTeamName'),
     path('api/tournament_list/', tournament_list, name='tournament_list'),
     path('api/posts_list/', post_list, name='posts_list'),
     path('api/player_in_match_list/', player_in_match_list, name='player_in_match_list'),
@@ -37,4 +38,7 @@ urlpatterns = [
     path('api/updateTeam/', updateTeam, name='updateTeam'),
     path('api/updateMatch/', updateMatch, name='updateMatch'),
     path('api/updatePost/', updatePost, name='updatePost'),
+    # Stats APIs
+    path('api/getTournamentMatches/', getTournamentMatches, name='getTournamentMatches'),
+    path('api/getMatcheDetailsById/', getMatcheDetailsById, name='getMatcheDetailsById'),
 ]

@@ -425,3 +425,38 @@ select {
     transform: rotate(360deg);
   }
 }
+
+.tournament-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.info-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.tournament-title {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.info-details {
+  display: flex;
+  align-items: center;
+}
+
+.info-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.info-row .icon {
+  margin-right: 5px;
+}
+
+

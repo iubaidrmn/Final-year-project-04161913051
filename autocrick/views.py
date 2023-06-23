@@ -4,7 +4,7 @@ from .models import *
 from .serializers import *
 from django.db.models import Q
 from bson import ObjectId
-from django.core.exceptions import ObjectDoesNotExist
+from rest_framework.parsers import FileUploadParser
 
 # @api_view(['GET'])
 # def user_list(request):
@@ -95,6 +95,37 @@ def getTournamentNameofMatch(request):
         return Response({'tournamentNames': serializer.data})
     except:
         return Response({'error': 'Can Not Retrieve Tournament Names List'})
+
+@api_view(['GET'])
+def getTeamName(request):
+    try:
+        team_id = ObjectId(request.GET.get('team_id'))
+        teamName = Team.objects.filter(Q(_id=team_id))
+        serializer = TeamsSerializer(teamName, many=True)
+        return Response({'teamName': serializer.data})
+    except:
+        return Response({'error': 'Can Not Retrieve Team Name'})
+
+@api_view(['GET'])
+def getTournamentMatches(request):
+    try:
+        tournament_id = ObjectId(request.GET.get('tournament_id'))
+        tournamentMatches = Matches.objects.filter(Q(tournament_id=tournament_id))
+        serializer = MatchSerializer(tournamentMatches, many=True)
+        return Response({'tournamentMatches': serializer.data})
+    except:
+        return Response({'error': 'Can Not Retrieve Tournament Matches List'})
+
+@api_view(['GET'])
+def getMatcheDetailsById(request):
+    try:
+        match_id = ObjectId(request.GET.get('match_id'))
+        matchDetails = MatchDetails.objects.filter(Q(match_id=match_id))
+        serializer = MatchDetailsSerializer(matchDetails, many=True)
+        return Response({'matchDetails': serializer.data})
+    except:
+        return Response({'error': 'Can Not Retrieve Matches Details List'})
+
 
 @api_view(['GET'])
 def roles_list(request):
@@ -224,13 +255,14 @@ def matchSave(request):
 @api_view(['POST'])
 def postSave(request):
     try:
+        parser_classes = (FileUploadParser,)
         serializer = PostSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response({'response': True, 'message': 'Post Saved Successfully'}, status=200)
-        return Response({'response': False, 'error': serializer.errors}, status=400)
+            return Response({'response': True, 'message': 'Post Saved Successfully'})
+        return Response({'response': False, 'error': serializer.errors})
     except Exception as e:
-        return Response({'response': False, 'error': str(e)}, status=500)
+        return Response({'response': False, 'error': str(e)})
 
 @api_view(['POST'])
 def teamSave(request):

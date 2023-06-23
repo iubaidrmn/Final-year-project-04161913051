@@ -18,6 +18,8 @@ import MatchUpdate from './components/match_update_form';
 import UpdateUser from './components/update_user';
 import MatchesList from './components/MatchesList';
 import PostsList from './components/PostsList';
+import TournamentStats from './components/statistics_screens/tournament_stats';
+import MatchStats from './components/statistics_screens/match_stats';
 
 function App() {
   return (
@@ -45,6 +47,9 @@ function App() {
         {/* Update Routes */}
         <Route path="/MatchUpdate" element={<MatchUpdate />} />
         <Route path="/UpdateUser" element={<UpdateUser />} />
+        {/* Stats */}
+        <Route path="/TournamentStats" element={<TournamentStats />} />
+        <Route path="/MatchStats" element={<MatchStats />} />
       </Routes>
     </Router>
   );

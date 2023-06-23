@@ -31,9 +31,11 @@ class Matches(models.Model):
     title = models.CharField(max_length=30)
     description = models.CharField(max_length=255)
     start_date = models.DateField()
+    start_time = models.TimeField()
+    team_id1 = models.CharField(max_length=24, primary_key=False)
+    team_id2 = models.CharField(max_length=24, primary_key=False)
     status = models.CharField(max_length=2)
     created_at = models.DateTimeField(auto_now_add=True)
-    start_time = models.TimeField()
     
     class Meta:
         db_table = 'matches'
@@ -66,7 +68,7 @@ class Post(models.Model):
     _id = djongo_models.ObjectIdField(primary_key=True, default=ObjectId, editable=False)
     title = models.CharField(max_length=30)
     description = models.CharField(max_length=255)
-    file_path = models.CharField(max_length=255)
+    file_path = models.FileField(upload_to='posts/')
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

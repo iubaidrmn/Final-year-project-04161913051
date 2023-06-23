@@ -251,6 +251,45 @@ export const getTournamentNameofMatch = async (tournament_id) => {
   }
 };
 
+export const getTournamentMatches = async (tournament_id) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/getTournamentMatches/?tournament_id=${tournament_id}`);
+    if (!response.ok) {
+      throw new Error('Error loading tournament Matches.');
+    }
+    const data = await response.json();
+    return data.tournamentMatches;
+  } catch (error) {
+    throw new Error('Error loading tournament Matches.');
+  }
+};
+
+export const getTeamName = async (team_id) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/getTeamName/?team_id=${team_id}`);
+    if (!response.ok) {
+      throw new Error('Error loading team name.');
+    }
+    const data = await response.json();
+    return data.teamName[0].title;
+  } catch (error) {
+    throw new Error('Error loading team name.');
+  }
+};
+
+export const getMatcheDetailsById = async (match_id) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/getMatcheDetailsById/?match_id=${match_id}`);
+    if (!response.ok) {
+      throw new Error('Error loading Matches Details.');
+    }
+    const data = await response.json();
+    return data.matchDetails;
+  } catch (error) {
+    throw new Error('Error loading Matches Details.');
+  }
+};
+
 export const getRoles = async () => {
   try {
     const response = await fetch(`${API_BASE_URL}/roles/`);
@@ -390,13 +429,14 @@ export const playersInMatchSave = async (playersInMatchData) => {
     });
 };
 
-export const postSave = async (matchData) => {
+export const postSave = async (postData) => {
   return fetch(`${API_BASE_URL}/postSave`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      // 'Content-Type': 'multipart/form-data'
     },
-    body: JSON.stringify(matchData),
+    body: JSON.stringify(postData),
   })
     .then((response) => {
       if (response.ok) {

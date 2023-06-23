@@ -12,7 +12,7 @@ export default class Post extends Component {
         this.state = {
             title: '',
             description : '',
-            file_path : 'image/',
+            file_path : '',
             created_at: '',
             showSuccessModal: false,
             showErrorModal: false,
@@ -33,6 +33,10 @@ export default class Post extends Component {
       } catch (error) {
       }
     }
+
+    handleFileChange = (event) => {
+      this.setState({ file_path: event.target.files[0] });
+    };
 
     showSuccessModal = (message) => {
       this.setState({ successMessage: message, showSuccessModal: true });
@@ -78,7 +82,7 @@ export default class Post extends Component {
 
     handleSubmit = (event) => {
         event.preventDefault();
-    
+      
         const { title, description, file_path, created_at, _id } = this.state;
         if(_id == null){
           const postData = {title, description, file_path, created_at };
@@ -93,20 +97,20 @@ export default class Post extends Component {
             .catch((error) => {
               this.showErrorModal(error.message);
             });
-          } else if(_id !== null){
-            const postDataUpdate = {title, description, file_path };
-            updatePost(_id, postDataUpdate)
-            .then((data) => {
-              if (data.response === true) {
-                this.showSuccessModal(data.message);
-              } else {
-                this.showErrorModal(data.error);
-              }
-            })
-            .catch((error) => {
-              this.showErrorModal(error.message);
-            });
-          }
+        } else if(_id !== null){
+          const postDataUpdate = {title, description, file_path };
+          updatePost(_id, postDataUpdate)
+          .then((data) => {
+            if (data.response === true) {
+              this.showSuccessModal(data.message);
+            } else {
+              this.showErrorModal(data.error);
+            }
+          })
+          .catch((error) => {
+            this.showErrorModal(error.message);
+          });
+        }
     };
 
     render() {
@@ -117,7 +121,7 @@ export default class Post extends Component {
             <div className="content">
               <div className='container'>
               <h2>{_id == null ? 'Create' : 'Update'}  Post / Educational Content</h2>
-                <form onSubmit={this.handleSubmit}>
+                <form onSubmit={this.handleSubmit} encType="multipart/form-data">
                   <div className="row">
                     <div className="col">
                         <div className="form-group">
@@ -127,6 +131,14 @@ export default class Post extends Component {
                             name="title"
                             value={title}
                             onChange={this.handleChange}
+                          />
+                        </div>
+                        <div className="form-group">
+                          <label>Choose Media:</label>
+                          <input
+                            type="file"
+                            name="file_path"
+                            onChange={this.handleFileChange}
                           />
                         </div>
                       </div>

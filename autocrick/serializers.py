@@ -30,7 +30,8 @@ class MatchSerializer(serializers.ModelSerializer):
     _id = serializers.SerializerMethodField()
     class Meta:
         model = Matches
-        fields = ('_id', 'tournament_id', 'title', 'description', 'start_date', 'status', 'created_at', 'start_time')
+        fields = ('_id', 'tournament_id', 'title', 'description', 'start_date','start_time', 'team_id1', 'team_id2',
+                   'status', 'created_at')
     def get__id(self, obj):
         return str(obj._id)
     
