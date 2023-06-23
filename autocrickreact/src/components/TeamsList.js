@@ -3,6 +3,7 @@ import { getTeams, getCoachNameOfTeam } from '../services/api';
 import { FaEdit, FaTrash } from 'react-icons/fa';
 import HeaderBar from '../includes/header';
 import Footer from '../includes/footer';
+import Team from '../components/team_form';
 import '../assets/styles.css';
 import '../assets/tableStyling.css';
 
@@ -12,6 +13,8 @@ export default class TeamsList extends Component {
     this.state = {
       teams: [],
       coachNames: {},
+      redirectToTeam: false,
+      teamId: null,
     };
   }
 
@@ -46,15 +49,20 @@ export default class TeamsList extends Component {
   };
 
   handleEdit = (row) => {
-
+    this.setState({
+      redirectToTeam: true,
+      teamId: row._id,
+    });
   };
 
   handleDelete = (row) => {
   };
 
   render() {
-    const { teams, coachNames } = this.state;
-
+    const { teams, coachNames, redirectToTeam, teamId } = this.state;
+    if (redirectToTeam) {
+      return <Team _id={teamId} />;
+    }
     return (
       <div className="page-container">
         <HeaderBar />

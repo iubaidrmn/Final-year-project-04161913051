@@ -17,25 +17,32 @@ import TournamentList from './components/TournamentList';
 import MatchUpdate from './components/match_update_form';
 import UpdateUser from './components/update_user';
 import MatchesList from './components/MatchesList';
+import PostsList from './components/PostsList';
 
 function App() {
   return (
     <Router>
       <Routes>
         <Route path="/" element={<Login />} />
+        {/* Auth Routes */}
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/TeamsList" element={<TeamsList />} />
+        {/* Dashboard / Newsfeed Routes */}
+        <Route path="/TeamDashboard" element={<TeamDashboard />} />
         <Route path="/NewsFeed" element={<NewsFeed />} />
+        {/* List Routes */}
+        <Route path="/PostsList" element={<PostsList />} />
+        <Route path="/TeamsList" element={<TeamsList />} />
+        <Route path="/MatchesList" element={<MatchesList />} />
+        <Route path="/TournamentList" element={<TournamentList />} />
+        {/* Forms Route (For Edit and Add) */}
         <Route path="/Tournament" element={<Tournament />} />
         <Route path="/PlayerInMatch" element={<PlayerInMatch />} />
         <Route path="/Match" element={<Match />} />
-        <Route path="/TeamDashboard" element={<TeamDashboard />} />
         <Route path="/CreatePost" element={<Post />} />
         <Route path="/CreateTeam" element={<Team />} />
         <Route path="/CreateTeamMembers" element={<TeamMemers />} />
-        <Route path="/TournamentList" element={<TournamentList />} />
-        <Route path="/MatchesList" element={<MatchesList />} />
+        {/* Update Routes */}
         <Route path="/MatchUpdate" element={<MatchUpdate />} />
         <Route path="/UpdateUser" element={<UpdateUser />} />
       </Routes>

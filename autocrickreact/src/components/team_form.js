@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { teamSave, getUsers } from '../services/api';
+import { teamSave, getUsers, get_team_details, updateTeam } from '../services/api';
 import HeaderBar from '../includes/header';
 import Footer from '../includes/footer';
 import '../assets/styles.css';
@@ -20,12 +20,17 @@ export default class Team extends Component {
             errorMessage: '',
             isLoading: true,
             isError: false,
+            _id: this.props._id ?? null
         }
     }
 
     async componentDidMount() {
       try {
         const players = await getUsers(5);
+        if(this.state._id !== null){
+          const team = await get_team_details(this.state._id);
+          this.setState({ title:team[0].title, coach_id:team[0].coach_id });
+        }
         this.setState({ players, isLoading: false });
       } catch (error) {
         this.setState({ isError: true, isLoading: false });
@@ -39,10 +44,22 @@ export default class Team extends Component {
     handleSubmit = (event) => {
         event.preventDefault();
     
-        const { title, coach_id } = this.state;
+        const { title, coach_id, _id } = this.state;
         const teamData = {title, coach_id };
-    
-        teamSave(teamData)
+        if(_id == null){
+          teamSave(teamData)
+            .then((data) => {
+              if (data.response === true) {
+                this.showSuccessModal(data.message);
+              } else {
+                this.showErrorModal(data.error);
+              }
+            })
+            .catch((error) => {
+              this.showErrorModal(error.message);
+            });
+        } else if(_id !== null){
+          updateTeam(_id, teamData)
           .then((data) => {
             if (data.response === true) {
               this.showSuccessModal(data.message);
@@ -53,6 +70,7 @@ export default class Team extends Component {
           .catch((error) => {
             this.showErrorModal(error.message);
           });
+        }
     };
 
     showSuccessModal = (message) => {
@@ -80,7 +98,7 @@ export default class Team extends Component {
           onGoToHomepage={() => {
             this.hideSuccessModal();
             // Redirect to the homepage
-            window.location.replace('/NewsFeed');
+            window.location.replace('/TeamsList');
           }}
         />
       );
@@ -94,13 +112,13 @@ export default class Team extends Component {
     }
 
     render() {
-        const { players, title, coach_id } = this.state;
+        const { players, title, coach_id, _id } = this.state;
         return (
           <div className="news-feed">
             <HeaderBar />
             <div className="content">
               <div className='container'>
-              <h2>Create Team</h2>
+              <h2>{_id == null ? 'Create' : 'Update'} Team</h2>
                 <form onSubmit={this.handleSubmit}>
                   <div className="row">
                     <div className="col">
@@ -131,7 +149,7 @@ export default class Team extends Component {
                   {this.state.showSuccessModal && this.renderSuccessModal()}
                   {this.state.showErrorModal && this.renderErrorModal()}
                   <button type="submit" className="submit-button">
-                    Create Team
+                  {_id == null ? 'Create' : 'Update'} Team
                   </button>
                 </form>
               </div>
