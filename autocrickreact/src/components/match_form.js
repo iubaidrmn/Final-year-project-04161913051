@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { getTournaments, matchSave } from '../services/api';
+import { getTournaments, matchSave, get_match_details, updateMatch } from '../services/api';
 import HeaderBar from '../includes/header';
 import Footer from '../includes/footer';
 import '../assets/styles.css';
@@ -24,6 +24,7 @@ export default class Match extends Component {
             showErrorModal: false,
             successMessage: '',
             errorMessage: '',
+            _id: this.props._id ?? null
         }
     }
 
@@ -45,6 +46,11 @@ export default class Match extends Component {
 
     async componentDidMount() {
       try {
+        if(this.state._id !== null){
+          const match = await get_match_details(this.state._id);
+          this.setState({ title:match[0].title, description:match[0].description, tournament_id:match[0].tournament_id,
+            start_date:match[0].start_date, start_time:match[0].start_time, });
+        }
         const tournaments = await getTournaments();
         this.setState({ tournaments, isLoading: false});
       } catch (error) {
@@ -58,16 +64,30 @@ export default class Match extends Component {
 
     handleSubmit = (event) => {
         event.preventDefault();
-    
-        const {tournament_id, title, description, start_date, start_time, status, created_at } = this.state;
-        const matchData = {tournament_id, title, description, start_date, start_time, status, created_at };
-    
-        matchSave(matchData)
+        const {tournament_id, title, description, start_date, start_time, status, created_at, _id } = this.state;
+        if(_id == null){
+          const matchData = {tournament_id, title, description, start_date, start_time, status, created_at };
+          matchSave(matchData)
+            .then((data) => {
+              if (data.response === true) {
+                this.showSuccessModal(data.message);
+                this.setState({ tournament_id: '', title: '', description : '', start_date: '', 
+                  start_time: '', status: '1', created_at: '', });
+              } else {
+                this.showErrorModal(data.error);
+              }
+            })
+            .catch((error) => {
+              this.showErrorModal(error.message);
+            });
+        } else if(_id !== null){
+          const matchDataUpdate = {tournament_id, title, description, start_date, start_time };
+          updateMatch(_id, matchDataUpdate)
           .then((data) => {
             if (data.response === true) {
               this.showSuccessModal(data.message);
               this.setState({ tournament_id: '', title: '', description : '', start_date: '', 
-                start_time: '', status: '1', created_at: '', });
+                start_time: ''});
             } else {
               this.showErrorModal(data.error);
             }
@@ -75,6 +95,7 @@ export default class Match extends Component {
           .catch((error) => {
             this.showErrorModal(error.message);
           });
+        }
     };
 
     renderSuccessModal() {
@@ -83,14 +104,10 @@ export default class Match extends Component {
         <SuccessMessage
           message={successMessage}
           onClose={this.hideSuccessModal}
-          onAddAnother={() => {
-            this.hideSuccessModal();
-            // Perform additional actions for adding another team member
-          }}
           onGoToHomepage={() => {
             this.hideSuccessModal();
             // Redirect to the homepage
-            window.location.replace('/NewsFeed');
+            window.location.replace('/MatchesList');
           }}
         />
       );
@@ -104,13 +121,13 @@ export default class Match extends Component {
     }
 
     render() {
-      const {tournament_id, title, description, start_date, start_time, tournaments } = this.state;
+      const {tournament_id, title, description, start_date, start_time, tournaments, _id } = this.state;
       return (
         <div className="news-feed">
           <HeaderBar />
           <div className="content">
             <div className='container'>
-            <h2>Create a Match</h2>
+            <h2>{_id == null ? 'Create' : 'Update'} Match</h2>
               <form onSubmit={this.handleSubmit}>
                 <div className="row">
                   <div className="col">
@@ -166,7 +183,7 @@ export default class Match extends Component {
                 {this.state.showSuccessModal && this.renderSuccessModal()}
                 {this.state.showErrorModal && this.renderErrorModal()}
                 <button type="submit" className="submit-button">
-                  Create Match
+                {_id == null ? 'Create' : 'Update'} Match
                 </button>
               </form>
             </div>

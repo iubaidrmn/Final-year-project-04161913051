@@ -6,6 +6,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     # Show List of all tables in Mongo DB APIs Based on IDs
     path('api/get_user_details/', get_user_details, name='get_user_details'),
+    path('api/get_team_details/', get_team_details, name='get_team_details'),
+    path('api/get_post_details/', get_post_details, name='get_post_details'),
+    path('api/get_match_details/', get_match_details, name='get_match_details'),
     path('api/get_tournament_details/', get_tournament_details, name='get_tournament_details'),
     # Show List of all tables in Mongo DB APIs
     path('api/users/', user_list, name='api_user_list'),
@@ -13,6 +16,7 @@ urlpatterns = [
     path('api/matches_list/', matches_list, name='matches_list'),
     path('api/teams_list/', teams_list, name='teams_list'),
     path('api/getCoachNameOfTeam/', getCoachNameOfTeam, name='getCoachNameOfTeam'),
+    path('api/getTournamentNameofMatch/', getTournamentNameofMatch, name='getTournamentNameofMatch'),
     path('api/tournament_list/', tournament_list, name='tournament_list'),
     path('api/posts_list/', post_list, name='posts_list'),
     path('api/player_in_match_list/', player_in_match_list, name='player_in_match_list'),
@@ -29,4 +33,8 @@ urlpatterns = [
     path('api/matchDetailsSave', matchDetailsSave, name='matchDetailsSave'),
     # Update Information APIs
     path('api/updateUser', updateUser, name='updateUser'),
+    path('api/updateTournament/', updateTournament, name='updateTournament'),
+    path('api/updateTeam/', updateTeam, name='updateTeam'),
+    path('api/updateMatch/', updateMatch, name='updateMatch'),
+    path('api/updatePost/', updatePost, name='updatePost'),
 ]

@@ -11,7 +11,6 @@ export default class TeamsList extends Component {
     super(props);
     this.state = {
       teams: [],
-      selectedRow: null,
       coachNames: {},
     };
   }
@@ -47,18 +46,14 @@ export default class TeamsList extends Component {
   };
 
   handleEdit = (row) => {
-    this.props.onEdit(row);
-    this.setState({ selectedRow: row._id });
 
   };
 
   handleDelete = (row) => {
-    this.props.onDelete(row);
-    this.setState({ selectedRow: null });
   };
 
   render() {
-    const { teams, selectedRow, coachNames } = this.state;
+    const { teams, coachNames } = this.state;
 
     return (
       <div className="page-container">

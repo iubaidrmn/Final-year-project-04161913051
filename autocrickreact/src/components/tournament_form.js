@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { tournamentSave } from '../services/api';
+import { tournamentSave, get_tournament_details, updateTournament } from '../services/api';
 import HeaderBar from '../includes/header';
 import Footer from '../includes/footer';
 import '../assets/styles.css';
@@ -19,12 +19,24 @@ export default class Tournament extends Component {
             start_date: '',
             end_date: '',
             status: '1',
-            created_at: '2023-06-10 12:00:00',
+            created_at: '',
             showSuccessModal: false,
             showErrorModal: false,
             successMessage: '',
             errorMessage: '',
+            _id: this.props._id ?? null
         }
+    }
+
+    async componentDidMount() {
+      if(this.state._id !== null){
+        try {
+          const tournament = await get_tournament_details(this.state._id);
+          this.setState({ title:tournament[0].title,
+            description:tournament[0].description, no_of_matches:tournament[0].no_of_matches,
+            venue:tournament[0].venue, start_date:tournament[0].start_date, end_date:tournament[0].end_date, });
+        } catch (error) {}
+      }
     }
 
     showSuccessModal = (message) => {
@@ -50,10 +62,23 @@ export default class Tournament extends Component {
     handleSubmit = (event) => {
         event.preventDefault();
     
-        const { title, description, no_of_matches, latitude, longitude, venue, start_date, end_date, status, created_at } = this.state;
+        const { title, description, no_of_matches, latitude, longitude, venue, start_date, end_date, status, created_at, _id } = this.state;
         const tournamentData = {title, description, no_of_matches, latitude, longitude, venue, start_date, end_date, status, created_at };
-    
-        tournamentSave(tournamentData)
+        if(_id == null){
+          tournamentSave(tournamentData)
+            .then((data) => {
+              if (data.response === true) {
+                this.showSuccessModal(data.message);
+              } else {
+                this.showErrorModal(data.error);
+              }
+            })
+            .catch((error) => {
+              this.showErrorModal(error.message);
+            });
+        } else if(_id !== null){
+          const tournamentDataUpdate = {title, description, no_of_matches, venue, start_date, end_date };
+          updateTournament(_id, tournamentDataUpdate)
           .then((data) => {
             if (data.response === true) {
               this.showSuccessModal(data.message);
@@ -64,6 +89,7 @@ export default class Tournament extends Component {
           .catch((error) => {
             this.showErrorModal(error.message);
           });
+        }
     };
 
     renderSuccessModal() {
@@ -75,7 +101,7 @@ export default class Tournament extends Component {
           onGoToHomepage={() => {
             this.hideSuccessModal();
             // Redirect to the homepage
-            window.location.replace('/NewsFeed');
+            window.location.replace('/TournamentList');
           }}
         />
       );
@@ -89,13 +115,13 @@ export default class Tournament extends Component {
     }
 
     render() {
-        const { title, description, no_of_matches, venue, start_date, end_date } = this.state;
+        const { title, description, no_of_matches, venue, start_date, end_date, _id } = this.state;
         return (
           <div className="news-feed">
             <HeaderBar />
             <div className="content">
-              <div className='container'>
-              <h2>Create a Tournament</h2>
+              <div className='container'>                
+              <h2>{_id == null ? 'Create' : 'Update'} Tournament</h2>
                 <form onSubmit={this.handleSubmit}>
                   <div className="row">
                     <div className="col">
@@ -160,7 +186,7 @@ export default class Tournament extends Component {
                   {this.state.showSuccessModal && this.renderSuccessModal()}
                   {this.state.showErrorModal && this.renderErrorModal()}
                   <button type="submit" className="submit-button">
-                    Create Tournament
+                  {_id == null ? 'Create' : 'Update'}  Tournament
                   </button>
                 </form>
               </div>

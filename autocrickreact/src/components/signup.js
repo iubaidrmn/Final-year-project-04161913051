@@ -161,7 +161,7 @@ class Signup extends Component {
                 <select name="role_id" value={role_id} onChange={this.handleChange}>
                   <option value="">Select Role</option>
                   {roles.map((role) => (
-                    <option value={role.role_id}>{role.role}</option>
+                    <option key={role.role_id} value={role.role_id}>{role.role}</option>
                   ))}
                 </select>
               </div>

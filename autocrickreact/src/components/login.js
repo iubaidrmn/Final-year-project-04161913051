@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { login } from '../services/api';
 import { Link } from 'react-router-dom';
 import '../assets/styles.css';
+import SuccessMessage from '../includes/success';
+import ErrorMessage from '../includes/error';
 
 export default class Login extends Component {
   constructor(props) {
@@ -9,7 +11,10 @@ export default class Login extends Component {
     this.state = {
       username: '',
       password: '',
-      error: '',
+      showSuccessModal: false,
+      showErrorModal: false,
+      successMessage: '',
+      errorMessage: '',
     };
   }
 
@@ -26,23 +31,60 @@ export default class Login extends Component {
     login(userData)
       .then((data) => {
         if(data.response === true){
-          this.setState({ error: data.message });
           localStorage.setItem('user_id', data.user['_id']);
           localStorage.setItem('fullname', data.user['fullname']);
           localStorage.setItem('username', data.user['username']);
           localStorage.setItem('role_id', data.user['role_id']);
           window.location.replace("/NewsFeed")
         } else {
-          this.setState({ error: data.error });
+          this.showErrorModal(data.error);
         }
       })
       .catch((error) => {
-        this.setState({ error: error.message });
+        this.showErrorModal(error.message);
       });
   };
 
+  showSuccessModal = (message) => {
+    this.setState({ successMessage: message, showSuccessModal: true });
+  };
+
+  hideSuccessModal = () => {
+    this.setState({ showSuccessModal: false });
+  };
+
+  showErrorModal = (message) => {
+    this.setState({ errorMessage: message, showErrorModal: true });
+  };
+
+  hideErrorModal = () => {
+    this.setState({ showErrorModal: false });
+  };
+
+  renderSuccessModal() {
+    const { successMessage } = this.state;
+    return (
+      <SuccessMessage
+        message={successMessage}
+        onClose={this.hideSuccessModal}
+        onGoToHomepage={() => {
+          this.hideSuccessModal();
+          // Redirect to the homepage
+          window.location.replace('/NewsFeed');
+        }}
+      />
+    );
+  }
+
+  renderErrorModal() {
+    const { errorMessage } = this.state;
+    return (
+      <ErrorMessage message={errorMessage} onClose={this.hideErrorModal} />
+    );
+  }
+
   render() {
-    const { username, password, error } = this.state;
+    const { username, password } = this.state;
     return (
       <div className="container">
         <h2>Login</h2>
@@ -67,7 +109,8 @@ export default class Login extends Component {
               onChange={this.handleChange}
             />
           </div>
-          {error && <p className="error-message">{error}</p>}
+          {this.state.showSuccessModal && this.renderSuccessModal()}
+          {this.state.showErrorModal && this.renderErrorModal()}
           <button className='submit-button' type="submit">Login</button>
           <p className="signup-link">
             Not registered yet? <Link to="/signup">Signup</Link>

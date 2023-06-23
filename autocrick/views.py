@@ -4,6 +4,7 @@ from .models import *
 from .serializers import *
 from django.db.models import Q
 from bson import ObjectId
+from django.core.exceptions import ObjectDoesNotExist
 
 # @api_view(['GET'])
 # def user_list(request):
@@ -28,13 +29,43 @@ def get_user_details(request):
 @api_view(['GET'])
 def get_tournament_details(request):
     try:
-        _id = request.GET.get('_id')
-        tournament = Tournament.objects.get(Q(_id=_id) | Q(_id__isnull=True))
+        _id = ObjectId(request.GET.get('_id'))
+        tournament = Tournament.objects.filter(Q(_id=_id))
         serializer = TournamentSerializer(tournament, many=True)
         return Response({'tournament': serializer.data})
     except Exception as e:
-        return Response({'response': False, 'error': str(e)}, status=500)
+        return Response({'response': False, 'error': str(e)})
     
+@api_view(['GET'])
+def get_team_details(request):
+    try:
+        _id = ObjectId(request.GET.get('_id'))
+        team = Team.objects.filter(Q(_id=_id))
+        serializer = TeamsSerializer(team, many=True)
+        return Response({'team': serializer.data})
+    except Exception as e:
+        return Response({'response': False, 'error': str(e)})
+
+@api_view(['GET'])
+def get_match_details(request):
+    try:
+        _id = ObjectId(request.GET.get('_id'))
+        match = Matches.objects.filter(Q(_id=_id))
+        serializer = MatchSerializer(match, many=True)
+        return Response({'match': serializer.data})
+    except Exception as e:
+        return Response({'response': False, 'error': str(e)})
+
+@api_view(['GET'])
+def get_post_details(request):
+    try:
+        _id = ObjectId(request.GET.get('_id'))
+        post = Post.objects.filter(Q(_id=_id))
+        serializer = PostSerializer(post, many=True)
+        return Response({'post': serializer.data})
+    except Exception as e:
+        return Response({'response': False, 'error': str(e)})
+
 @api_view(['GET'])
 def user_list(request):
     try:
@@ -48,13 +79,22 @@ def user_list(request):
 @api_view(['GET'])
 def getCoachNameOfTeam(request):
     try:
-        coach_id = request.GET.get('coach_id')  # Get the coach_id from the request query parameters
-        coach_id = ObjectId(coach_id)
+        coach_id = ObjectId(request.GET.get('coach_id'))
         coachNames = User.objects.filter(Q(_id=coach_id))
         serializer = UserSerializer(coachNames, many=True)
         return Response({'coachNames': serializer.data})
     except:
         return Response({'error': 'Can Not Retrieve Teams List'}, status=400)
+
+@api_view(['GET'])
+def getTournamentNameofMatch(request):
+    try:
+        tournament_id = ObjectId(request.GET.get('tournament_id'))
+        tournamentNames = Tournament.objects.filter(Q(_id=tournament_id))
+        serializer = TournamentSerializer(tournamentNames, many=True)
+        return Response({'tournamentNames': serializer.data})
+    except:
+        return Response({'error': 'Can Not Retrieve Tournament Names List'})
 
 @api_view(['GET'])
 def roles_list(request):
@@ -140,11 +180,24 @@ def signup(request):
     try:
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
+            username = request.data.get('username')
+            email = request.data.get('email')
+            
+            # Check if username exists
+            username_exists = len(User.objects.filter(username = username)) > 0
+            if username_exists:
+                return Response({'response': False, 'error': 'Username already exists.'})
+            
+            # Check if email exists
+            email_exists = len(User.objects.filter(email = email)) > 0
+            if email_exists:
+                return Response({'response': False, 'error': 'Email already exists.'})
+
             serializer.save()
-            return Response({'response': True, 'message': 'Registration Successful.'}, status=200)
-        return Response({'response': False, 'error': serializer.errors}, status=400)
+            return Response({'response': True, 'message': 'Registration Successful.'})
+        return Response({'response': False, 'error': serializer.errors})
     except Exception as e:
-        return Response({'response': False, 'error': str(e)}, status=500)
+        return Response({'response': False, 'error': str(e)})
 
 @api_view(['POST'])
 def tournamentSave(request):
@@ -229,16 +282,81 @@ def updateUser(request):
         user_id = request.data.get('username')
         # user_id = request.data.get('user_id')
         if not user_id:
-            return Response({'response': False, 'error': 'User ID not provided.'}, status=400)
+            return Response({'response': False, 'error': 'User ID not provided.'})
         
         user = User.objects.get(username=user_id)
         serializer = UserSerializer(user, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
-            return Response({'response': True, 'message': 'User information updated.'}, status=200)
-        return Response({'response': False, 'error': serializer.errors}, status=400)
+            return Response({'response': True, 'message': 'User information updated.'})
+        return Response({'response': False, 'error': serializer.errors})
     except User.DoesNotExist:
-        return Response({'response': False, 'error': 'User not found.'}, status=404)
+        return Response({'response': False, 'error': 'User not found.'})
     except Exception as e:
-        return Response({'response': False, 'error': str(e)}, status=500)
+        return Response({'response': False, 'error': str(e)})
 
+@api_view(['PATCH'])
+def updateTournament(request):
+    try:
+        tournamentId = request.GET.get('tournamentId')
+        tournamentId = ObjectId(tournamentId)
+        if not tournamentId:
+            return Response({'response': False, 'error': 'Tournament ID not provided.'})
+        
+        # tournament = Tournament.objects.get(Q(_id = tournamentId))
+        tournament = Tournament.objects.filter(Q(_id = tournamentId)).first()
+        serializer = TournamentSerializer(tournament, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'response': True, 'message': 'Tournament information updated.'})
+        return Response({'response': False, 'error': serializer.errors})
+    except Exception as e:
+        return Response({'response': False, 'error': str(e)})
+
+@api_view(['PATCH'])
+def updateTeam(request):
+    try:
+        teamId = request.GET.get('teamId')
+        teamId = ObjectId(teamId)
+        if not teamId:
+            return Response({'response': False, 'error': 'Team ID not provided.'})
+        team = Team.objects.filter(Q(_id = teamId)).first()
+        serializer = TeamsSerializer(team, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'response': True, 'message': 'Team information updated.'})
+        return Response({'response': False, 'error': serializer.errors})
+    except Exception as e:
+        return Response({'response': False, 'error': str(e)})
+
+@api_view(['PATCH'])
+def updateMatch(request):
+    try:
+        matchId = request.GET.get('matchId')
+        matchId = ObjectId(matchId)
+        if not matchId:
+            return Response({'response': False, 'error': 'Match ID not provided.'})
+        match = Matches.objects.filter(Q(_id = matchId)).first()
+        serializer = MatchSerializer(match, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'response': True, 'message': 'Match information updated.'})
+        return Response({'response': False, 'error': serializer.errors})
+    except Exception as e:
+        return Response({'response': False, 'error': str(e)})
+
+@api_view(['PATCH'])
+def updatePost(request):
+    try:
+        postId = request.GET.get('postId')
+        postId = ObjectId(postId)
+        if not postId:
+            return Response({'response': False, 'error': 'Post ID not provided.'})
+        post = Post.objects.filter(Q(_id = postId)).first()
+        serializer = PostSerializer(post, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'response': True, 'message': 'Post information updated.'})
+        return Response({'response': False, 'error': serializer.errors})
+    except Exception as e:
+        return Response({'response': False, 'error': str(e)})

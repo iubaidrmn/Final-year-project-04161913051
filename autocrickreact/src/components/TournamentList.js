@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
-import { getTournaments, get_tournament_details } from '../services/api';
+import { getTournaments } from '../services/api';
 import { FaEdit, FaTrash } from 'react-icons/fa';
 import HeaderBar from '../includes/header';
 import Footer from '../includes/footer';
+import Tournament from '../components/tournament_form';
 import '../assets/styles.css';
 import '../assets/tableStyling.css';
 
@@ -11,7 +12,8 @@ export default class TournamentList extends Component {
     super(props);
     this.state = {
       tournaments: [],
-      selectedRow: null,
+      redirectToTournament: false,
+      tournamentId: null,
     };
   }
 
@@ -24,23 +26,22 @@ export default class TournamentList extends Component {
     }
   }
 
-  handleEdit = async (row) => {
-    try {
-      const tournamentDetails = await get_tournament_details(row._id);
-      console.log(tournamentDetails);
-    } catch (error) {
-      // this.showErrorModal(error.message);
-    }
+  handleEdit = (row) => {
+    this.setState({
+      redirectToTournament: true,
+      tournamentId: row._id,
+    });
   };
 
   handleDelete = (row) => {
-    this.props.onDelete(row);
-    this.setState({ selectedRow: null });
+    
   };
 
   render() {
-    const { tournaments } = this.state;
-
+    const { tournaments, redirectToTournament, tournamentId  } = this.state;
+    if (redirectToTournament) {
+      return <Tournament _id={tournamentId} />;
+    }
     return (
       <div className="page-container">
         <HeaderBar />
