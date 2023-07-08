@@ -425,6 +425,7 @@ select {
     transform: rotate(360deg);
   }
 }
+<<<<<<< HEAD
 
 .tournament-info {
   display: flex;
@@ -460,3 +461,11 @@ select {
 }
 
 
+=======
+.rounded-box {
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+}
+>>>>>>> f47c960251c5bc502bdef151045c36e2fc17e938

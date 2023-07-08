@@ -20,6 +20,9 @@ import MatchesList from './components/MatchesList';
 import PostsList from './components/PostsList';
 import TournamentStats from './components/statistics_screens/tournament_stats';
 import MatchStats from './components/statistics_screens/match_stats';
+import Homepage from './components/homepage';
+import TournamentScreen from './components/tournament_screen';
+import MatchScoring from './components/match_scoring';
 
 function App() {
   return (
@@ -50,6 +53,9 @@ function App() {
         {/* Stats */}
         <Route path="/TournamentStats" element={<TournamentStats />} />
         <Route path="/MatchStats" element={<MatchStats />} />
+        <Route path="/Homepage" element={<Homepage />} />
+        <Route path="/TournamentScreen" element={<TournamentScreen />} />
+        <Route path="/MatchScoring" element={<MatchScoring />} />
       </Routes>
     </Router>
   );
