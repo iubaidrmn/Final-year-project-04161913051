@@ -16,6 +16,9 @@ import TeamMemers from './components/team_members_form';
 import TournamentList from './components/TournamentList';
 import MatchUpdate from './components/match_update_form';
 import UpdateUser from './components/update_user';
+import Homepage from './components/homepage';
+import TournamentScreen from './components/tournament_screen';
+import MatchScoring from './components/match_scoring';
 
 function App() {
   return (
@@ -36,6 +39,9 @@ function App() {
         <Route path="/TournamentList" element={<TournamentList />} />
         <Route path="/MatchUpdate" element={<MatchUpdate />} />
         <Route path="/UpdateUser" element={<UpdateUser />} />
+        <Route path="/Homepage" element={<Homepage />} />
+        <Route path="/TournamentScreen" element={<TournamentScreen />} />
+        <Route path="/MatchScoring" element={<MatchScoring />} />
       </Routes>
     </Router>
   );

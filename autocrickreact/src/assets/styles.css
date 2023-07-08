@@ -425,3 +425,9 @@ select {
     transform: rotate(360deg);
   }
 }
+.rounded-box {
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+}

@@ -24,4 +24,5 @@ urlpatterns = [
     path('api/tournamentSave', tournamentSave, name='tournamentSave'),
     path('api/teamMembersSave', teamMembersSave, name='teamMembersSave'),
     path('api/playersInMatchSave', playersInMatchSave, name='playersInMatchSave'),
+    path('api/matchDetailsSave', matchDetailsSave, name='matchDetailsSave'),
 ]
