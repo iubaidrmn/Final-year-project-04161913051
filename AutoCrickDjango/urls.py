@@ -41,4 +41,5 @@ urlpatterns = [
     # Stats APIs
     path('api/getTournamentMatches/', getTournamentMatches, name='getTournamentMatches'),
     path('api/getMatcheDetailsById/', getMatcheDetailsById, name='getMatcheDetailsById'),
+    path('api/get_top_players/', get_top_players, name='get_top_players'),
 ]

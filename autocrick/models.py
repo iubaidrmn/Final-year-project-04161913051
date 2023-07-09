@@ -99,6 +99,11 @@ class MatchDetails(models.Model):
     bowler_id = models.CharField(max_length=24, primary_key=False)
     runs = models.CharField(max_length=3)
     wickets = models.CharField(max_length=3)
+    innings = models.CharField(max_length=10)
+    extras = models.CharField(max_length=10)
+    outOption = models.CharField(max_length=10)
+    current_over = models.CharField(max_length=10)
+    current_ball = models.CharField(max_length=10)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

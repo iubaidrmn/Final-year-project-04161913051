@@ -5,6 +5,7 @@ import image2 from '../assets/image2.jpg';
 import image3 from '../assets/image3.jpg';
 import HeaderBar from '../includes/header';
 import Footer from '../includes/footer';
+import Sidebar from '../includes/sidebar';
 
 export class Homepage extends Component {
   constructor(props) {
@@ -53,15 +54,7 @@ export class Homepage extends Component {
       <div>
         <HeaderBar />
         <div style={styles.container}>
-          <div style={styles.navigationMenu}>
-            {/* Navigation Menu */}
-            <ul style={styles.navigationList}>
-              <li style={styles.navigationItem}>Home</li>
-              <li style={styles.navigationItem}>About</li>
-              <li style={styles.navigationItem}>Services</li>
-              <li style={styles.navigationItem}>Contact</li>
-            </ul>
-          </div>
+          <Sidebar />
           <div style={styles.content}>
             <h2 style={styles.heading}>{recentTournamentsText}</h2>
             <div style={styles.sliderContainer}>
@@ -126,7 +119,6 @@ const styles = {
     cursor: 'pointer',
     borderBottom: '1px solid #ccc', // Add a gray border to the bottom of each navigation item
     padding: '10px', // Add some padding to the navigation items
-    cursor: 'pointer',
   },
   content: {
     flex: 1,

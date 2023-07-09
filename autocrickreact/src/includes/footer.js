@@ -5,7 +5,7 @@ export default class Footer extends React.Component {
     const currentYear = new Date().getFullYear();
     return (
       <div className="footer">
-        <div className="year-info">© {currentYear} Cricket News. All rights reserved.</div>
+        <div className="year-info">© {currentYear} AutoCrick. All rights reserved.</div>
       </div>
     );
   }

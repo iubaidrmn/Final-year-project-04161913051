@@ -71,6 +71,7 @@ class MatchDetailsSerializer(serializers.ModelSerializer):
     _id = serializers.SerializerMethodField()
     class Meta:
         model = MatchDetails
-        fields = ('_id', 'match_id', 'batsman_id', 'bowler_id', 'runs', 'wickets', 'created_at')
+        fields = ('_id', 'match_id', 'batsman_id', 'bowler_id', 'runs', 'wickets', 'innings', 'extras',
+                  'outOption', 'current_over', 'current_ball', 'created_at')
     def get__id(self, obj):
         return str(obj._id)

@@ -1,10 +1,15 @@
-import React, { Component } from 'react';
-import { matchDetailsSave, getUsers, getMatches } from '../services/api';
-import HeaderBar from '../includes/header';
-import Footer from '../includes/footer';
-import '../assets/styles.css';
-import SuccessMessage from '../includes/success';
-import ErrorMessage from '../includes/error';
+import React, { Component } from "react";
+import {
+  matchDetailsSave,
+  getUsers,
+  getMatches,
+  getMatcheDetailsById,
+} from "../services/api";
+import HeaderBar from "../includes/header";
+import Footer from "../includes/footer";
+import "../assets/styles.css";
+import SuccessMessage from "../includes/success";
+import ErrorMessage from "../includes/error";
 
 export default class MatchUpdate extends Component {
   constructor(props) {
@@ -14,20 +19,21 @@ export default class MatchUpdate extends Component {
       batsman_id: "",
       bowler_id: "",
       runs: "",
-      wickets: "",
-      extra: "",
+      wickets: "0",
+      extras: "0",
       innings: "",
-      outOption: "",
+      outOption: "not_out",
       players: [],
       matches: [],
+      matchDetailsbyId: [],
       showSuccessModal: false,
       showErrorModal: false,
       successMessage: "",
       errorMessage: "",
       isLoading: true,
       isError: false,
-      current_over: "", // Add the current_over variable to the initial state
-      current_ball: "", // Add the current_ball variable to the initial state
+      current_over: "0", // Add the current_over variable to the initial state
+      current_ball: "0", // Add the current_ball variable to the initial state
     };
   }
 
@@ -60,12 +66,13 @@ export default class MatchUpdate extends Component {
   handleChange = (event) => {
     const { name, value } = event.target;
     if (name === "extra") {
-      this.setState({ extra: value === "" ? "" : 1 });
-    } else if (name === "over") {
-      this.setState({ current_over: value });
-    } else if (name === "ball") {
-      this.setState({ current_ball: value });
+      this.setState({ extra: value === "" ? "0" : "1" });
     } else {
+      if (name === "match_id") {
+        getMatcheDetailsById(value).then((data) => {
+          this.setState({ matchDetailsbyId: data });
+        });
+      }
       this.setState({ [name]: value });
     }
   };
@@ -73,14 +80,55 @@ export default class MatchUpdate extends Component {
   handleSubmit = (event) => {
     event.preventDefault();
 
-    const { match_id, batsman_id, bowler_id, runs, wickets } = this.state;
-    const matchDetails = { match_id, batsman_id, bowler_id, runs, wickets };
+    const {
+      match_id,
+      batsman_id,
+      bowler_id,
+      runs,
+      wickets,
+      innings,
+      extras,
+      outOption,
+      current_over,
+      current_ball,
+    } = this.state;
+    const matchDetails = {
+      match_id,
+      batsman_id,
+      bowler_id,
+      runs,
+      wickets,
+      innings,
+      extras,
+      outOption,
+      current_over,
+      current_ball,
+    };
 
     matchDetailsSave(matchDetails)
       .then((data) => {
         if (data.response === true) {
           this.showSuccessModal(data.message);
-          this.setState({ batsman_id: '', bowler_id: '', runs: '', wickets: '' });
+          this.setState(
+            {
+              batsman_id: "",
+              bowler_id: "",
+              runs: "",
+              wickets: "0",
+              innings: "",
+              extras: "0",
+              outOption: "not_out",
+              current_over: "",
+              current_ball: "",
+            },
+            () => {
+              if (this.state.match_id !== "") {
+                getMatcheDetailsById(this.state.match_id).then((data) => {
+                  this.setState({ matchDetailsbyId: data });
+                });
+              }
+            }
+          );
         } else {
           this.showErrorModal(data.error);
         }
@@ -103,7 +151,7 @@ export default class MatchUpdate extends Component {
         onGoToHomepage={() => {
           this.hideSuccessModal();
           // Redirect to the homepage
-          window.location.replace('/NewsFeed');
+          window.location.replace("/NewsFeed");
         }}
       />
     );
@@ -117,27 +165,90 @@ export default class MatchUpdate extends Component {
   }
 
   render() {
-    const { match_id, batsman_id, bowler_id, runs, wickets, players, matches, innings, outOption } = this.state;
-
+    const {
+      matchDetailsbyId,
+      match_id,
+      batsman_id,
+      bowler_id,
+      runs,
+      wickets,
+      players,
+      matches,
+      innings,
+      outOption,
+      extras,
+      current_ball,
+      current_over,
+    } = this.state;
     // Generate options for the "over" menu
     const overOptions = [];
     const maxOverValue = 20; // Adjust the maximum value as needed
     for (let i = 1; i <= maxOverValue; i++) {
-      overOptions.push(<option key={i} value={i}>{i}</option>);
+      overOptions.push(
+        <option key={i} value={i}>
+          {i}
+        </option>
+      );
     }
+    var overSummaryRows = [];
+    var matchSummaryRows = [];
+    if (matchDetailsbyId.length > 0) {
+      var currentOver = null;
+      var currentOverSummary = null;
 
-    // Generate some random row values for the match summary table
-    const overSummaryRows = [
-      { ball_no: 1, sixes: 0, fours: 1, extra: 0, type_of_extra: "-", wickets: 0, type_of_wicket: "-", total_runs: 1 },
-      { ball_no: 2, sixes: 0, fours: 0, extra: 1, type_of_extra: "wide", wickets: 0, type_of_wicket: "-", total_runs: 1 },
-      // Add more rows as needed
-    ];
-    const matchSummaryRows = [
-      { over_number: 1, sixes: 2, fours: 4, extra: 1, type_of_extra: "wide", wickets: 0, type_of_wicket: "-", total_runs: 15 },
-      { over_number: 2, sixes: 1, fours: 3, extra: 0, type_of_extra: "-", wickets: 1, type_of_wicket: "run_out", total_runs: 12 },
-      { over_number: 3, sixes: 0, fours: 2, extra: 1, type_of_extra: "no_ball", wickets: 0, type_of_wicket: "-", total_runs: 10 },
-      // Add more rows as needed
-    ];
+      matchDetailsbyId.forEach((item) => {
+        const overNumber = parseInt(item.current_over);
+        const ballNumber = parseInt(item.current_ball);
+
+        if (overNumber !== currentOver) {
+          currentOver = overNumber;
+          currentOverSummary = {
+            over_number: currentOver,
+            balls: [],
+          };
+          overSummaryRows.push(currentOverSummary);
+        }
+
+        const ballSummary = {
+          ball_no: ballNumber,
+          sixes: item.runs === "6" ? 1 : 0,
+          fours: item.runs === "4" ? 1 : 0,
+          extra: parseInt(item.extras),
+          type_of_extra: "-",
+          wickets: parseInt(item.wickets),
+          type_of_wicket: "-",
+          total_runs: parseInt(item.runs),
+        };
+
+        currentOverSummary.balls.push(ballSummary);
+      });
+      var matchSummaryMap = {};
+      matchDetailsbyId.forEach((item) => {
+        const overNumber = parseInt(item.current_over);
+        if (!matchSummaryMap[overNumber]) {
+          matchSummaryMap[overNumber] = {
+            over_number: overNumber,
+            sixes: 0,
+            fours: 0,
+            extra: 0,
+            type_of_extra: "-",
+            wickets: 0,
+            type_of_wicket: "-",
+            total_runs: 0,
+          };
+        }
+        const matchSummaryRow = matchSummaryMap[overNumber];
+        matchSummaryRow.total_runs += parseInt(item.runs);
+        if (item.runs === "6") {
+          matchSummaryRow.sixes += 1;
+        } else if (item.runs === "4") {
+          matchSummaryRow.fours += 1;
+        }
+        matchSummaryRow.extra += parseInt(item.extras);
+        matchSummaryRow.wickets += parseInt(item.wickets);
+      });
+      matchSummaryRows = Object.values(matchSummaryMap);
+    }
 
     return (
       <div className="news-feed">
@@ -157,8 +268,8 @@ export default class MatchUpdate extends Component {
                       onChange={this.handleChange}
                     >
                       <option value="">Select Innings</option>
-                      <option value="first_inning">First Inning</option>
-                      <option value="second_inning">Second Inning</option>
+                      <option value="first">First Inning</option>
+                      <option value="second">Second Inning</option>
                     </select>
                   </div>
                   <div className="form-group">
@@ -247,22 +358,24 @@ export default class MatchUpdate extends Component {
                   <div className="form-group">
                     <label>Over:</label>
                     <select
-                      id="over"
-                      name="over"
-                      value={this.state.over}
+                      id="current_over"
+                      name="current_over"
+                      value={current_over}
                       onChange={this.handleChange}
                     >
+                      <option value="">Select Over</option>
                       {overOptions}
                     </select>
                   </div>
                   <div className="form-group">
                     <label>Ball:</label>
                     <select
-                      id="ball"
-                      name="ball"
-                      value={this.state.ball}
+                      id="current_ball"
+                      name="current_ball"
+                      value={current_ball}
                       onChange={this.handleChange}
                     >
+                      <option value="">Select Ball</option>
                       <option value="1">1</option>
                       <option value="2">2</option>
                       <option value="3">3</option>
@@ -276,14 +389,12 @@ export default class MatchUpdate extends Component {
                     <select
                       id="extra"
                       name="extra"
-                      value={this.state.extra}
+                      value={extras}
                       onChange={this.handleChange}
                     >
-                      <option value="">Select Extra</option>
+                      <option value="0">Select Extra</option>
                       <option value="wide">Wide</option>
                       <option value="no_ball">No Ball</option>
-                      <option value="bye">Bye</option>
-                      <option value="leg_bye">Leg Bye</option>
                     </select>
                   </div>
                 </div>
@@ -298,110 +409,116 @@ export default class MatchUpdate extends Component {
             </form>
           </div>
         </div>
-        <div className="match-summary">
-  <h2>Over Summary</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>Ball No</th>
-        <th>Sixes</th>
-        <th>Fours</th>
-        <th>Extra</th>
-        <th>Type of Extra</th>
-        <th>Wickets</th>
-        <th>Type of Wicket</th>
-        <th>Total Runs</th>
-      </tr>
-    </thead>
-    <tbody>
-      {overSummaryRows.map((row, index) => (
-        <tr key={index}>
-          <td>{row.ball_no}</td>
-          <td>{row.sixes}</td>
-          <td>{row.fours}</td>
-          <td>{row.extra}</td>
-          <td>{row.type_of_extra}</td>
-          <td>{row.wickets}</td>
-          <td>{row.type_of_wicket}</td>
-          <td>{row.total_runs}</td>
-        </tr>
-      ))}
-    </tbody>
-  </table>
+        {matchDetailsbyId.length > 0 && (
+          <div className="match-summary">
+            <h2>Over Summary</h2>
+            {overSummaryRows.map((over, index) => (
+              <div key={index}>
+                <h3>Over {over.over_number}</h3>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Ball No</th>
+                      <th>Sixes</th>
+                      <th>Fours</th>
+                      <th>Extra</th>
+                      <th>Type of Extra</th>
+                      <th>Wickets</th>
+                      <th>Type of Wicket</th>
+                      <th>Total Runs</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {over.balls.map((ball, ballIndex) => (
+                      <tr key={ballIndex}>
+                        <td>{ball.ball_no}</td>
+                        <td>{ball.sixes}</td>
+                        <td>{ball.fours}</td>
+                        <td>{ball.extra}</td>
+                        <td>{ball.type_of_extra}</td>
+                        <td>{ball.wickets}</td>
+                        <td>{ball.type_of_wicket}</td>
+                        <td>{ball.total_runs}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ))}
+            <div className="over-summary"></div>
 
-  <div className="over-summary"></div>
+            <h2>Match Summary</h2>
+            <table>
+              <thead>
+                <tr>
+                  <th>Over Number</th>
+                  <th>Sixes</th>
+                  <th>Fours</th>
+                  <th>Extra</th>
+                  <th>Type of Extra</th>
+                  <th>Wickets</th>
+                  <th>Type of Wicket</th>
+                  <th>Total Runs</th>
+                </tr>
+              </thead>
+              <tbody>
+                {matchSummaryRows.map((row, index) => (
+                  <tr key={index}>
+                    <td>{row.over_number}</td>
+                    <td>{row.sixes}</td>
+                    <td>{row.fours}</td>
+                    <td>{row.extra}</td>
+                    <td>{row.type_of_extra}</td>
+                    <td>{row.wickets}</td>
+                    <td>{row.type_of_wicket}</td>
+                    <td>{row.total_runs}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
 
-  <h2>Match Summary</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>Over Number</th>
-        <th>Sixes</th>
-        <th>Fours</th>
-        <th>Extra</th>
-        <th>Type of Extra</th>
-        <th>Wickets</th>
-        <th>Type of Wicket</th>
-        <th>Total Runs</th>
-      </tr>
-    </thead>
-    <tbody>
-      {matchSummaryRows.map((row, index) => (
-        <tr key={index}>
-          <td>{row.over_number}</td>
-          <td>{row.sixes}</td>
-          <td>{row.fours}</td>
-          <td>{row.extra}</td>
-          <td>{row.type_of_extra}</td>
-          <td>{row.wickets}</td>
-          <td>{row.type_of_wicket}</td>
-          <td>{row.total_runs}</td>
-        </tr>
-      ))}
-    </tbody>
-  </table>
+            <style>
+              {`
+        .match-summary {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
 
-  <style>
-    {`
-      .match-summary {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-      }
+        table {
+          border-collapse: collapse;
+          width: 100%;
+          max-width: 600px;
+          margin-top: 20px;
+        }
 
-      table {
-        border-collapse: collapse;
-        width: 100%;
-        max-width: 600px;
-        margin-top: 20px;
-      }
+        th, td {
+          padding: 10px;
+          text-align: center;
+          border: 1px solid #ccc;
+        }
 
-      th, td {
-        padding: 10px;
-        text-align: center;
-        border: 1px solid #ccc;
-      }
+        thead {
+          background-color: #f2f2f2;
+          font-weight: bold;
+        }
 
-      thead {
-        background-color: #f2f2f2;
-        font-weight: bold;
-      }
+        tbody tr:nth-child(even) {
+          background-color: #f9f9f9;
+        }
 
-      tbody tr:nth-child(even) {
-        background-color: #f9f9f9;
-      }
+        tbody tr:hover {
+          background-color: #eaeaea;
+        }
 
-      tbody tr:hover {
-        background-color: #eaeaea;
-      }
-
-      .over-summary {
-        margin-top: 20px;
-      }
-    `}
-  </style>
-</div>
-
+        .over-summary {
+          margin-top: 20px;
+        }
+      `}
+            </style>
+          </div>
+        )}
+        <br></br>
         <Footer />
       </div>
     );

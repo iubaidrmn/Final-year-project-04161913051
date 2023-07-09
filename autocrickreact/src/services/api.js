@@ -1,11 +1,11 @@
-const API_BASE_URL = 'http://localhost:8000/api';
+const API_BASE_URL = "http://localhost:8000/api";
 
 // Authentication Registration APIs
 export const login = async (userData) => {
   return fetch(`${API_BASE_URL}/login`, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify(userData),
   })
@@ -13,7 +13,7 @@ export const login = async (userData) => {
       if (response.ok) {
         return response.json();
       } else {
-        throw new Error('Invalid login credentials');
+        throw new Error("Invalid login credentials");
       }
     })
     .catch((error) => {
@@ -23,9 +23,9 @@ export const login = async (userData) => {
 
 export const signup = async (userData) => {
   return fetch(`${API_BASE_URL}/signup`, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify(userData),
   })
@@ -33,7 +33,7 @@ export const signup = async (userData) => {
       if (response.ok) {
         return response.json();
       } else {
-        throw new Error('Invalid Input');
+        throw new Error("Invalid Input");
       }
     })
     .catch((error) => {
@@ -41,14 +41,13 @@ export const signup = async (userData) => {
     });
 };
 
-
 // update users APIs
 export const updateUser = async (userId, userData) => {
   return fetch(`${API_BASE_URL}/updateUser`, {
     // return fetch(`${API_BASE_URL}/updateUser/?user_id=${userId}`, {
-    method: 'PATCH',
+    method: "PATCH",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify(userData),
   })
@@ -56,7 +55,7 @@ export const updateUser = async (userId, userData) => {
       if (response.ok) {
         return response.json();
       } else {
-        throw new Error('Invalid Input');
+        throw new Error("Invalid Input");
       }
     })
     .catch((error) => {
@@ -66,18 +65,21 @@ export const updateUser = async (userId, userData) => {
 
 // update tournament API
 export const updateTournament = async (tournamentId, tournamentData) => {
-    return fetch(`${API_BASE_URL}/updateTournament/?tournamentId=${tournamentId}`, {
-    method: 'PATCH',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(tournamentData),
-  })
+  return fetch(
+    `${API_BASE_URL}/updateTournament/?tournamentId=${tournamentId}`,
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(tournamentData),
+    }
+  )
     .then((response) => {
       if (response.ok) {
         return response.json();
       } else {
-        throw new Error('Something Went Wrong!');
+        throw new Error("Something Went Wrong!");
       }
     })
     .catch((error) => {
@@ -86,10 +88,10 @@ export const updateTournament = async (tournamentId, tournamentData) => {
 };
 
 export const updateTeam = async (teamId, teamData) => {
-    return fetch(`${API_BASE_URL}/updateTeam/?teamId=${teamId}`, {
-    method: 'PATCH',
+  return fetch(`${API_BASE_URL}/updateTeam/?teamId=${teamId}`, {
+    method: "PATCH",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify(teamData),
   })
@@ -97,7 +99,7 @@ export const updateTeam = async (teamId, teamData) => {
       if (response.ok) {
         return response.json();
       } else {
-        throw new Error('Something Went Wrong!');
+        throw new Error("Something Went Wrong!");
       }
     })
     .catch((error) => {
@@ -106,10 +108,10 @@ export const updateTeam = async (teamId, teamData) => {
 };
 
 export const updatePost = async (postId, postData) => {
-    return fetch(`${API_BASE_URL}/updatePost/?postId=${postId}`, {
-    method: 'PATCH',
+  return fetch(`${API_BASE_URL}/updatePost/?postId=${postId}`, {
+    method: "PATCH",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify(postData),
   })
@@ -117,7 +119,7 @@ export const updatePost = async (postId, postData) => {
       if (response.ok) {
         return response.json();
       } else {
-        throw new Error('Something Went Wrong!');
+        throw new Error("Something Went Wrong!");
       }
     })
     .catch((error) => {
@@ -127,22 +129,22 @@ export const updatePost = async (postId, postData) => {
 
 export const updateMatch = async (matchId, matchData) => {
   return fetch(`${API_BASE_URL}/updateMatch/?matchId=${matchId}`, {
-  method: 'PATCH',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  body: JSON.stringify(matchData),
-})
-  .then((response) => {
-    if (response.ok) {
-      return response.json();
-    } else {
-      throw new Error('Something Went Wrong!');
-    }
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(matchData),
   })
-  .catch((error) => {
-    throw new Error(error.error);
-  });
+    .then((response) => {
+      if (response.ok) {
+        return response.json();
+      } else {
+        throw new Error("Something Went Wrong!");
+      }
+    })
+    .catch((error) => {
+      throw new Error(error.error);
+    });
 };
 
 // Show list of Users APIs
@@ -150,143 +152,178 @@ export const getUsers = async (role_id) => {
   try {
     const response = await fetch(`${API_BASE_URL}/users/?role_id=${role_id}`);
     if (!response.ok) {
-      throw new Error('Error loading users.');
+      throw new Error("Error loading users.");
     }
     const data = await response.json();
     return data.users;
   } catch (error) {
-    throw new Error('Error loading users.');
+    throw new Error("Error loading users.");
   }
 };
 
 // Show list of Users APIs
 export const get_user_details = async (user_id) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/get_user_details/?user_id=${user_id}`);
+    const response = await fetch(
+      `${API_BASE_URL}/get_user_details/?user_id=${user_id}`
+    );
     if (!response.ok) {
-      throw new Error('Error loading users.');
+      throw new Error("Error loading users.");
     }
     const data = await response.json();
     return data.users;
   } catch (error) {
-    throw new Error('Error loading users.');
+    throw new Error("Error loading users.");
   }
 };
 
 export const get_tournament_details = async (_id) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/get_tournament_details/?_id=${_id}`);
+    const response = await fetch(
+      `${API_BASE_URL}/get_tournament_details/?_id=${_id}`
+    );
     if (!response.ok) {
-      throw new Error('Error loading tournamnents.');
+      throw new Error("Error loading tournamnents.");
     }
     const data = await response.json();
     return data.tournament;
   } catch (error) {
-    throw new Error('Error loading users.');
+    throw new Error("Error loading users.");
   }
 };
 
 export const get_team_details = async (_id) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/get_team_details/?_id=${_id}`);
+    const response = await fetch(
+      `${API_BASE_URL}/get_team_details/?_id=${_id}`
+    );
     if (!response.ok) {
-      throw new Error('Error loading team.');
+      throw new Error("Error loading team.");
     }
     const data = await response.json();
     return data.team;
   } catch (error) {
-    throw new Error('Error loading users.');
+    throw new Error("Error loading users.");
   }
 };
 
 export const get_match_details = async (_id) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/get_match_details/?_id=${_id}`);
+    const response = await fetch(
+      `${API_BASE_URL}/get_match_details/?_id=${_id}`
+    );
     if (!response.ok) {
-      throw new Error('Error loading match.');
+      throw new Error("Error loading match.");
     }
     const data = await response.json();
     return data.match;
   } catch (error) {
-    throw new Error('Error loading users.');
+    throw new Error("Error loading users.");
   }
 };
 
 export const get_post_details = async (_id) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/get_post_details/?_id=${_id}`);
+    const response = await fetch(
+      `${API_BASE_URL}/get_post_details/?_id=${_id}`
+    );
     if (!response.ok) {
-      throw new Error('Error loading post.');
+      throw new Error("Error loading post.");
     }
     const data = await response.json();
     return data.post;
   } catch (error) {
-    throw new Error('Error loading users.');
+    throw new Error("Error loading users.");
   }
 };
 
 export const getCoachNameOfTeam = async (coach_id) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/getCoachNameOfTeam/?coach_id=${coach_id}`);
+    const response = await fetch(
+      `${API_BASE_URL}/getCoachNameOfTeam/?coach_id=${coach_id}`
+    );
     if (!response.ok) {
-      throw new Error('Error loading coach names.');
+      throw new Error("Error loading coach names.");
     }
     const data = await response.json();
     return data.coachNames;
   } catch (error) {
-    throw new Error('Error loading coach names.');
+    throw new Error("Error loading coach names.");
   }
 };
 
 export const getTournamentNameofMatch = async (tournament_id) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/getTournamentNameofMatch/?tournament_id=${tournament_id}`);
+    const response = await fetch(
+      `${API_BASE_URL}/getTournamentNameofMatch/?tournament_id=${tournament_id}`
+    );
     if (!response.ok) {
-      throw new Error('Error loading tournament names.');
+      throw new Error("Error loading tournament names.");
     }
     const data = await response.json();
     return data.tournamentNames;
   } catch (error) {
-    throw new Error('Error loading tournament names.');
+    throw new Error("Error loading tournament names.");
   }
 };
 
 export const getTournamentMatches = async (tournament_id) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/getTournamentMatches/?tournament_id=${tournament_id}`);
+    const response = await fetch(
+      `${API_BASE_URL}/getTournamentMatches/?tournament_id=${tournament_id}`
+    );
     if (!response.ok) {
-      throw new Error('Error loading tournament Matches.');
+      throw new Error("Error loading tournament Matches.");
     }
     const data = await response.json();
     return data.tournamentMatches;
   } catch (error) {
-    throw new Error('Error loading tournament Matches.');
+    throw new Error("Error loading tournament Matches.");
   }
 };
 
 export const getTeamName = async (team_id) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/getTeamName/?team_id=${team_id}`);
+    const response = await fetch(
+      `${API_BASE_URL}/getTeamName/?team_id=${team_id}`
+    );
     if (!response.ok) {
-      throw new Error('Error loading team name.');
+      throw new Error("Error loading team name.");
     }
     const data = await response.json();
     return data.teamName[0].title;
   } catch (error) {
-    throw new Error('Error loading team name.');
+    throw new Error("Error loading team name.");
   }
 };
 
 export const getMatcheDetailsById = async (match_id) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/getMatcheDetailsById/?match_id=${match_id}`);
+    const response = await fetch(
+      `${API_BASE_URL}/getMatcheDetailsById/?match_id=${match_id}`
+    );
     if (!response.ok) {
-      throw new Error('Error loading Matches Details.');
+      throw new Error("Error loading Matches Details.");
     }
     const data = await response.json();
     return data.matchDetails;
   } catch (error) {
-    throw new Error('Error loading Matches Details.');
+    throw new Error("Error loading Matches Details.");
+  }
+};
+
+export const get_top_players = async () => {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/get_top_players/`
+    );
+    if (!response.ok) {
+      throw new Error("Error loading Matches Details.");
+    }
+    const data = await response.json();
+    return data.top_players;
+  } catch (error) {
+    throw new Error("Error loading Matches Details.");
   }
 };
 
@@ -294,12 +331,12 @@ export const getRoles = async () => {
   try {
     const response = await fetch(`${API_BASE_URL}/roles/`);
     if (!response.ok) {
-      throw new Error('Error loading roles.');
+      throw new Error("Error loading roles.");
     }
     const data = await response.json();
     return data.roles;
   } catch (error) {
-    throw new Error('Error loading roles.');
+    throw new Error("Error loading roles.");
   }
 };
 
@@ -307,12 +344,12 @@ export const getTournaments = async () => {
   try {
     const response = await fetch(`${API_BASE_URL}/tournament_list/`);
     if (!response.ok) {
-      throw new Error('Error loading Tournaments.');
+      throw new Error("Error loading Tournaments.");
     }
     const data = await response.json();
     return data.tournaments;
   } catch (error) {
-    throw new Error('Error loading Tournaments.');
+    throw new Error("Error loading Tournaments.");
   }
 };
 
@@ -320,12 +357,12 @@ export const getMatches = async () => {
   try {
     const response = await fetch(`${API_BASE_URL}/matches_list/`);
     if (!response.ok) {
-      throw new Error('Error loading Matches.');
+      throw new Error("Error loading Matches.");
     }
     const data = await response.json();
     return data.matches;
   } catch (error) {
-    throw new Error('Error loading Matches.');
+    throw new Error("Error loading Matches.");
   }
 };
 
@@ -333,12 +370,12 @@ export const getTeams = async () => {
   try {
     const response = await fetch(`${API_BASE_URL}/teams_list/`);
     if (!response.ok) {
-      throw new Error('Error loading Teams.');
+      throw new Error("Error loading Teams.");
     }
     const data = await response.json();
     return data.teams;
   } catch (error) {
-    throw new Error('Error loading Teams.');
+    throw new Error("Error loading Teams.");
   }
 };
 
@@ -346,12 +383,12 @@ export const getPosts = async () => {
   try {
     const response = await fetch(`${API_BASE_URL}/posts_list/`);
     if (!response.ok) {
-      throw new Error('Error loading Posts.');
+      throw new Error("Error loading Posts.");
     }
     const data = await response.json();
     return data.posts;
   } catch (error) {
-    throw new Error('Error loading Posts.');
+    throw new Error("Error loading Posts.");
   }
 };
 
@@ -359,21 +396,21 @@ export const getPlayerInMatchList = async () => {
   try {
     const response = await fetch(`${API_BASE_URL}/player_in_match_list/`);
     if (!response.ok) {
-      throw new Error('Error loading Player In Match List.');
+      throw new Error("Error loading Player In Match List.");
     }
     const data = await response.json();
     return data.players_in_match;
   } catch (error) {
-    throw new Error('Error loading Player In Match List.');
+    throw new Error("Error loading Player In Match List.");
   }
 };
 
 // Save Data in Mongo DB APIs
 export const tournamentSave = async (tournamentData) => {
   return fetch(`${API_BASE_URL}/tournamentSave`, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify(tournamentData),
   })
@@ -381,7 +418,7 @@ export const tournamentSave = async (tournamentData) => {
       if (response.ok) {
         return response.json();
       } else {
-        throw new Error('Invalid Input');
+        throw new Error("Invalid Input");
       }
     })
     .catch((error) => {
@@ -391,9 +428,9 @@ export const tournamentSave = async (tournamentData) => {
 
 export const matchSave = async (matchData) => {
   return fetch(`${API_BASE_URL}/matchSave`, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify(matchData),
   })
@@ -401,7 +438,7 @@ export const matchSave = async (matchData) => {
       if (response.ok) {
         return response.json();
       } else {
-        throw new Error('Invalid Input');
+        throw new Error("Invalid Input");
       }
     })
     .catch((error) => {
@@ -411,9 +448,9 @@ export const matchSave = async (matchData) => {
 
 export const playersInMatchSave = async (playersInMatchData) => {
   return fetch(`${API_BASE_URL}/playersInMatchSave`, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify(playersInMatchData),
   })
@@ -421,7 +458,7 @@ export const playersInMatchSave = async (playersInMatchData) => {
       if (response.ok) {
         return response.json();
       } else {
-        throw new Error('Invalid Input');
+        throw new Error("Invalid Input");
       }
     })
     .catch((error) => {
@@ -431,9 +468,9 @@ export const playersInMatchSave = async (playersInMatchData) => {
 
 export const postSave = async (postData) => {
   return fetch(`${API_BASE_URL}/postSave`, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       // 'Content-Type': 'multipart/form-data'
     },
     body: JSON.stringify(postData),
@@ -442,7 +479,7 @@ export const postSave = async (postData) => {
       if (response.ok) {
         return response.json();
       } else {
-        throw new Error('Invalid Input');
+        throw new Error("Invalid Input");
       }
     })
     .catch((error) => {
@@ -452,9 +489,9 @@ export const postSave = async (postData) => {
 
 export const teamSave = async (matchData) => {
   return fetch(`${API_BASE_URL}/teamSave`, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify(matchData),
   })
@@ -462,7 +499,7 @@ export const teamSave = async (matchData) => {
       if (response.ok) {
         return response.json();
       } else {
-        throw new Error('Invalid Input');
+        throw new Error("Invalid Input");
       }
     })
     .catch((error) => {
@@ -472,9 +509,9 @@ export const teamSave = async (matchData) => {
 
 export const teamMembersSave = async (matchData) => {
   return fetch(`${API_BASE_URL}/teamMembersSave`, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify(matchData),
   })
@@ -482,7 +519,7 @@ export const teamMembersSave = async (matchData) => {
       if (response.ok) {
         return response.json();
       } else {
-        throw new Error('Invalid Input');
+        throw new Error("Invalid Input");
       }
     })
     .catch((error) => {
@@ -492,9 +529,9 @@ export const teamMembersSave = async (matchData) => {
 
 export const matchDetailsSave = async (matchDetails) => {
   return fetch(`${API_BASE_URL}/matchDetailsSave`, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify(matchDetails),
   })
@@ -502,7 +539,7 @@ export const matchDetailsSave = async (matchDetails) => {
       if (response.ok) {
         return response.json();
       } else {
-        throw new Error('Invalid Input');
+        throw new Error("Invalid Input");
       }
     })
     .catch((error) => {
