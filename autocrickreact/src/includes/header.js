@@ -1,6 +1,7 @@
 import React from "react";
 import { FaUserCircle } from "react-icons/fa";
 import ProfileMenu from "./profile-menu";
+import Sidebar from "./sidebar";
 
 export default class HeaderBar extends React.Component {
   constructor(props) {
@@ -19,6 +20,7 @@ export default class HeaderBar extends React.Component {
   render() {
     const { isProfileMenuOpen } = this.state;
     return (
+      <>
       <div className="header-bar">
         <div className="profile-icon"></div>
         <div className="logo">
@@ -29,6 +31,8 @@ export default class HeaderBar extends React.Component {
           {isProfileMenuOpen && <ProfileMenu />}
         </div>
       </div>
+      <Sidebar />
+      </>
     );
   }
 }

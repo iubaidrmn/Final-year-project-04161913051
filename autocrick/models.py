@@ -68,7 +68,7 @@ class Post(models.Model):
     _id = djongo_models.ObjectIdField(primary_key=True, default=ObjectId, editable=False)
     title = models.CharField(max_length=30)
     description = models.CharField(max_length=255)
-    file_path = models.FileField(upload_to='posts/')
+    file_path = models.ImageField(upload_to='posts/')
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

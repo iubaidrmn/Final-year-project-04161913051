@@ -109,7 +109,7 @@ export default class NewsFeed extends Component {
                               borderRadius: '5px',
                             }}
                             src={mediaPath}
-                            alt={`Image ${mediaIndex + 1}`}
+                            alt="Newsfeed"
                           />
                         );
                       } else if (mediaPath.endsWith('.mp4')) {

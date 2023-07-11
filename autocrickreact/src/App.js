@@ -53,7 +53,7 @@ function App() {
         {/* Stats */}
         <Route path="/TournamentStats" element={<TournamentStats />} />
         <Route path="/MatchStats" element={<MatchStats />} />
-        <Route path="/Homepage" element={<Homepage />} />
+        <Route path="/Tournaments_TopPlayers" element={<Homepage />} />
         <Route path="/TournamentScreen" element={<TournamentScreen />} />
         <Route path="/MatchScoring" element={<MatchScoring />} />
       </Routes>

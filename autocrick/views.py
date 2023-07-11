@@ -7,55 +7,6 @@ from bson import ObjectId
 from rest_framework.parsers import FileUploadParser
 from pymongo import MongoClient
 
-# @api_view(['GET'])
-# def user_list(request):
-#     try:
-#         users = User.objects.all()
-#         serializer = UserSerializer(users, many=True)
-#         return Response({'users': serializer.data})
-#     except:
-#         return Response({'error': 'Can Not Retrieve User List'}, status=400)
-
-@api_view(['GET'])
-def get_top_players(request):
-    try:
-        # Connect to MongoDB
-        client = MongoClient('mongodb://localhost:27017/')
-        db = client['autocrick']
-        collection = db['match_details']
-
-        # Aggregation pipeline to get top 2 players
-        pipeline = [
-            # {"$match": {"match_id": "your_match_id"}},  # Replace "your_match_id" with the actual match ID
-            {"$group": {
-                "_id": "$batsman_id",
-                "total_runs": {"$sum": {"$toInt": "$runs"}},
-                "total_matches": {"$sum": 1},
-                "balls_played": {"$sum": 1}
-            }},
-            {"$project": {
-                "_id": 0,
-                "batsman_id": "$_id",
-                "total_runs": 1,
-                "total_matches": 1,
-                "balls_played": 1,
-                "strike_rate": {"$multiply": [
-                    {"$divide": ["$total_runs", "$balls_played"]},
-                    100
-                ]}
-            }},
-            {"$sort": {"total_runs": -1}},
-            {"$limit": 2}
-        ]
-
-        # Execute the aggregation query
-        result = list(collection.aggregate(pipeline))
-
-        return Response({'top_players': result})
-    except Exception as e:
-        return Response({'error': 'Cannot retrieve top players'}, status=400)
-
-
 @api_view(['POST'])
 def matchDetailsSave(request):
     try:
@@ -177,7 +128,6 @@ def getMatcheDetailsById(request):
         return Response({'matchDetails': serializer.data})
     except:
         return Response({'error': 'Can Not Retrieve Matches Details List'})
-
 
 @api_view(['GET'])
 def roles_list(request):
@@ -307,10 +257,9 @@ def matchSave(request):
 @api_view(['POST'])
 def postSave(request):
     try:
-        parser_classes = (FileUploadParser,)
         serializer = PostSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
+            serializer.save(file_path=request.FILES['file_path'])
             return Response({'response': True, 'message': 'Post Saved Successfully'})
         return Response({'response': False, 'error': serializer.errors})
     except Exception as e:
@@ -444,3 +393,41 @@ def updatePost(request):
         return Response({'response': False, 'error': serializer.errors})
     except Exception as e:
         return Response({'response': False, 'error': str(e)})
+
+@api_view(['GET'])
+def get_top_players(request):
+    try:
+        # Connect to MongoDB
+        client = MongoClient('mongodb://localhost:27017/')
+        db = client['autocrick']
+        collection = db['match_details']
+
+        # Aggregation pipeline to get top 2 players with names
+        pipeline = [
+            {"$group": {
+                "_id": "$batsman_id",
+                "total_runs": {"$sum": {"$toInt": "$runs"}},
+                "total_matches": {"$addToSet": "$match_id"},
+                "balls_played": {"$sum": 1}
+            }},
+            {"$project": {
+                "_id": 0,
+                "batsman_id": "$_id",
+                "total_runs": 1,
+                "total_matches": {"$size": "$total_matches"},
+                "balls_played": 1,
+                "strike_rate": {"$multiply": [
+                    {"$divide": ["$total_runs", "$balls_played"]},
+                    100
+                ]}
+            }},
+            {"$sort": {"total_runs": -1}},
+            {"$limit": 2}
+        ]
+
+        # Execute the aggregation query
+        result = list(collection.aggregate(pipeline))
+
+        return Response({'top_players': result})
+    except Exception as e:
+        return Response({'error': 'Cannot retrieve top players'}, status=400)

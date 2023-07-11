@@ -6,6 +6,8 @@ const menuConfig = {
   1: [
     // Admin
     { to: "/NewsFeed", icon: <FaNewspaper />, label: "News Feed" },
+    { to: "/CreatePost", icon: <FaNewspaper />, label: "Create Post" },
+    { to: "/Tournaments_TopPlayers", icon: <FaNewspaper />, label: "Tournaments" },
   ],
   2: [
     // Tournament Organizer
@@ -18,6 +20,7 @@ const menuConfig = {
     // Player
     { to: "/NewsFeed", icon: <FaNewspaper />, label: "News Feed" },
     { to: "/CreatePost", icon: <FaNewspaper />, label: "Create Post" },
+    { to: "/Tournaments_TopPlayers", icon: <FaNewspaper />, label: "Tournaments" },
   ],
   4: [
     // Normal User
@@ -27,15 +30,18 @@ const menuConfig = {
     // Coach
     { to: "/NewsFeed", icon: <FaNewspaper />, label: "News Feed" },
     { to: "/TeamDashboard", icon: <FaUsers />, label: "Team Dashboard" },
+    { to: "/Tournaments_TopPlayers", icon: <FaNewspaper />, label: "Tournaments" },
     { to: "/CreatePost", icon: <FaNewspaper />, label: "Create Post" },
     { to: "/CreateTeam", icon: <FaUsers />, label: "Create Team" },
     { to: "/CreateTeamMembers", icon: <FaUsers />, label: "Team Members" },
+    // { to: "/TeamsList", icon: <FaUsers />, label: "Teams List" },
   ],
   6: [
     // Umpier
     { to: "/NewsFeed", icon: <FaNewspaper />, label: "News Feed" },
     { to: "/CreatePost", icon: <FaNewspaper />, label: "Create Post" },
     { to: "/MatchUpdate", icon: <FaNewspaper />, label: "Match Update" },
+    { to: "/Tournaments_TopPlayers", icon: <FaNewspaper />, label: "Tournaments" },
   ],
 };
 

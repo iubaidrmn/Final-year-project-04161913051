@@ -318,12 +318,12 @@ export const get_top_players = async () => {
       `${API_BASE_URL}/get_top_players/`
     );
     if (!response.ok) {
-      throw new Error("Error loading Matches Details.");
+      throw new Error("Error loading Top Players.");
     }
     const data = await response.json();
     return data.top_players;
   } catch (error) {
-    throw new Error("Error loading Matches Details.");
+    throw new Error("Error loading Top Players.");
   }
 };
 
