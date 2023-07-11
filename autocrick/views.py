@@ -237,7 +237,7 @@ def tournamentSave(request):
     try:
         serializer = TournamentSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
+            serializer.save(file_path=request.FILES['file_path'])
             return Response({'response': True, 'message': 'Tournament Saved Successfully'}, status=200)
         return Response({'response': False, 'error': serializer.errors}, status=400)
     except Exception as e:
@@ -260,7 +260,7 @@ def postSave(request):
         serializer = PostSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save(file_path=request.FILES['file_path'])
-            return Response({'response': True, 'message': 'Post Saved Successfully'})
+            return Response({'response': True, 'message': 'Post Uploaded'})
         return Response({'response': False, 'error': serializer.errors})
     except Exception as e:
         return Response({'response': False, 'error': str(e)})

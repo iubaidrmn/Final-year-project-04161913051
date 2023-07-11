@@ -22,7 +22,7 @@ class TournamentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tournament
         fields = ('_id', 'title', 'description', 'no_of_matches', 'latitude', 'longitude', 'venue',
-                  'start_date', 'end_date', 'status', 'created_at')
+                  'start_date', 'end_date', 'status', 'file_path', 'created_at')
     def get__id(self, obj):
         return str(obj._id)
     

@@ -68,9 +68,13 @@ export default class Post extends Component {
             },
           }
         );
-        console.log("File uploaded successfully:", response);
+        if(response.data.response == true)
+          this.showSuccessModal(response.data.message);
+        else 
+          this.showErrorModal(response.data.error);
       }
     } catch (error) {
+      // this.showErrorModal(error.message);
       console.error("Error uploading file:", error);
     }
   };
@@ -82,6 +86,7 @@ export default class Post extends Component {
         this.setState({
           title: post[0].title,
           description: post[0].description,
+          file_path: post[0].file_path,
         });
       }
     } catch (error) {}
