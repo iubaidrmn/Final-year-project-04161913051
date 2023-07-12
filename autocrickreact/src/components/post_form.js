@@ -1,7 +1,8 @@
 import React, { Component } from "react";
-import { postSave, get_post_details, updatePost } from "../services/api";
+import { get_post_details, updatePost } from "../services/api";
 import HeaderBar from "../includes/header";
 import Footer from "../includes/footer";
+import Sidebar from "../includes/sidebar";
 import "../assets/styles.css";
 import SuccessMessage from "../includes/success";
 import ErrorMessage from "../includes/error";
@@ -34,29 +35,29 @@ export default class Post extends Component {
   handleUpload = async () => {
     const { _id, title, description, file_path } = this.state;
     try {
+      const username = localStorage.getItem("username");
       if (_id !== null) {
-        const postDataUpdate = { title, description, file_path };
+        const postDataUpdate = { title, description, file_path, username };
         updatePost(_id, postDataUpdate)
-          .then((data) => {
-            if (data.response === true) {
-              this.showSuccessModal(data.message);
+          .then((response) => {
+            if (response.data.response === true) {
+              this.showSuccessModal(response.data.message);
             } else {
-              this.showErrorModal(data.error);
+              this.showErrorModal(response.data.error);
             }
           })
           .catch((error) => {
             this.showErrorModal(error.message);
           });
       } else {
-        const formData = new FormData();
-        formData.append("file_path", file_path);
-        formData.append("title", title);
-        formData.append("description", description);
+        if (file_path !== "") {
+          const formData = new FormData();
+          formData.append("title", title);
+          formData.append("description", description);
+          formData.append("file_path", file_path);
+          formData.append("created_by", username);
 
-        const response = await axios.post(
-          "http://localhost:8000/api/postSave",
-          formData,
-          {
+          const config = {
             headers: {
               "Content-Type": "multipart/form-data",
             },
@@ -66,16 +67,25 @@ export default class Post extends Component {
               );
               this.setState({ uploadProgress: progress });
             },
-          }
-        );
-        if(response.data.response == true)
-          this.showSuccessModal(response.data.message);
-        else 
-          this.showErrorModal(response.data.error);
+          };
+
+          axios
+            .post("http://localhost:8000/api/postSave", formData, config)
+            .then((response) => {
+              if (response.data.response === true) {
+                this.showSuccessModal(response.data.message);
+              } else {
+                this.showErrorModal(response.data.error);
+              }
+            })
+            .catch((error) => {
+              this.showErrorModal(error.message);
+            });
+        }
       }
     } catch (error) {
-      // this.showErrorModal(error.message);
       console.error("Error uploading file:", error);
+      // this.showErrorModal(error.message);
     }
   };
 
@@ -130,110 +140,107 @@ export default class Post extends Component {
   }
 
   handleChange = (event) => {
-    if (event.target.name == "title" || event.target.name == "description")
+    if (event.target.name === "title" || event.target.name === "description")
       this.setState({ [event.target.name]: event.target.value });
-  };
-
-  handleSubmit = (event) => {
-    event.preventDefault();
-
-    const { title, description, file_path, created_at, _id } = this.state;
-    if (_id == null) {
-      const postData = { title, description, file_path, created_at };
-      postSave(postData)
-        .then((data) => {
-          if (data.response === true) {
-            this.showSuccessModal(data.message);
-          } else {
-            this.showErrorModal(data.error);
-          }
-        })
-        .catch((error) => {
-          this.showErrorModal(error.message);
-        });
-    } else if (_id !== null) {
-      const postDataUpdate = { title, description, file_path };
-      updatePost(_id, postDataUpdate)
-        .then((data) => {
-          if (data.response === true) {
-            this.showSuccessModal(data.message);
-          } else {
-            this.showErrorModal(data.error);
-          }
-        })
-        .catch((error) => {
-          this.showErrorModal(error.message);
-        });
-    }
   };
 
   render() {
     const { title, description, file_path, _id, uploadProgress } = this.state;
+    const fileName = file_path && file_path.name;
     return (
-      <div className="news-feed">
+      <div>
         <HeaderBar />
-        <div className="content">
-          <div className="container">
-            <h2>
-              {_id == null ? "Create" : "Update"} Post / Educational Content
-            </h2>
-            <form onSubmit={this.handleSubmit} encType="multipart/form-data">
-              <div className="row">
-                <div className="col">
-                  <div className="form-group">
-                    <label>Title:</label>
-                    <input
-                      type="text"
-                      name="title"
-                      value={title}
-                      onChange={this.handleChange}
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label>Choose Media:</label>
-                    <Dropzone
-                      onDrop={this.handleDrop}
-                      accept="image/*,video/*"
-                      multiple={false}
+        <div style={styles.container}>
+          <Sidebar />
+          <div style={styles.containerMain}>
+            <div className="news-feed">
+              <div className="content">
+                <div className="container">
+                  <h2>
+                    {_id == null ? "Create" : "Update"} Post / Educational
+                    Content
+                  </h2>
+                  <div
+                    style={{
+                      backgroundColor: "#FFFFFF",
+                      padding: "20px",
+                      boxShadow: "0px 2px 3.84px rgba(0, 0, 0, 0.25)",
+                      borderRadius: "10px",
+                      marginBottom: "20px",
+                      width: "100%",
+                      maxWidth: "500px",
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "flex-start",
+                    }}
+                  >
+                    <form
+                      onSubmit={this.handleUpload}
+                      encType="multipart/form-data"
                     >
-                      {({ getRootProps, getInputProps }) => (
-                        <div {...getRootProps()} className="dropzone">
-                          <input {...getInputProps()} />
+                      <div className="row">
+                        <div className="col">
                           <div className="form-group">
-                            <button type="button">Choose File</button>
+                            <label>Title:</label>
+                            <input
+                              type="text"
+                              name="title"
+                              value={title}
+                              onChange={this.handleChange}
+                            />
+                          </div>
+                          <div className="form-group">
+                            <label>Choose Media:</label>
+                            <Dropzone
+                              onDrop={this.handleDrop}
+                              accept="image/*,video/*"
+                              multiple={false}
+                            >
+                              {({ getRootProps, getInputProps }) => (
+                                <div {...getRootProps()} className="dropzone">
+                                  <input {...getInputProps()} />
+                                  <div className="form-group">
+                                    <button
+                                      type="button"
+                                      className="submit-button"
+                                    >
+                                      Choose File
+                                    </button>
+                                  </div>
+                                </div>
+                              )}
+                            </Dropzone>
                           </div>
                         </div>
-                      )}
-                    </Dropzone>
-                    {file_path && (
-                      <div>
-                        <p>Selected file: {file_path.name}</p>
-                        <div>Upload progress: {uploadProgress}%</div>
-                        <button
-                          className="submit-button"
-                          onClick={this.handleUpload}
-                        >
-                          {_id == null ? "Create" : "Update"}
-                        </button>
+                        <div className="col">
+                          <div className="form-group">
+                            <label>Description:</label>
+                            <input
+                              type="text"
+                              name="description"
+                              value={description}
+                              onChange={this.handleChange}
+                            />
+                          </div>
+                        </div>
                       </div>
-                    )}
-                  </div>
-                </div>
-                <div className="col">
-                  <div className="form-group">
-                    <label>Description:</label>
-                    <input
-                      type="text"
-                      name="description"
-                      value={description}
-                      onChange={this.handleChange}
-                    />
+                      {this.state.showSuccessModal && this.renderSuccessModal()}
+                      {this.state.showErrorModal && this.renderErrorModal()}
+                      {fileName && (
+                        <div>
+                          <p>Selected file: {fileName}</p>
+                          <div>Upload progress: {uploadProgress}%</div>
+                        </div>
+                      )}
+                      <br></br>
+                      <button type="submit" className="submit-button">
+                        {_id == null ? "Create" : "Update"} Post
+                      </button>
+                    </form>
                   </div>
                 </div>
               </div>
-              {this.state.showSuccessModal && this.renderSuccessModal()}
-              {this.state.showErrorModal && this.renderErrorModal()}
-            </form>
+            </div>
           </div>
         </div>
         <Footer />
@@ -241,3 +248,18 @@ export default class Post extends Component {
     );
   }
 }
+
+const styles = {
+  container: {
+    display: "flex",
+    minHeight: "100vh",
+    backgroundColor: "#f5f5f5",
+  },
+  containerMain: {
+    flex: 1,
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+};

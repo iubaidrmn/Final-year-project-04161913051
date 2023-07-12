@@ -1,27 +1,28 @@
-import React, { Component } from 'react';
-import { teamMembersSave, getTeams, getUsers } from '../services/api';
-import HeaderBar from '../includes/header';
-import Footer from '../includes/footer';
-import Modal from 'react-modal';
-import '../assets/styles.css';
-import LoadingSpinner from '../components/loading_spinner';
-import SuccessMessage from '../includes/success';
-import ErrorMessage from '../includes/error';
+import React, { Component } from "react";
+import { teamMembersSave, getTeams, getUsers } from "../services/api";
+import HeaderBar from "../includes/header";
+import Footer from "../includes/footer";
+import Sidebar from "../includes/sidebar";
+import Modal from "react-modal";
+import "../assets/styles.css";
+import LoadingSpinner from "../components/loading_spinner";
+import SuccessMessage from "../includes/success";
+import ErrorMessage from "../includes/error";
 
 export default class TeamMembers extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      team_id: '',
+      team_id: "",
       players: [],
       teams: [],
       player_id: null,
       showConfirmation: false,
-      created_at: '',
+      created_at: "",
       showSuccessModal: false,
       showErrorModal: false,
-      successMessage: '',
-      errorMessage: '',
+      successMessage: "",
+      errorMessage: "",
       isLoading: true,
       isError: false,
     };
@@ -50,17 +51,17 @@ export default class TeamMembers extends Component {
     const teamMembersData = { team_id, player_id };
 
     teamMembersSave(teamMembersData)
-    .then((data) => {
-      if (data.response === true) {
-        this.showSuccessModal(data.message);
-        this.setState({ team_id: '', player_id: null });
-      } else {
-        this.showErrorModal(data.error);
-      }
-    })
-    .catch((error) => {
-      this.showErrorModal(error.message);
-    });
+      .then((data) => {
+        if (data.response === true) {
+          this.showSuccessModal(data.message);
+          this.setState({ team_id: "", player_id: null });
+        } else {
+          this.showErrorModal(data.error);
+        }
+      })
+      .catch((error) => {
+        this.showErrorModal(error.message);
+      });
 
     this.setState({ showConfirmation: false });
   };
@@ -97,17 +98,20 @@ export default class TeamMembers extends Component {
           </tr>
         </thead>
         <tbody>
-        {players.map((player, index) => (
-          <tr key={player._id}>
-            <td>{index + 1}</td>
-            <td>{player.fullname}</td>
-            <td>
-              <button className='submit-button' onClick={() => this.handleCandidateClick(player)}>
-                Add to Team
-              </button>
-            </td>
-          </tr>
-        ))}
+          {players.map((player, index) => (
+            <tr key={player._id}>
+              <td>{index + 1}</td>
+              <td>{player.fullname}</td>
+              <td>
+                <button
+                  className="submit-button"
+                  onClick={() => this.handleCandidateClick(player)}
+                >
+                  Add to Team
+                </button>
+              </td>
+            </tr>
+          ))}
         </tbody>
       </table>
     );
@@ -125,8 +129,8 @@ export default class TeamMembers extends Component {
       >
         <h2>Confirmation</h2>
         <p>
-          Are you sure you want to add{' '}
-          {player_id && player_id.fullname} to the team?
+          Are you sure you want to add {player_id && player_id.fullname} to the
+          team?
         </p>
         <div className="popup-actions">
           <button onClick={this.handleConfirmationClose}>Cancel</button>
@@ -149,7 +153,7 @@ export default class TeamMembers extends Component {
         onGoToHomepage={() => {
           this.hideSuccessModal();
           // Redirect to the homepage
-          window.location.replace('/NewsFeed');
+          window.location.replace("/NewsFeed");
         }}
       />
     );
@@ -170,7 +174,7 @@ export default class TeamMembers extends Component {
           <HeaderBar />
           <div className="content1">
             <div className="loading-icon">
-            <LoadingSpinner />
+              <LoadingSpinner />
             </div>
           </div>
           <Footer />
@@ -179,38 +183,75 @@ export default class TeamMembers extends Component {
     }
 
     return (
-      <div className="news-feed1">
+      <div>
         <HeaderBar />
-        <div className="content1">
-          <div className="container1">
-            <h2>Choose Team Members</h2>
-            <label htmlFor="team">Select a Team:</label>
-            <select
-              id="team"
-              value={team_id}
-              onChange={this.handleTeamChange}
-            >
-              <option value="">-- Select Team --</option>
-              {teams && teams.length > 0 ? (
-                teams.map((team) => (
-                  <option value={team._id} key={team._id}>
-                    {team.title}
-                  </option>
-                ))
-              ) : (
-                <option value="" disabled>
-                  No teams available
-                </option>
-              )}
-            </select>
-            {team_id && this.renderTable()}
-            {this.renderConfirmationModal()}
-            {this.state.showSuccessModal && this.renderSuccessModal()}
-            {this.state.showErrorModal && this.renderErrorModal()}
+        <div style={styles.container}>
+          <Sidebar />
+          <div style={styles.containerMain}>
+            <div className="news-feed1">
+              <div className="content1">
+                <div>
+                  <h2>Choose Team Members</h2>
+                  <div
+                    style={{
+                      backgroundColor: "#FFFFFF",
+                      padding: "20px",
+                      boxShadow: "0px 2px 3.84px rgba(0, 0, 0, 0.25)",
+                      borderRadius: "10px",
+                      marginBottom: "20px",
+                      width: "100%",
+                      maxWidth: "500px",
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "flex-start",
+                    }}
+                  >
+                    <label htmlFor="team">Select a Team:</label>
+                    <select
+                      id="team"
+                      value={team_id}
+                      onChange={this.handleTeamChange}
+                    >
+                      <option value="">-- Select Team --</option>
+                      {teams && teams.length > 0 ? (
+                        teams.map((team) => (
+                          <option value={team._id} key={team._id}>
+                            {team.title}
+                          </option>
+                        ))
+                      ) : (
+                        <option value="" disabled>
+                          No teams available
+                        </option>
+                      )}
+                    </select>
+                    {team_id && this.renderTable()}
+                    {this.renderConfirmationModal()}
+                    {this.state.showSuccessModal && this.renderSuccessModal()}
+                    {this.state.showErrorModal && this.renderErrorModal()}
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
         <Footer />
       </div>
     );
-  }  
+  }
 }
+
+const styles = {
+  container: {
+    display: "flex",
+    minHeight: "100vh",
+    backgroundColor: "#f5f5f5",
+  },
+  containerMain: {
+    flex: 1,
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+};

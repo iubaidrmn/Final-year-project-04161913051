@@ -7,6 +7,7 @@ import {
 } from "../services/api";
 import HeaderBar from "../includes/header";
 import Footer from "../includes/footer";
+import Sidebar from "../includes/sidebar";
 import "../assets/styles.css";
 import SuccessMessage from "../includes/success";
 import ErrorMessage from "../includes/error";
@@ -251,234 +252,253 @@ export default class MatchUpdate extends Component {
     }
 
     return (
-      <div className="news-feed">
+      <div>
         <HeaderBar />
-        <div className="content">
-          <div className="container">
-            <h2>Match Details</h2>
-            <form onSubmit={this.handleSubmit} className="rounded-box">
-              <div className="row">
-                <div className="col">
-                  <div className="form-group">
-                    <label>Innings:</label>
-                    <select
-                      id="innings"
-                      name="innings"
-                      value={innings}
-                      onChange={this.handleChange}
-                    >
-                      <option value="">Select Innings</option>
-                      <option value="first">First Inning</option>
-                      <option value="second">Second Inning</option>
-                    </select>
-                  </div>
-                  <div className="form-group">
-                    <label>Batsman:</label>
-                    <select
-                      id="batsman_id"
-                      name="batsman_id"
-                      value={batsman_id}
-                      onChange={this.handleChange}
-                    >
-                      <option value="">Select Batsman</option>
-                      {players.map((player) => (
-                        <option key={player._id} value={player._id}>
-                          {player.fullname}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className="form-group">
-                    <label>Bowler:</label>
-                    <select
-                      id="bowler_id"
-                      name="bowler_id"
-                      value={bowler_id}
-                      onChange={this.handleChange}
-                    >
-                      <option value="">Select Bowler</option>
-                      {players.map((player) => (
-                        <option key={player._id} value={player._id}>
-                          {player.fullname}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className="form-group">
-                    <label>Wickets:</label>
-                    <input
-                      type="text"
-                      name="wickets"
-                      value={wickets}
-                      onChange={this.handleChange}
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label>Out:</label>
-                    <select
-                      id="outOption"
-                      name="outOption"
-                      value={outOption}
-                      onChange={this.handleChange}
-                    >
-                      <option value="">Select Out Option</option>
-                      <option value="out">Out</option>
-                      <option value="run_out">Run Out</option>
-                      <option value="retired_out">Retired Out</option>
-                      <option value="not_out">Not Out</option>
-                    </select>
-                  </div>
-                </div>
-                <div className="col">
-                  <div className="form-group">
-                    <label>Match:</label>
-                    <select
-                      id="match_id"
-                      name="match_id"
-                      value={match_id}
-                      onChange={this.handleChange}
-                    >
-                      <option value="">Select Match</option>
-                      {matches.map((match) => (
-                        <option key={match._id} value={match._id}>
-                          {match.title}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className="form-group">
-                    <label>Runs:</label>
-                    <input
-                      type="text"
-                      name="runs"
-                      value={runs}
-                      onChange={this.handleChange}
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label>Over:</label>
-                    <select
-                      id="current_over"
-                      name="current_over"
-                      value={current_over}
-                      onChange={this.handleChange}
-                    >
-                      <option value="">Select Over</option>
-                      {overOptions}
-                    </select>
-                  </div>
-                  <div className="form-group">
-                    <label>Ball:</label>
-                    <select
-                      id="current_ball"
-                      name="current_ball"
-                      value={current_ball}
-                      onChange={this.handleChange}
-                    >
-                      <option value="">Select Ball</option>
-                      <option value="1">1</option>
-                      <option value="2">2</option>
-                      <option value="3">3</option>
-                      <option value="4">4</option>
-                      <option value="5">5</option>
-                      <option value="6">6</option>
-                    </select>
-                  </div>
-                  <div className="form-group">
-                    <label>Extra:</label>
-                    <select
-                      id="extra"
-                      name="extra"
-                      value={extras}
-                      onChange={this.handleChange}
-                    >
-                      <option value="0">Select Extra</option>
-                      <option value="wide">Wide</option>
-                      <option value="no_ball">No Ball</option>
-                    </select>
+        <div style={styles.container}>
+          <Sidebar />
+          <div style={styles.containerMain}>
+            <div className="news-feed">
+              <div className="content">
+                <div className="container">
+                  <h2>Match Details</h2>
+                  <div
+                    style={{
+                      backgroundColor: "#FFFFFF",
+                      padding: "20px",
+                      boxShadow: "0px 2px 3.84px rgba(0, 0, 0, 0.25)",
+                      borderRadius: "10px",
+                      marginBottom: "20px",
+                      width: "100%",
+                      maxWidth: "480px",
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "flex-start",
+                    }}
+                  >
+                    <form onSubmit={this.handleSubmit}>
+                      <div className="row">
+                        <div className="col">
+                          <div className="form-group">
+                            <label>Innings:</label>
+                            <select
+                              id="innings"
+                              name="innings"
+                              value={innings}
+                              onChange={this.handleChange}
+                            >
+                              <option value="">Select Innings</option>
+                              <option value="first">First Inning</option>
+                              <option value="second">Second Inning</option>
+                            </select>
+                          </div>
+                          <div className="form-group">
+                            <label>Batsman:</label>
+                            <select
+                              id="batsman_id"
+                              name="batsman_id"
+                              value={batsman_id}
+                              onChange={this.handleChange}
+                            >
+                              <option value="">Select Batsman</option>
+                              {players.map((player) => (
+                                <option key={player._id} value={player._id}>
+                                  {player.fullname}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                          <div className="form-group">
+                            <label>Bowler:</label>
+                            <select
+                              id="bowler_id"
+                              name="bowler_id"
+                              value={bowler_id}
+                              onChange={this.handleChange}
+                            >
+                              <option value="">Select Bowler</option>
+                              {players.map((player) => (
+                                <option key={player._id} value={player._id}>
+                                  {player.fullname}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                          <div className="form-group">
+                            <label>Wickets:</label>
+                            <input
+                              type="text"
+                              name="wickets"
+                              value={wickets}
+                              onChange={this.handleChange}
+                            />
+                          </div>
+                          <div className="form-group">
+                            <label>Out:</label>
+                            <select
+                              id="outOption"
+                              name="outOption"
+                              value={outOption}
+                              onChange={this.handleChange}
+                            >
+                              <option value="">Select Out Option</option>
+                              <option value="out">Out</option>
+                              <option value="run_out">Run Out</option>
+                              <option value="retired_out">Retired Out</option>
+                              <option value="not_out">Not Out</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div className="col">
+                          <div className="form-group">
+                            <label>Match:</label>
+                            <select
+                              id="match_id"
+                              name="match_id"
+                              value={match_id}
+                              onChange={this.handleChange}
+                            >
+                              <option value="">Select Match</option>
+                              {matches.map((match) => (
+                                <option key={match._id} value={match._id}>
+                                  {match.title}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                          <div className="form-group">
+                            <label>Runs:</label>
+                            <input
+                              type="text"
+                              name="runs"
+                              value={runs}
+                              onChange={this.handleChange}
+                            />
+                          </div>
+                          <div className="form-group">
+                            <label>Over:</label>
+                            <select
+                              id="current_over"
+                              name="current_over"
+                              value={current_over}
+                              onChange={this.handleChange}
+                            >
+                              <option value="">Select Over</option>
+                              {overOptions}
+                            </select>
+                          </div>
+                          <div className="form-group">
+                            <label>Ball:</label>
+                            <select
+                              id="current_ball"
+                              name="current_ball"
+                              value={current_ball}
+                              onChange={this.handleChange}
+                            >
+                              <option value="">Select Ball</option>
+                              <option value="1">1</option>
+                              <option value="2">2</option>
+                              <option value="3">3</option>
+                              <option value="4">4</option>
+                              <option value="5">5</option>
+                              <option value="6">6</option>
+                            </select>
+                          </div>
+                          <div className="form-group">
+                            <label>Extra:</label>
+                            <select
+                              id="extra"
+                              name="extra"
+                              value={extras}
+                              onChange={this.handleChange}
+                            >
+                              <option value="0">Select Extra</option>
+                              <option value="wide">Wide</option>
+                              <option value="no_ball">No Ball</option>
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                      {this.state.showSuccessModal && this.renderSuccessModal()}
+                      {this.state.showErrorModal && this.renderErrorModal()}
+                      <div className="submit-button-container">
+                        <button type="submit" className="submit-button">
+                          Add Detail
+                        </button>
+                      </div>
+                    </form>
                   </div>
                 </div>
               </div>
-              {this.state.showSuccessModal && this.renderSuccessModal()}
-              {this.state.showErrorModal && this.renderErrorModal()}
-              <div className="submit-button-container">
-                <button type="submit" className="submit-button">
-                  Add Detail
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-        {matchDetailsbyId.length > 0 && (
-          <div className="match-summary">
-            <h2>Over Summary</h2>
-            {overSummaryRows.map((over, index) => (
-              <div key={index}>
-                <h3>Over {over.over_number}</h3>
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Ball No</th>
-                      <th>Sixes</th>
-                      <th>Fours</th>
-                      <th>Extra</th>
-                      <th>Type of Extra</th>
-                      <th>Wickets</th>
-                      <th>Type of Wicket</th>
-                      <th>Total Runs</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {over.balls.map((ball, ballIndex) => (
-                      <tr key={ballIndex}>
-                        <td>{ball.ball_no}</td>
-                        <td>{ball.sixes}</td>
-                        <td>{ball.fours}</td>
-                        <td>{ball.extra}</td>
-                        <td>{ball.type_of_extra}</td>
-                        <td>{ball.wickets}</td>
-                        <td>{ball.type_of_wicket}</td>
-                        <td>{ball.total_runs}</td>
+              {matchDetailsbyId.length > 0 && (
+                <div className="match-summary">
+                  <h2>Over Summary</h2>
+                  {overSummaryRows.map((over, index) => (
+                    <div key={index}>
+                      <h3>Over {over.over_number}</h3>
+                      <table>
+                        <thead>
+                          <tr>
+                            <th>Ball No</th>
+                            <th>Sixes</th>
+                            <th>Fours</th>
+                            <th>Extra</th>
+                            <th>Type of Extra</th>
+                            <th>Wickets</th>
+                            <th>Type of Wicket</th>
+                            <th>Total Runs</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {over.balls.map((ball, ballIndex) => (
+                            <tr key={ballIndex}>
+                              <td>{ball.ball_no}</td>
+                              <td>{ball.sixes}</td>
+                              <td>{ball.fours}</td>
+                              <td>{ball.extra}</td>
+                              <td>{ball.type_of_extra}</td>
+                              <td>{ball.wickets}</td>
+                              <td>{ball.type_of_wicket}</td>
+                              <td>{ball.total_runs}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  ))}
+                  <div className="over-summary"></div>
+
+                  <h2>Match Summary</h2>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Over Number</th>
+                        <th>Sixes</th>
+                        <th>Fours</th>
+                        <th>Extra</th>
+                        <th>Type of Extra</th>
+                        <th>Wickets</th>
+                        <th>Type of Wicket</th>
+                        <th>Total Runs</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            ))}
-            <div className="over-summary"></div>
+                    </thead>
+                    <tbody>
+                      {matchSummaryRows.map((row, index) => (
+                        <tr key={index}>
+                          <td>{row.over_number}</td>
+                          <td>{row.sixes}</td>
+                          <td>{row.fours}</td>
+                          <td>{row.extra}</td>
+                          <td>{row.type_of_extra}</td>
+                          <td>{row.wickets}</td>
+                          <td>{row.type_of_wicket}</td>
+                          <td>{row.total_runs}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
 
-            <h2>Match Summary</h2>
-            <table>
-              <thead>
-                <tr>
-                  <th>Over Number</th>
-                  <th>Sixes</th>
-                  <th>Fours</th>
-                  <th>Extra</th>
-                  <th>Type of Extra</th>
-                  <th>Wickets</th>
-                  <th>Type of Wicket</th>
-                  <th>Total Runs</th>
-                </tr>
-              </thead>
-              <tbody>
-                {matchSummaryRows.map((row, index) => (
-                  <tr key={index}>
-                    <td>{row.over_number}</td>
-                    <td>{row.sixes}</td>
-                    <td>{row.fours}</td>
-                    <td>{row.extra}</td>
-                    <td>{row.type_of_extra}</td>
-                    <td>{row.wickets}</td>
-                    <td>{row.type_of_wicket}</td>
-                    <td>{row.total_runs}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-
-            <style>
-              {`
+                  <style>
+                    {`
         .match-summary {
           display: flex;
           flex-direction: column;
@@ -515,12 +535,30 @@ export default class MatchUpdate extends Component {
           margin-top: 20px;
         }
       `}
-            </style>
+                  </style>
+                </div>
+              )}
+              <br></br>
+            </div>
           </div>
-        )}
-        <br></br>
+        </div>
         <Footer />
       </div>
     );
   }
 }
+
+const styles = {
+  container: {
+    display: "flex",
+    minHeight: "100vh",
+    backgroundColor: "#f5f5f5",
+  },
+  containerMain: {
+    flex: 1,
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+};

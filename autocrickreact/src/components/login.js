@@ -31,6 +31,7 @@ export default class Login extends Component {
     login(userData)
       .then((data) => {
         if (data.response === true) {
+          console.log("data", data);
           localStorage.setItem("user_id", data.user["_id"]);
           localStorage.setItem("fullname", data.user["fullname"]);
           localStorage.setItem("username", data.user["username"]);

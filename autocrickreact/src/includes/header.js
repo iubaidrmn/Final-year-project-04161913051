@@ -1,7 +1,6 @@
 import React from "react";
 import { FaUserCircle } from "react-icons/fa";
 import ProfileMenu from "./profile-menu";
-import Sidebar from "./sidebar";
 
 export default class HeaderBar extends React.Component {
   constructor(props) {
@@ -21,17 +20,16 @@ export default class HeaderBar extends React.Component {
     const { isProfileMenuOpen } = this.state;
     return (
       <>
-      <div className="header-bar">
-        <div className="profile-icon"></div>
-        <div className="logo">
-          AutoCrick | Local Optimized Cricket Automation
+        <div className="header-bar">
+          <div className="profile-icon"></div>
+          <div className="logo">
+            AutoCrick | Local Optimized Cricket Automation
+          </div>
+          <div className="profile-icon" onClick={this.handleProfileIconClick}>
+            <FaUserCircle size={24} />
+            {isProfileMenuOpen && <ProfileMenu />}
+          </div>
         </div>
-        <div className="profile-icon" onClick={this.handleProfileIconClick}>
-          <FaUserCircle size={24} />
-          {isProfileMenuOpen && <ProfileMenu />}
-        </div>
-      </div>
-      <Sidebar />
       </>
     );
   }

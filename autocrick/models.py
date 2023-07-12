@@ -59,7 +59,7 @@ class Tournament(models.Model):
     start_date = models.DateField()
     end_date = models.DateField()
     status = models.CharField(max_length=2)
-    file_path = models.FileField(upload_to='posts/')
+    file_path = models.FileField(upload_to='autocrickreact/public/posts/', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -69,7 +69,8 @@ class Post(models.Model):
     _id = djongo_models.ObjectIdField(primary_key=True, default=ObjectId, editable=False)
     title = models.CharField(max_length=30)
     description = models.CharField(max_length=255)
-    file_path = models.FileField(upload_to='posts/')
+    file_path = models.FileField(upload_to='autocrickreact/public/posts/', blank=True, null=True)
+    created_by = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -98,7 +99,7 @@ class MatchDetails(models.Model):
     match_id = models.CharField(max_length=24, primary_key=False)
     batsman_id = models.CharField(max_length=24, primary_key=False)
     bowler_id = models.CharField(max_length=24, primary_key=False)
-    runs = models.CharField(max_length=3)
+    runs = models.IntegerField()
     wickets = models.CharField(max_length=3)
     innings = models.CharField(max_length=10)
     extras = models.CharField(max_length=10)

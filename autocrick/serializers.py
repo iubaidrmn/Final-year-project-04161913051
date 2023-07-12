@@ -39,7 +39,7 @@ class PostSerializer(serializers.ModelSerializer):
     _id = serializers.SerializerMethodField()
     class Meta:
         model = Post
-        fields = ('_id', 'title', 'description', 'file_path', 'created_at')
+        fields = ('_id', 'title', 'description', 'file_path', 'created_by', 'created_at')
     def get__id(self, obj):
         return str(obj._id)
     
