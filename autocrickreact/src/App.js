@@ -20,9 +20,14 @@ import MatchesList from './components/MatchesList';
 import PostsList from './components/PostsList';
 import TournamentStats from './components/statistics_screens/tournament_stats';
 import MatchStats from './components/statistics_screens/match_stats';
+import MatchesStats from './components/statistics_screens/matches_stats';
 import Homepage from './components/homepage';
 import TournamentScreen from './components/tournament_screen';
 import MatchScoring from './components/match_scoring';
+import StatsRecords from './components/stats_records';
+import TournamentSummary from './components/tournament_summary';
+import MatchSummary from './components/match_summary';
+import CustomKit from './components/custom_kit';
 
 function App() {
   return (
@@ -53,9 +58,14 @@ function App() {
         {/* Stats */}
         <Route path="/TournamentStats" element={<TournamentStats />} />
         <Route path="/MatchStats" element={<MatchStats />} />
+        <Route path="/MatchesStats" element={<MatchesStats />} />
         <Route path="/Homepage" element={<Homepage />} />
         <Route path="/TournamentScreen" element={<TournamentScreen />} />
         <Route path="/MatchScoring" element={<MatchScoring />} />
+        <Route path="/StatsRecords" element={<StatsRecords />} />
+        <Route path="/TournamentSummary" element={<TournamentSummary />} />
+        <Route path="/MatchSummary" element={<MatchSummary />} />
+        <Route path="/CustomKit" element={<CustomKit />} />
       </Routes>
     </Router>
   );
