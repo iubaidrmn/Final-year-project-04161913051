@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { getTournaments } from "../services/api";
+import { getTournaments, delete_info } from "../services/api";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import HeaderBar from "../includes/header";
 import Footer from "../includes/footer";
@@ -7,6 +7,9 @@ import Sidebar from "../includes/sidebar";
 import Tournament from "../components/tournament_form";
 import "../assets/styles.css";
 import "../assets/tableStyling.css";
+import Modal from "react-modal";
+import SuccessMessage from "../includes/success";
+import ErrorMessage from "../includes/error";
 
 export default class TournamentList extends Component {
   constructor(props) {
@@ -15,7 +18,106 @@ export default class TournamentList extends Component {
       tournaments: [],
       redirectToTournament: false,
       tournamentId: null,
+      showConfirmation: false,
+      showSuccessModal: false,
+      showErrorModal: false,
+      successMessage: "",
+      errorMessage: "",
+      _id: null,
     };
+  }
+  handleCandidateClick = (_id) => {
+    this.setState({ _id, showConfirmation: true });
+  };
+
+  handleConfirmationClose = () => {
+    this.setState({ showConfirmation: false });
+  };
+
+  handleConfirmationConfirm = () => {
+    const { _id } = this.state;
+
+    delete_info(_id, "delete_tournament")
+      .then((data) => {
+        if (data.response === true) {
+          this.showSuccessModal(data.message);
+          this.setState({ _id: null });
+        } else {
+          this.showErrorModal(data.error);
+        }
+      })
+      .catch((error) => {
+        this.showErrorModal(error.message);
+      });
+
+    this.setState({ showConfirmation: false });
+  };
+
+  showSuccessModal = (message) => {
+    this.setState({ successMessage: message, showSuccessModal: true });
+  };
+
+  hideSuccessModal = () => {
+    this.setState({ showSuccessModal: false });
+  };
+
+  showErrorModal = (message) => {
+    this.setState({ errorMessage: message, showErrorModal: true });
+  };
+
+  hideErrorModal = () => {
+    this.setState({ showErrorModal: false });
+  };
+
+  renderConfirmationModal() {
+    const { _id } = this.state;
+    return (
+      <Modal
+        isOpen={this.state.showConfirmation}
+        onRequestClose={this.handleConfirmationClose}
+        contentLabel="Confirmation Modal"
+        className="confirmation-modal"
+        overlayClassName="confirmation-modal-overlay"
+      >
+        <h2>Confirmation</h2>
+        <p>Are you sure you want to Delete the record?</p>
+        <div className="popup-actions">
+          <button
+            className="edit-button"
+            onClick={this.handleConfirmationClose}
+          >
+            Cancel
+          </button>
+          <button
+            className="delete-button"
+            onClick={this.handleConfirmationConfirm}
+          >
+            Confirm
+          </button>
+        </div>
+      </Modal>
+    );
+  }
+
+  renderSuccessModal() {
+    const { successMessage } = this.state;
+    return (
+      <SuccessMessage
+        message={successMessage}
+        onClose={this.hideSuccessModal}
+        onGoToHomepage={() => {
+          this.hideSuccessModal();
+          window.location.replace("/TournamentList");
+        }}
+      />
+    );
+  }
+
+  renderErrorModal() {
+    const { errorMessage } = this.state;
+    return (
+      <ErrorMessage message={errorMessage} onClose={this.hideErrorModal} />
+    );
   }
 
   async componentDidMount() {
@@ -33,8 +135,6 @@ export default class TournamentList extends Component {
       tournamentId: row._id,
     });
   };
-
-  handleDelete = (row) => {};
 
   render() {
     const { tournaments, redirectToTournament, tournamentId } = this.state;
@@ -102,7 +202,9 @@ export default class TournamentList extends Component {
                               </button>
                               <button
                                 className="delete-button"
-                                onClick={() => this.handleDelete(tournament)}
+                                onClick={() =>
+                                  this.handleCandidateClick(tournament._id)
+                                }
                               >
                                 <FaTrash />
                               </button>
@@ -112,6 +214,9 @@ export default class TournamentList extends Component {
                       })}
                     </tbody>
                   </table>
+                  {this.renderConfirmationModal()}
+                  {this.state.showSuccessModal && this.renderSuccessModal()}
+                  {this.state.showErrorModal && this.renderErrorModal()}
                 </div>
               </div>
             </div>

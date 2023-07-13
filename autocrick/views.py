@@ -477,6 +477,17 @@ def get_team_members(request):
             total_runs = MatchDetails.objects.filter(batsman_id=player_id).aggregate(total_runs=Sum('runs')).get('total_runs', 0) or 0
             balls_played = MatchDetails.objects.filter(batsman_id=player_id).count()
             
+            # Player Bowler
+            balls_bowled = MatchDetails.objects.filter(bowler_id=player_id).count()
+            
+            # Initialize player type as None
+            player_type = None
+            
+            if(balls_played > 0):
+                player_type = 'Batsman'
+            else:
+                player_type = 'Bowler'
+            
             # Calculate the strike rate
             strike_rate = (total_runs / balls_played) * 100 if balls_played else 0
             
@@ -485,19 +496,100 @@ def get_team_members(request):
             team_name = team.title if team else None
             
             # Retrieve distinct match count using the $push and $group stages
-            match_count = MatchDetails.objects.filter(batsman_id=player_id).values('match_id').distinct()
-            total_matches = len(match_count)
+            match_count_batsman = MatchDetails.objects.filter(batsman_id=player_id).values('match_id').distinct()
+            total_matches_batsman = len(match_count_batsman)
+            
+            match_count_bowler = MatchDetails.objects.filter(bowler_id=player_id).values('match_id').distinct()
+            total_matches_bowler = len(match_count_bowler)
             
             team_member_data.append({
                 'player_id': str(player_id),
                 'player_name': player_name,
+                'player_type': player_type,
                 'team_name': team_name,
                 'total_runs': total_runs,
-                'total_matches': total_matches,
+                'total_matches_batsman': total_matches_batsman,
+                'total_matches_bowler': total_matches_bowler,
                 'balls_played': balls_played,
+                'balls_bowled': balls_bowled,
                 'strike_rate': strike_rate
             })
 
         return Response({'team_members': team_member_data})
     except Exception as e:
         return Response({'error': str(e)}, status=400)
+        
+        
+@api_view(['DELETE'])
+def delete_team_member(request):
+    try:
+        player_id = request.GET.get('player_id')
+        if not player_id:
+            return Response({'response': False, 'error': 'Player ID not provided.'})
+        team_member = TeamMembers.objects.filter(player_id=player_id).first()
+        if not team_member:
+            return Response({'response': False, 'error': 'Player not found.'})
+        team_member.delete()
+        return Response({'response': True, 'message': 'Player Removed From Team.'})
+    except Exception as e:
+        return Response({'response': False, 'error': str(e)})
+        
+
+@api_view(['DELETE'])
+def delete_team(request):
+    try:
+        _id = ObjectId(request.GET.get('_id'))
+        if not _id:
+            return Response({'response': False, 'error': 'Team ID not provided.'})
+        team = Team.objects.filter(_id=_id).first()
+        if not team:
+            return Response({'response': False, 'error': 'Team not found.'})
+        team.delete()
+        return Response({'response': True, 'message': 'Team Deleted.'})
+    except Exception as e:
+        return Response({'response': False, 'error': str(e)})
+
+
+@api_view(['DELETE'])
+def delete_tournament(request):
+    try:
+        _id = ObjectId(request.GET.get('_id'))
+        if not _id:
+            return Response({'response': False, 'error': 'Tournament ID not provided.'})
+        tournament = Tournament.objects.filter(_id=_id).first()
+        if not tournament:
+            return Response({'response': False, 'error': 'Tournament not found.'})
+        tournament.delete()
+        return Response({'response': True, 'message': 'Tournament Deleted.'})
+    except Exception as e:
+        return Response({'response': False, 'error': str(e)})
+        
+
+@api_view(['DELETE'])
+def delete_post(request):
+    try:
+        _id = ObjectId(request.GET.get('_id'))
+        if not _id:
+            return Response({'response': False, 'error': 'Post ID not provided.'})
+        post = Post.objects.filter(_id=_id).first()
+        if not post:
+            return Response({'response': False, 'error': 'Post not found.'})
+        post.delete()
+        return Response({'response': True, 'message': 'Post Deleted.'})
+    except Exception as e:
+        return Response({'response': False, 'error': str(e)})
+        
+        
+@api_view(['DELETE'])
+def delete_match(request):
+    try:
+        _id = ObjectId(request.GET.get('_id'))
+        if not _id:
+            return Response({'response': False, 'error': 'Match ID not provided.'})
+        match = Matches.objects.filter(_id=_id).first()
+        if not match:
+            return Response({'response': False, 'error': 'Match not found.'})
+        match.delete()
+        return Response({'response': True, 'message': 'Match Deleted.'})
+    except Exception as e:
+        return Response({'response': False, 'error': str(e)})

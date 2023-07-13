@@ -587,3 +587,39 @@ export const get_team_members = async () => {
     throw new Error("Error loading  Players Details.");
   }
 };
+
+export const delete_team_member = async (player_id) => {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/delete_team_member/?player_id=${player_id}`,
+      {
+        method: "DELETE",
+      }
+    );
+    if (!response.ok) {
+      throw new Error("Something Went Wrong.");
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    throw new Error("Unhandle Exception Occurred.");
+  }
+};
+
+export const delete_info = async (_id, functionName) => {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/${functionName}/?_id=${_id}`,
+      {
+        method: "DELETE",
+      }
+    );
+    if (!response.ok) {
+      throw new Error("Something Went Wrong.");
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    throw new Error("Unhandle Exception Occurred.");
+  }
+};

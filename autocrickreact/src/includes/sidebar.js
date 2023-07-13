@@ -20,6 +20,7 @@ const menuConfig = {
     { to: "/Tournament", icon: <FaTrophy />, label: "Add Tournament" },
     { to: "/TournamentList", icon: <FaTrophy />, label: "Tournaments" },
     { to: "/Match", icon: <FaPlus />, label: "Add Match" },
+    { to: "/MatchesList", icon: <FaPlus />, label: "MatchesList" },
     { to: "/TeamsList", icon: <FaUsers />, label: "Teams List" },
   ],
   3: [

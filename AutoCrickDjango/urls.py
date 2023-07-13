@@ -46,4 +46,10 @@ urlpatterns = [
     path('api/getUsersNameByUsername/', getUsersNameByUsername, name='getUsersNameByUsername'),
     path('api/posts_list_by_user/', posts_list_by_user, name='posts_list_by_user'),
     path('api/get_team_members/', get_team_members, name='get_team_members'),
+    # Delete APIs
+    path('api/delete_team_member/', delete_team_member, name='delete_team_member'),
+    path('api/delete_match/', delete_match, name='delete_match'),
+    path('api/delete_post/', delete_post, name='delete_post'),
+    path('api/delete_tournament/', delete_tournament, name='delete_tournament'),
+    path('api/delete_team/', delete_team, name='delete_team'),
 ]
