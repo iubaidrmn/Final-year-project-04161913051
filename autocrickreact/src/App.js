@@ -30,6 +30,9 @@ import StatsRecords from './components/stats_records';
 import TournamentSummary from './components/tournament_summary';
 import MatchSummary from './components/match_summary';
 import CustomKit from './components/custom_kit';
+import SearchPlayer from "./components/search_player";
+import SearchTeam from "./components/search_team";
+import PendingRequests from "./components/pending_requests";
 
 function App() {
   return (
@@ -61,17 +64,18 @@ function App() {
         {/* Stats */}
         <Route path="/TournamentStats" element={<TournamentStats />} />
         <Route path="/MatchStats" element={<MatchStats />} />
-        <Route path="/Tournaments_TopPlayers" element={<Homepage />} />
-        <Route path="/TournamentScreen" element={<TournamentScreen />} />
-        <Route path="/Players-Details" element={<PlayersDetailsList />} />
         <Route path="/MatchesStats" element={<MatchesStats />} />
-        <Route path="/Homepage" element={<Homepage />} />
-        <Route path="/TournamentScreen" element={<TournamentScreen />} />
-        <Route path="/MatchScoring" element={<MatchScoring />} />
         <Route path="/StatsRecords" element={<StatsRecords />} />
         <Route path="/TournamentSummary" element={<TournamentSummary />} />
         <Route path="/MatchSummary" element={<MatchSummary />} />
         <Route path="/CustomKit" element={<CustomKit />} />
+        <Route path="/Tournaments_TopPlayers" element={<Homepage />} />
+        <Route path="/TournamentScreen" element={<TournamentScreen />} />
+        <Route path="/MatchScoring" element={<MatchScoring />} />
+        <Route path="/Players-Details" element={<PlayersDetailsList />} />
+        <Route path="/SearchPlayer" element={<SearchPlayer />} />
+        <Route path="/SearchTeam" element={<SearchTeam />} />
+        <Route path="/PendingRequests" element={<PendingRequests />} />
       </Routes>
     </Router>
   );
