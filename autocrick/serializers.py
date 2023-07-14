@@ -31,7 +31,15 @@ class MatchSerializer(serializers.ModelSerializer):
     class Meta:
         model = Matches
         fields = ('_id', 'tournament_id', 'title', 'description', 'start_date','start_time', 'team_id1', 'team_id2',
-                   'status', 'created_at')
+                   'status', 'total_overs', 'created_at')
+    def get__id(self, obj):
+        return str(obj._id)
+    
+class MatchInningsSerializer(serializers.ModelSerializer):
+    _id = serializers.SerializerMethodField()
+    class Meta:
+        model = MatchInnings
+        fields = ('_id', 'match_id', 'target', 'achieved', 'innings_end_first', 'innings_end_second', 'team_won', 'team_first_innings', 'team_second_innings', 'created_at')
     def get__id(self, obj):
         return str(obj._id)
     

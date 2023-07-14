@@ -8,11 +8,8 @@ const menuConfig = {
     { to: "/NewsFeed", icon: <FaNewspaper />, label: "News Feed" },
     { to: "/CreatePost", icon: <FaNewspaper />, label: "Create Post" },
     { to: "/PostsList", icon: <FaNewspaper />, label: "Posts List" },
-    {
-      to: "/Tournaments_TopPlayers",
-      icon: <FaNewspaper />,
-      label: "Tournaments",
-    },
+    { to: "/MatchSummary", icon: <FaNewspaper />, label: "Match Summary" },
+    { to: "/Tournaments_TopPlayers", icon: <FaNewspaper />, label: "Tournaments" },
   ],
   2: [
     // Tournament Organizer
@@ -20,7 +17,7 @@ const menuConfig = {
     { to: "/Tournament", icon: <FaTrophy />, label: "Add Tournament" },
     { to: "/TournamentList", icon: <FaTrophy />, label: "Tournaments" },
     { to: "/Match", icon: <FaPlus />, label: "Add Match" },
-    { to: "/MatchesList", icon: <FaPlus />, label: "MatchesList" },
+    { to: "/MatchesList", icon: <FaPlus />, label: "Matches List" },
     { to: "/TeamsList", icon: <FaUsers />, label: "Teams List" },
   ],
   3: [
@@ -28,11 +25,7 @@ const menuConfig = {
     { to: "/NewsFeed", icon: <FaNewspaper />, label: "News Feed" },
     { to: "/CreatePost", icon: <FaNewspaper />, label: "Create Post" },
     { to: "/PostsList", icon: <FaNewspaper />, label: "Posts List" },
-    {
-      to: "/Tournaments_TopPlayers",
-      icon: <FaNewspaper />,
-      label: "Tournaments",
-    },
+    { to: "/Tournaments_TopPlayers", icon: <FaNewspaper />, label: "Tournaments" },
   ],
   4: [
     // Normal User
@@ -42,11 +35,7 @@ const menuConfig = {
     // Coach
     { to: "/NewsFeed", icon: <FaNewspaper />, label: "News Feed" },
     //{ to: "/TeamDashboard", icon: <FaUsers />, label: "Team Dashboard" },
-    {
-      to: "/Tournaments_TopPlayers",
-      icon: <FaNewspaper />,
-      label: "Tournaments",
-    },
+    { to: "/Tournaments_TopPlayers", icon: <FaNewspaper />, label: "Tournaments" },
     { to: "/CreatePost", icon: <FaNewspaper />, label: "Create Post" },
     { to: "/PostsList", icon: <FaNewspaper />, label: "Posts List" },
     { to: "/CreateTeam", icon: <FaUsers />, label: "Create Team" },
@@ -60,11 +49,7 @@ const menuConfig = {
     { to: "/CreatePost", icon: <FaNewspaper />, label: "Create Post" },
     { to: "/PostsList", icon: <FaNewspaper />, label: "Posts List" },
     { to: "/MatchUpdate", icon: <FaNewspaper />, label: "Match Update" },
-    {
-      to: "/Tournaments_TopPlayers",
-      icon: <FaNewspaper />,
-      label: "Tournaments",
-    },
+    { to: "/Tournaments_TopPlayers", icon: <FaNewspaper />, label: "Tournaments" },
   ],
 };
 

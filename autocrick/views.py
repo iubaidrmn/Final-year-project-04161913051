@@ -14,17 +14,52 @@ def matchDetailsSave(request):
         serializer = MatchDetailsSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response({'response': True, 'message': 'Saved Successful.'}, status=200)
-        return Response({'response': False, 'error': serializer.errors}, status=400)
+            return Response({'response': True, 'message': 'Saved Successfully.'})
+        return Response({'response': False, 'error': serializer.errors})
     except Exception as e:
-        return Response({'response': False, 'error': str(e)}, status=500)
+        return Response({'response': False, 'error': str(e)})
+        
+@api_view(['POST'])
+def matchInningsSave(request):
+    try:
+        serializer = MatchInningsSerializer(data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'response': True, 'message': 'Saved Successfully.'})
+        return Response({'response': False, 'error': serializer.errors})
+    except Exception as e:
+        return Response({'response': False, 'error': str(e)})        
+
+@api_view(['PATCH'])
+def matchInningsUpdate(request):
+    try:
+        match_id = request.GET.get('match_id')
+        if not match_id:
+            return Response({'response': False, 'error': 'Match ID not provided.'})
+        match = MatchInnings.objects.filter(Q(match_id = match_id)).first()
+        serializer = MatchInningsSerializer(match, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'response': True, 'message': 'Information updated.'})
+        return Response({'response': False, 'error': serializer.errors})
+    except Exception as e:
+        return Response({'response': False, 'error': str(e)})
+
+@api_view(['GET'])
+def get_match_innings(request):
+    try:
+        match_id = request.GET.get('match_id')
+        match_innings = MatchInnings.objects.filter(Q(match_id=match_id))
+        serializer = MatchInningsSerializer(match_innings, many=True)
+        return Response({'response':True, 'match_innings': serializer.data})
+    except:
+        return Response({'response':False, 'error': 'Can Not Retrieve Data'})
 
 @api_view(['GET'])
 def get_user_details(request):
     try:
-        _id = request.GET.get('user_id')  # Get the role_id from the request query parameters
+        _id = request.GET.get('user_id')
         users = User.objects.filter(Q(username=_id) | Q(_id__isnull=True))
-        # users = User.objects.filter(Q(_id=_id) | Q(_id__isnull=True))
         serializer = UserSerializer(users, many=True)
         return Response({'users': serializer.data})
     except:
@@ -392,8 +427,7 @@ def updateTeam(request):
 @api_view(['PATCH'])
 def updateMatch(request):
     try:
-        matchId = request.GET.get('matchId')
-        matchId = ObjectId(matchId)
+        matchId = ObjectId(request.GET.get('matchId'))
         if not matchId:
             return Response({'response': False, 'error': 'Match ID not provided.'})
         match = Matches.objects.filter(Q(_id = matchId)).first()
@@ -593,3 +627,106 @@ def delete_match(request):
         return Response({'response': True, 'message': 'Match Deleted.'})
     except Exception as e:
         return Response({'response': False, 'error': str(e)})
+        
+
+@api_view(['GET'])
+def match_summary_by_id(request):
+    try:
+        match_id = ObjectId(request.GET.get('match_id'))
+        if not match_id:
+            return Response({'response': False, 'error': 'Match ID not provided.'})
+        match = Matches.objects.filter(match_id = match_id).first()
+        if not match:
+            return Response({'response': False, 'error': 'Match not found.'})
+        match.delete()
+        return Response({'response': True, 'message': 'Match Deleted.'})
+    except Exception as e:
+        return Response({'response': False, 'error': str(e)})
+        
+@api_view(['GET'])
+def get_matches_by_tournament_id(request):
+    try:
+        tournament_id = request.GET.get('tournament_id')
+        match = Matches.objects.filter(Q(tournament_id=tournament_id))
+        serializer = MatchSerializer(match, many=True)
+        return Response({'response': True, 'matches': serializer.data})
+    except Exception as e:
+        return Response({'response': False, 'error': str(e)})
+        
+@api_view(['GET'])
+def get_teams_by_match_id(request):
+    try:
+        match_id = ObjectId(request.GET.get('_id'))
+        match = Matches.objects.get(_id=match_id)
+        team1 = Team.objects.get(_id=ObjectId(match.team_id1))
+        team2 = Team.objects.get(_id=ObjectId(match.team_id2))
+        teams = [team1.title, team2.title]
+        return Response({'response': True, 'teams': teams})
+    except Matches.DoesNotExist:
+        return Response({'response': False, 'error': 'Match not found'})
+    except Team.DoesNotExist:
+        return Response({'response': False, 'error': 'Team not found'})
+    except Exception as e:
+        return Response({'response': False, 'error': str(e)})
+
+
+@api_view(['GET'])
+def get_match_details_by_match_id(request):
+    try:
+        match_id = request.GET.get('match_id')
+        match_details = MatchDetails.objects.filter(match_id=match_id)
+        serialized_match_details = MatchDetailsSerializer(match_details, many=True).data
+
+        player_details = []
+
+        for match_detail in serialized_match_details:
+            batsman_id = match_detail['batsman_id']
+            bowler_id = match_detail['bowler_id']
+
+            batsman = User.objects.get(_id=ObjectId(batsman_id))
+            bowler = User.objects.get(_id=ObjectId(bowler_id))
+
+            player_detail = {
+                'batsman_name': batsman.fullname,
+                'runs': match_detail['runs'],
+                'bowler_name': bowler.fullname,
+                'wickets': match_detail['wickets'],
+                'innings': match_detail['innings'],
+                'extras': match_detail['extras'],
+                'outOption': match_detail['outOption'],
+                'current_over': match_detail['current_over'],
+                'current_ball': match_detail['current_ball'],
+            }
+
+            player_details.append(player_detail)
+
+        return Response({'response': True, 'player_details': player_details})
+    except MatchDetails.DoesNotExist:
+        return Response({'response': False, 'error': 'Match details not found'})
+    except User.DoesNotExist:
+        return Response({'response': False, 'error': 'User not found'})
+    except Exception as e:
+        return Response({'response': False, 'error': str(e)})
+
+
+from bson import ObjectId
+
+from bson import ObjectId
+
+@api_view(['GET'])
+def get_team_players_by_team_id(request):
+    try:
+        team_id = request.GET.get('team_id')
+        team_members = TeamMembers.objects.filter(team_id=team_id)
+        player_ids = [member.player_id for member in team_members]
+        player_object_ids = [ObjectId(pid) for pid in player_ids]
+        players = User.objects.filter(_id__in=player_object_ids)
+        
+        # Prepare a list of dictionaries containing IDs and names of team members
+        team_members_data = [{'_id': str(player._id), 'fullname': player.fullname} for player in players]
+        
+        return Response({'response': True, 'team_members': team_members_data})
+    except Exception as e:
+        return Response({'response': False, 'error': str(e)})
+
+

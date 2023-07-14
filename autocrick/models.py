@@ -35,10 +35,26 @@ class Matches(models.Model):
     team_id1 = models.CharField(max_length=24, primary_key=False)
     team_id2 = models.CharField(max_length=24, primary_key=False)
     status = models.CharField(max_length=2)
+    total_overs = models.CharField(max_length=3)
     created_at = models.DateTimeField(auto_now_add=True)
     
     class Meta:
         db_table = 'matches'
+
+class MatchInnings(models.Model):
+    _id = djongo_models.ObjectIdField(primary_key=True, default=ObjectId, editable=False)
+    match_id = models.CharField(max_length=24, primary_key=False)
+    target = models.CharField(max_length=3, blank=True, null=True)
+    achieved = models.CharField(max_length=3, blank=True, null=True)
+    innings_end_first = models.CharField(max_length=1, blank=True, null=True)
+    innings_end_second = models.CharField(max_length=1, blank=True, null=True)
+    team_won = models.CharField(max_length=24, primary_key=False, blank=True, null=True)
+    team_first_innings = models.CharField(max_length=24, primary_key=False, blank=True, null=True)
+    team_second_innings = models.CharField(max_length=24, primary_key=False, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        db_table = 'match_innings'
 
 class Players_in_Match(models.Model):
     _id = djongo_models.ObjectIdField(primary_key=True, default=ObjectId, editable=False)

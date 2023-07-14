@@ -23,6 +23,7 @@ export default class Match extends Component {
       start_date: "",
       start_time: "",
       status: "1",
+	  total_overs: "0",
       created_at: "",
       tournaments: [],
       teams: [],
@@ -66,6 +67,7 @@ export default class Match extends Component {
           start_time: match[0].start_time,
           team_id1: match[0].team_id1,
           team_id2: match[0].team_id2,
+          total_overs: match[0].total_overs,
         });
       }
       const tournaments = await getTournaments();
@@ -91,6 +93,7 @@ export default class Match extends Component {
       team_id1,
       team_id2,
       status,
+	  total_overs,
       created_at,
       _id,
     } = this.state;
@@ -120,6 +123,7 @@ export default class Match extends Component {
               created_at: "",
               team_id1: null,
               team_id2: null,
+			  total_overs: "0",
             });
           } else {
             this.showErrorModal(data.error);
@@ -137,6 +141,7 @@ export default class Match extends Component {
         start_time,
         team_id1,
         team_id2,
+		total_overs,
       };
       updateMatch(_id, matchDataUpdate)
         .then((data) => {
@@ -150,6 +155,7 @@ export default class Match extends Component {
               start_time: "",
               team_id1: null,
               team_id2: null,
+			  total_overs: "0",
             });
           } else {
             this.showErrorModal(data.error);
@@ -194,6 +200,7 @@ export default class Match extends Component {
       teams,
       team_id1,
       team_id2,
+	  total_overs,
     } = this.state;
     return (
       <div>
@@ -264,7 +271,7 @@ export default class Match extends Component {
                             >
                               <option value="">Select Team 2</option>
                               {teams.map((team) => (
-                                <option value={team._id}>{team.title}</option>
+                                <option value={team._id} key={team._id}>{team.title}</option>
                               ))}
                             </select>
                           </div>
@@ -297,9 +304,18 @@ export default class Match extends Component {
                             >
                               <option value="">Select Team 1</option>
                               {teams.map((team) => (
-                                <option value={team._id}>{team.title}</option>
+                                <option value={team._id} key={team._id}>{team.title}</option>
                               ))}
                             </select>
+                          </div>
+						  <div className="form-group">
+                            <label>Total Overs:</label>
+                            <input
+                              type="text"
+                              name="total_overs"
+                              value={total_overs}
+                              onChange={this.handleChange}
+                            />
                           </div>
                         </div>
                       </div>

@@ -41,6 +41,26 @@ export const signup = async (userData) => {
     });
 };
 
+export const matchInningsSave = async (matchInningsData) => {
+  return fetch(`${API_BASE_URL}/matchInningsSave`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(matchInningsData),
+  })
+    .then((response) => {
+      if (response.ok) {
+        return response.json();
+      } else {
+        throw new Error("Invalid Input");
+      }
+    })
+    .catch((error) => {
+      throw new Error(error.error);
+    });
+};
+
 // update users APIs
 export const updateUser = async (userId, userData) => {
   return fetch(`${API_BASE_URL}/updateUser`, {
@@ -56,6 +76,29 @@ export const updateUser = async (userId, userData) => {
         return response.json();
       } else {
         throw new Error("Invalid Input");
+      }
+    })
+    .catch((error) => {
+      throw new Error(error.error);
+    });
+};
+
+export const matchInningsUpdate = async (match_id, inningsData) => {
+  return fetch(
+    `${API_BASE_URL}/matchInningsUpdate/?match_id=${match_id}`,
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(inningsData),
+    }
+  )
+    .then((response) => {
+      if (response.ok) {
+        return response.json();
+      } else {
+        throw new Error("Something Went Wrong!");
       }
     })
     .catch((error) => {
@@ -621,5 +664,67 @@ export const delete_info = async (_id, functionName) => {
     return data;
   } catch (error) {
     throw new Error("Unhandle Exception Occurred.");
+  }
+};
+
+
+export const get_matches_by_tournament_id = async (tournament_id) => {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/get_matches_by_tournament_id/?tournament_id=${tournament_id}`
+    );
+    if (!response.ok) {
+      throw new Error("Error loading Matches.");
+    }
+    const data = await response.json();
+    return data.matches;
+  } catch (error) {
+    throw new Error("Error loading Matches.");
+  }
+};
+
+
+export const get_teams_by_match_id = async (_id) => {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/get_teams_by_match_id/?_id=${_id}`
+    );
+    if (!response.ok) {
+      throw new Error("Error loading Teams.");
+    }
+    const data = await response.json();
+    return data.teams;
+  } catch (error) {
+    throw new Error("Error loading teams.");
+  }
+};
+
+export const get_match_details_by_match_id = async (match_id) => {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/get_match_details_by_match_id/?match_id=${match_id}`
+    );
+    if (!response.ok) {
+      throw new Error("Error loading details.");
+    }
+    const data = await response.json();
+    return data.player_details;
+  } catch (error) {
+    throw new Error("Error loading details.");
+  }
+};
+
+export const get_team_players_by_team_id = async (team_id) => {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/get_team_players_by_team_id/?team_id=${team_id}`
+    );
+    if (!response.ok) {
+      throw new Error("Error loading details.");
+    }
+    const data = await response.json();
+    return data.team_members;
+  } catch (error) {
+    throw new Error("Error loading details.");
   }
 };
