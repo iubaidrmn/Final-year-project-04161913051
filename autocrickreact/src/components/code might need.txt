@@ -1,0 +1,99 @@
+post form.js
+const created_by = localStorage.getItem("username");
+const { title, description, file_path, _id } = this.state;
+if (_id == null) {
+const postData = { title, description, file_path, created_by };
+if (file_path === "") this.showErrorModal("Attach a Picture or video.");
+else {
+postSave(postData)
+  .then((data) => {
+  if (data.response === true) {
+  this.showSuccessModal(data.message);
+  } else {
+  this.showErrorModal(data.error);
+  }
+  })
+  .catch((error) => {
+  this.showErrorModal(error.message);
+  });
+  }
+  } else if (_id !== null) {
+  const postDataUpdate = { title, description, file_path, created_by };
+  updatePost(_id, postDataUpdate)
+  .then((data) => {
+  if (data.response === true) {
+  this.showSuccessModal(data.message);
+  } else {
+  this.showErrorModal(data.error);
+  }
+  })
+  .catch((error) => {
+  this.showErrorModal(error.message);
+  });
+  }
+  
+  
+  tournament_form.js
+    // handleSubmit = (event) => {
+  //   event.preventDefault();
+
+  //   const {
+  //     title,
+  //     description,
+  //     no_of_matches,
+  //     latitude,
+  //     longitude,
+  //     venue,
+  //     start_date,
+  //     end_date,
+  //     status,
+  //     created_at,
+  //     _id,
+  //   } = this.state;
+  //   const tournamentData = {
+  //     title,
+  //     description,
+  //     no_of_matches,
+  //     latitude,
+  //     longitude,
+  //     venue,
+  //     start_date,
+  //     end_date,
+  //     status,
+  //     created_at,
+  //   };
+  //   if (_id == null) {
+  //     tournamentSave(tournamentData)
+  //       .then((data) => {
+  //         if (data.response === true) {
+  //           this.showSuccessModal(data.message);
+  //         } else {
+  //           this.showErrorModal(data.error);
+  //         }
+  //       })
+  //       .catch((error) => {
+  //         this.showErrorModal(error.message);
+  //       });
+  //   } else if (_id !== null) {
+  //     const tournamentDataUpdate = {
+  //       title,
+  //       description,
+  //       no_of_matches,
+  //       venue,
+  //       start_date,
+  //       end_date,
+  //     };
+  //     updateTournament(_id, tournamentDataUpdate)
+  //       .then((data) => {
+  //         if (data.response === true) {
+  //           this.showSuccessModal(data.message);
+  //         } else {
+  //           this.showErrorModal(data.error);
+  //         }
+  //       })
+  //       .catch((error) => {
+  //         this.showErrorModal(error.message);
+  //       });
+  //   }
+  // };
+

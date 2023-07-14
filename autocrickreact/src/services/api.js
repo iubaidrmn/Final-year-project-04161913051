@@ -252,6 +252,21 @@ export const getCoachNameOfTeam = async (coach_id) => {
   }
 };
 
+export const getUsersNameByUsername = async (username) => {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/getUsersNameByUsername/?username=${username}`
+    );
+    if (!response.ok) {
+      throw new Error("Error loading user names.");
+    }
+    const data = await response.json();
+    return data.UsersName;
+  } catch (error) {
+    throw new Error("Error loading user names.");
+  }
+};
+
 export const getTournamentNameofMatch = async (tournament_id) => {
   try {
     const response = await fetch(
@@ -314,16 +329,14 @@ export const getMatcheDetailsById = async (match_id) => {
 
 export const get_top_players = async () => {
   try {
-    const response = await fetch(
-      `${API_BASE_URL}/get_top_players/`
-    );
+    const response = await fetch(`${API_BASE_URL}/get_top_players/`);
     if (!response.ok) {
-      throw new Error("Error loading Matches Details.");
+      throw new Error("Error loading Top Players.");
     }
     const data = await response.json();
     return data.top_players;
   } catch (error) {
-    throw new Error("Error loading Matches Details.");
+    throw new Error("Error loading Top Players.");
   }
 };
 
@@ -545,4 +558,32 @@ export const matchDetailsSave = async (matchDetails) => {
     .catch((error) => {
       throw new Error(error.error);
     });
+};
+
+export const posts_list_by_user = async (username) => {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/posts_list_by_user/?username=${username}`
+    );
+    if (!response.ok) {
+      throw new Error("Error loading Posts.");
+    }
+    const data = await response.json();
+    return data.posts;
+  } catch (error) {
+    throw new Error("Error loading Posts.");
+  }
+};
+
+export const get_team_members = async () => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/get_team_members/`);
+    if (!response.ok) {
+      throw new Error("Error loading Players Details.");
+    }
+    const data = await response.json();
+    return data.team_members;
+  } catch (error) {
+    throw new Error("Error loading  Players Details.");
+  }
 };

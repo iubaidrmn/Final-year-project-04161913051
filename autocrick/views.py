@@ -1,3 +1,4 @@
+from django.db.models import Sum
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from .models import *
@@ -6,55 +7,6 @@ from django.db.models import Q
 from bson import ObjectId
 from rest_framework.parsers import FileUploadParser
 from pymongo import MongoClient
-
-# @api_view(['GET'])
-# def user_list(request):
-#     try:
-#         users = User.objects.all()
-#         serializer = UserSerializer(users, many=True)
-#         return Response({'users': serializer.data})
-#     except:
-#         return Response({'error': 'Can Not Retrieve User List'}, status=400)
-
-@api_view(['GET'])
-def get_top_players(request):
-    try:
-        # Connect to MongoDB
-        client = MongoClient('mongodb://localhost:27017/')
-        db = client['autocrick']
-        collection = db['match_details']
-
-        # Aggregation pipeline to get top 2 players
-        pipeline = [
-            # {"$match": {"match_id": "your_match_id"}},  # Replace "your_match_id" with the actual match ID
-            {"$group": {
-                "_id": "$batsman_id",
-                "total_runs": {"$sum": {"$toInt": "$runs"}},
-                "total_matches": {"$sum": 1},
-                "balls_played": {"$sum": 1}
-            }},
-            {"$project": {
-                "_id": 0,
-                "batsman_id": "$_id",
-                "total_runs": 1,
-                "total_matches": 1,
-                "balls_played": 1,
-                "strike_rate": {"$multiply": [
-                    {"$divide": ["$total_runs", "$balls_played"]},
-                    100
-                ]}
-            }},
-            {"$sort": {"total_runs": -1}},
-            {"$limit": 2}
-        ]
-
-        # Execute the aggregation query
-        result = list(collection.aggregate(pipeline))
-
-        return Response({'top_players': result})
-    except Exception as e:
-        return Response({'error': 'Cannot retrieve top players'}, status=400)
-
 
 @api_view(['POST'])
 def matchDetailsSave(request):
@@ -121,12 +73,22 @@ def get_post_details(request):
 @api_view(['GET'])
 def user_list(request):
     try:
-        role_id = request.GET.get('role_id')  # Get the role_id from the request query parameters
+        role_id = request.GET.get('role_id')
         users = User.objects.filter(Q(role_id=role_id) | Q(role_id__isnull=True))
         serializer = UserSerializer(users, many=True)
         return Response({'users': serializer.data})
     except:
         return Response({'error': 'Can Not Retrieve User List'}, status=400)
+
+@api_view(['GET'])
+def posts_list_by_user(request):
+    try:
+        username = request.GET.get('username')
+        posts = Post.objects.filter(Q(created_by=username))
+        serializer = PostSerializer(posts, many=True)
+        return Response({'posts': serializer.data})
+    except:
+        return Response({'error': 'Can Not Retrieve Posts List'}, status=400)
 
 @api_view(['GET'])
 def getCoachNameOfTeam(request):
@@ -137,6 +99,16 @@ def getCoachNameOfTeam(request):
         return Response({'coachNames': serializer.data})
     except:
         return Response({'error': 'Can Not Retrieve Teams List'}, status=400)
+
+@api_view(['GET'])
+def getUsersNameByUsername(request):
+    try:
+        username = request.GET.get('username')
+        UsersName = User.objects.filter(Q(username=username))
+        serializer = UserSerializer(UsersName, many=True)
+        return Response({'response': True, 'UsersName': serializer.data})
+    except:
+        return Response({'response': False, 'error': 'Can Not Retrieve Users Names List'}, status=400)
 
 @api_view(['GET'])
 def getTournamentNameofMatch(request):
@@ -177,7 +149,6 @@ def getMatcheDetailsById(request):
         return Response({'matchDetails': serializer.data})
     except:
         return Response({'error': 'Can Not Retrieve Matches Details List'})
-
 
 @api_view(['GET'])
 def roles_list(request):
@@ -287,11 +258,11 @@ def tournamentSave(request):
     try:
         serializer = TournamentSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
-            return Response({'response': True, 'message': 'Tournament Saved Successfully'}, status=200)
-        return Response({'response': False, 'error': serializer.errors}, status=400)
+            serializer.save(file_path=request.FILES['file_path'])
+            return Response({'response': True, 'message': 'Tournament Saved Successfully'})
+        return Response({'response': False, 'error': serializer.errors})
     except Exception as e:
-        return Response({'response': False, 'error': str(e)}, status=500)
+        return Response({'response': False, 'error': str(e)})
 
 @api_view(['POST'])
 def matchSave(request):
@@ -307,11 +278,10 @@ def matchSave(request):
 @api_view(['POST'])
 def postSave(request):
     try:
-        parser_classes = (FileUploadParser,)
         serializer = PostSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
-            return Response({'response': True, 'message': 'Post Saved Successfully'})
+            serializer.save(file_path=request.FILES['file_path'])
+            return Response({'response': True, 'message': 'Post Uploaded'})
         return Response({'response': False, 'error': serializer.errors})
     except Exception as e:
         return Response({'response': False, 'error': str(e)})
@@ -343,11 +313,17 @@ def teamMembersSave(request):
     try:
         serializer = TeamMembersSerializer(data=request.data)
         if serializer.is_valid():
+            player_id = serializer.validated_data.get('player_id')
+            # Check if player with given player_id already exists in a team
+            teamMember_exists = len(TeamMembers.objects.filter(player_id = player_id)) > 0
+            if teamMember_exists:
+                return Response({'response': False, 'error': 'Player is already in a team'})
             serializer.save()
-            return Response({'response': True, 'message': 'Team Member Saved Successfully'}, status=200)
-        return Response({'response': False, 'error': serializer.errors}, status=400)
+            return Response({'response': True, 'message': 'Team Member Saved Successfully'})
+        return Response({'response': False, 'error': serializer.errors})
     except Exception as e:
-        return Response({'response': False, 'error': str(e)}, status=500)
+        return Response({'response': False, 'error': str(e)})
+
 
 @api_view(['POST'])
 def matchDetailsSave(request):
@@ -355,10 +331,10 @@ def matchDetailsSave(request):
         serializer = MatchDetailsSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response({'response': True, 'message': 'Saved Successful.'}, status=200)
-        return Response({'response': False, 'error': serializer.errors}, status=400)
+            return Response({'response': True, 'message': 'Saved Successful.'})
+        return Response({'response': False, 'error': serializer.errors})
     except Exception as e:
-        return Response({'response': False, 'error': str(e)}, status=500)
+        return Response({'response': False, 'error': str(e)})
 
 @api_view(['PATCH'])
 def updateUser(request):
@@ -444,3 +420,84 @@ def updatePost(request):
         return Response({'response': False, 'error': serializer.errors})
     except Exception as e:
         return Response({'response': False, 'error': str(e)})
+
+@api_view(['GET'])
+def get_top_players(request):
+    try:
+        # Connect to MongoDB
+        client = MongoClient('mongodb://localhost:27017/')
+        db = client['autocrick']
+        collection = db['match_details']
+
+        # Aggregation pipeline to get top 2 players with names
+        pipeline = [
+            {"$group": {
+                "_id": "$batsman_id",
+                "total_runs": {"$sum": {"$toInt": "$runs"}},
+                "total_matches": {"$addToSet": "$match_id"},
+                "balls_played": {"$sum": 1}
+            }},
+            {"$project": {
+                "_id": 0,
+                "batsman_id": "$_id",
+                "total_runs": 1,
+                "total_matches": {"$size": "$total_matches"},
+                "balls_played": 1,
+                "strike_rate": {"$multiply": [
+                    {"$divide": ["$total_runs", "$balls_played"]},
+                    100
+                ]}
+            }},
+            {"$sort": {"total_runs": -1}},
+            {"$limit": 2}
+        ]
+
+        # Execute the aggregation query
+        result = list(collection.aggregate(pipeline))
+
+        return Response({'top_players': result})
+    except Exception as e:
+        return Response({'error': 'Cannot retrieve top players'}, status=400)
+
+@api_view(['GET'])
+def get_team_members(request):
+    try:
+        team_members = TeamMembers.objects.all()
+        team_member_data = []
+        
+        for team_member in team_members:
+            player_id = team_member.player_id
+            team_id = team_member.team_id
+            
+            # Retrieve player details from the users table
+            player = User.objects.filter(_id=ObjectId(player_id)).first()
+            player_name = player.fullname if player else None
+            
+            # Retrieve total runs and balls played from the match details table
+            total_runs = MatchDetails.objects.filter(batsman_id=player_id).aggregate(total_runs=Sum('runs')).get('total_runs', 0) or 0
+            balls_played = MatchDetails.objects.filter(batsman_id=player_id).count()
+            
+            # Calculate the strike rate
+            strike_rate = (total_runs / balls_played) * 100 if balls_played else 0
+            
+            # Retrieve team name from the teams table
+            team = Team.objects.filter(_id=ObjectId(team_id)).first()
+            team_name = team.title if team else None
+            
+            # Retrieve distinct match count using the $push and $group stages
+            match_count = MatchDetails.objects.filter(batsman_id=player_id).values('match_id').distinct()
+            total_matches = len(match_count)
+            
+            team_member_data.append({
+                'player_id': str(player_id),
+                'player_name': player_name,
+                'team_name': team_name,
+                'total_runs': total_runs,
+                'total_matches': total_matches,
+                'balls_played': balls_played,
+                'strike_rate': strike_rate
+            })
+
+        return Response({'team_members': team_member_data})
+    except Exception as e:
+        return Response({'error': str(e)}, status=400)

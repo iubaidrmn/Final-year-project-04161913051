@@ -1,20 +1,20 @@
-import React, { Component } from 'react';
-import { login } from '../services/api';
-import { Link } from 'react-router-dom';
-import '../assets/styles.css';
-import SuccessMessage from '../includes/success';
-import ErrorMessage from '../includes/error';
+import React, { Component } from "react";
+import { login } from "../services/api";
+import { Link } from "react-router-dom";
+import "../assets/styles.css";
+import SuccessMessage from "../includes/success";
+import ErrorMessage from "../includes/error";
 
 export default class Login extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      username: '',
-      password: '',
+      username: "",
+      password: "",
       showSuccessModal: false,
       showErrorModal: false,
-      successMessage: '',
-      errorMessage: '',
+      successMessage: "",
+      errorMessage: "",
     };
   }
 
@@ -30,12 +30,13 @@ export default class Login extends Component {
 
     login(userData)
       .then((data) => {
-        if(data.response === true){
-          localStorage.setItem('user_id', data.user['_id']);
-          localStorage.setItem('fullname', data.user['fullname']);
-          localStorage.setItem('username', data.user['username']);
-          localStorage.setItem('role_id', data.user['role_id']);
-          window.location.replace("/NewsFeed")
+        if (data.response === true) {
+          console.log("data", data);
+          localStorage.setItem("user_id", data.user["_id"]);
+          localStorage.setItem("fullname", data.user["fullname"]);
+          localStorage.setItem("username", data.user["username"]);
+          localStorage.setItem("role_id", data.user["role_id"]);
+          window.location.replace("/NewsFeed");
         } else {
           this.showErrorModal(data.error);
         }
@@ -69,8 +70,7 @@ export default class Login extends Component {
         onClose={this.hideSuccessModal}
         onGoToHomepage={() => {
           this.hideSuccessModal();
-          // Redirect to the homepage
-          window.location.replace('/NewsFeed');
+          window.location.replace("/NewsFeed");
         }}
       />
     );
@@ -111,7 +111,9 @@ export default class Login extends Component {
           </div>
           {this.state.showSuccessModal && this.renderSuccessModal()}
           {this.state.showErrorModal && this.renderErrorModal()}
-          <button className='submit-button' type="submit">Login</button>
+          <button className="submit-button" type="submit">
+            Login
+          </button>
           <p className="signup-link">
             Not registered yet? <Link to="/signup">Signup</Link>
           </p>

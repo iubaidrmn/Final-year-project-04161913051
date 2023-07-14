@@ -1,139 +1,199 @@
-import React, { Component } from 'react';
-import HeaderBar from '../includes/header';
-import Footer from '../includes/footer';
-import image from '../assets/image.png';
-import video from '../assets/video.mp4';
-import { FaUserCircle } from 'react-icons/fa';
+import React, { Component } from "react";
+import HeaderBar from "../includes/header";
+import Footer from "../includes/footer";
+import Sidebar from "../includes/sidebar";
+import { FaUserCircle } from "react-icons/fa";
+import { getPosts, getUsersNameByUsername } from "../services/api";
+import moment from "moment";
 
 export default class NewsFeed extends Component {
   constructor(props) {
     super(props);
     this.state = {
       posts: [],
+      userNames: {},
     };
   }
 
-  render() {
-    const boxes = [
-      {
-        username: 'John Doe',
-        profilePic: 'john.jpg',
-        title: 'Box 1',
-        description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-        media: [image],
-      },
-      {
-        username: 'Jane Smith',
-        profilePic: 'jane.jpg',
-        title: 'Box 2',
-        description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-        media: [image],
-      },
-      {
-        username: 'Alice Johnson',
-        profilePic: 'alice.jpg',
-        title: 'Box 3',
-        description: 'Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-      },
-      {
-        username: 'John Doe',
-        profilePic: 'john.jpg',
-        title: 'Box 4',
-        description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-        media: [video],
-      },
-      {
-        username: 'Jane Smith',
-        profilePic: 'jane.jpg',
-        title: 'Box 5',
-        description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-        media: [image],
-      },
-      {
-        username: 'Alice Johnson',
-        profilePic: 'alice.jpg',
-        title: 'Box 6',
-        description: 'Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-      },
-      // Add more boxes as needed
-    ];
+  async componentDidMount() {
+    try {
+      const posts = await getPosts();
+      this.setState({ posts }, () => {
+        this.getUserNames();
+      });
+    } catch (error) {
+      console.log("error", error);
+    }
+  }
 
+  getUserNames = async () => {
+    const { posts } = this.state;
+    const userIds = posts.map((post) => post.created_by);
+    const userNames = {};
+
+    try {
+      const promises = userIds.map((userId) => getUsersNameByUsername(userId));
+      const responses = await Promise.all(promises);
+
+      responses.forEach((response, index) => {
+        const userId = userIds[index];
+        const userName = response[0].fullname;
+        userNames[userId] = userName;
+      });
+      this.setState({ userNames });
+    } catch (error) {
+      console.error("Error loading user names:", error);
+    }
+  };
+
+  render() {
+    const { posts, userNames } = this.state;
     return (
-      <div className="news-feed">
+      <div>
         <HeaderBar />
-        <div className="content">
-          <h1 style={{ textAlign: 'center', fontWeight: 'bold' }}>News Feeds</h1>
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            {boxes.map((box, index) => (
-              <div
-                key={index}
-                style={{
-                  backgroundColor: '#FFFFFF',
-                  padding: '20px',
-                  boxShadow: '0px 2px 3.84px rgba(0, 0, 0, 0.25)',
-                  borderRadius: '10px',
-                  marginBottom: '20px',
-                  width: '100%',
-                  maxWidth: '500px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'flex-start',
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
-                <div style={{ width: '30px', height: '30px', marginRight: '10px' }}>
-                    <FaUserCircle style={{ width: '100%', height: '100%', borderRadius: '50%' }} />
-                  </div>
-                  <div>
-                    <h2 style={{ fontWeight: 'bold', fontSize: '20px', margin: 0 }}>{box.username}</h2>
-                    <p style={{ fontSize: '12px', color: '#888', margin: 0 }}>June 19, 2023 10:30 AM</p>
-                  </div>
-                </div>
-                <h4 style={{ fontWeight: 'bold', fontSize: '20px', margin: 0 }}>{box.title}</h4>
-                {box.description && (
-                  <div>
-                    <p>{box.description}</p>
-                  </div>
-                )}
-                {box.media && box.media.length > 0 && (
-                  <div>
-                    {box.media.map((mediaPath, mediaIndex) => {
-                      if (mediaPath.endsWith('.png') || mediaPath.endsWith('.jpg') || mediaPath.endsWith('.jpeg')) {
-                        return (
-                          <img
-                            key={mediaIndex}
+        <div style={styles.container}>
+          <Sidebar />
+          <div style={styles.containerMain}>
+            <div className="news-feed">
+              <div className="content">
+                <h1 style={{ textAlign: "center", fontWeight: "bold" }}>
+                  News Feeds
+                </h1>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                  }}
+                >
+                  {posts.map((post, index) => (
+                    <div
+                      key={index}
+                      style={{
+                        backgroundColor: "#FFFFFF",
+                        padding: "20px",
+                        boxShadow: "0px 2px 3.84px rgba(0, 0, 0, 0.25)",
+                        borderRadius: "10px",
+                        marginBottom: "20px",
+                        width: "100%",
+                        maxWidth: "500px",
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "flex-start",
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          marginBottom: "10px",
+                        }}
+                      >
+                        <div
+                          style={{
+                            width: "30px",
+                            height: "30px",
+                            marginRight: "10px",
+                          }}
+                        >
+                          <FaUserCircle
                             style={{
-                              width: '100%',
-                              height: 'auto',
-                              marginBottom: '10px',
-                              borderRadius: '5px',
+                              width: "100%",
+                              height: "100%",
+                              borderRadius: "50%",
                             }}
-                            src={mediaPath}
-                            alt={`Image ${mediaIndex + 1}`}
                           />
-                        );
-                      } else if (mediaPath.endsWith('.mp4')) {
-                        return (
-                          <video
-                            key={mediaIndex}
+                        </div>
+                        <div>
+                          <h2
                             style={{
-                              width: '100%',
-                              height: 'auto',
-                              marginBottom: '10px',
-                              borderRadius: '5px',
+                              fontWeight: "bold",
+                              fontSize: "20px",
+                              margin: 0,
                             }}
-                            controls
                           >
-                            <source src={mediaPath} type="video/mp4" />
-                          </video>
-                        );
-                      }
-                      return null;
-                    })}
-                  </div>
-                )}
+                            {(() => {
+                              const un = userNames[post.created_by];
+                              return <span>{un}</span>;
+                            })()}
+                          </h2>
+                          <p
+                            style={{
+                              fontSize: "12px",
+                              color: "#888",
+                              margin: 0,
+                            }}
+                          >
+                            {moment(post.created_at).format(
+                              "MMMM DD, YYYY h:mm A"
+                            )}
+                          </p>
+                        </div>
+                      </div>
+                      <h4
+                        style={{
+                          fontWeight: "bold",
+                          fontSize: "20px",
+                          margin: 0,
+                        }}
+                      >
+                        {post.title}
+                      </h4>
+                      {post.description && (
+                        <div>
+                          <p>{post.description}</p>
+                        </div>
+                      )}
+                      {post.file_path && post.file_path.length > 0 && (
+                        <div>
+                          {(() => {
+                            post.file_path = post.file_path.substring(
+                              post.file_path.lastIndexOf("posts/")
+                            );
+                            if (
+                              post.file_path.endsWith(".png") ||
+                              post.file_path.endsWith(".jpg") ||
+                              post.file_path.endsWith(".jpeg")
+                            ) {
+                              return (
+                                <img
+                                  style={{
+                                    width: "100%",
+                                    height: "auto",
+                                    marginBottom: "10px",
+                                    borderRadius: "5px",
+                                  }}
+                                  src={`${post.file_path}`}
+                                  alt="Newsfeed"
+                                />
+                              );
+                            } else if (post.file_path.endsWith(".mp4")) {
+                              return (
+                                <video
+                                  style={{
+                                    width: "100%",
+                                    height: "auto",
+                                    marginBottom: "10px",
+                                    borderRadius: "5px",
+                                  }}
+                                  controls
+                                >
+                                  <source
+                                    src={`${post.file_path}`}
+                                    type="video/mp4"
+                                  />
+                                </video>
+                              );
+                            }
+                            return null;
+                          })()}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
               </div>
-            ))}
+            </div>
           </div>
         </div>
         <Footer />
@@ -141,3 +201,18 @@ export default class NewsFeed extends Component {
     );
   }
 }
+
+const styles = {
+  container: {
+    display: "flex",
+    minHeight: "100vh",
+    backgroundColor: "#f5f5f5",
+  },
+  containerMain: {
+    flex: 1,
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+};

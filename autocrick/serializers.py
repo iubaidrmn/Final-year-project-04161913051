@@ -22,7 +22,7 @@ class TournamentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tournament
         fields = ('_id', 'title', 'description', 'no_of_matches', 'latitude', 'longitude', 'venue',
-                  'start_date', 'end_date', 'status', 'created_at')
+                  'start_date', 'end_date', 'status', 'file_path', 'created_at')
     def get__id(self, obj):
         return str(obj._id)
     
@@ -39,7 +39,7 @@ class PostSerializer(serializers.ModelSerializer):
     _id = serializers.SerializerMethodField()
     class Meta:
         model = Post
-        fields = ('_id', 'title', 'description', 'file_path', 'created_at')
+        fields = ('_id', 'title', 'description', 'file_path', 'created_by', 'created_at')
     def get__id(self, obj):
         return str(obj._id)
     
@@ -74,4 +74,4 @@ class MatchDetailsSerializer(serializers.ModelSerializer):
         fields = ('_id', 'match_id', 'batsman_id', 'bowler_id', 'runs', 'wickets', 'innings', 'extras',
                   'outOption', 'current_over', 'current_ball', 'created_at')
     def get__id(self, obj):
-        return str(obj._id)
+        return str(obj._id) 

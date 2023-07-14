@@ -1,11 +1,12 @@
-import React, { Component } from 'react';
-import { getTeams, getCoachNameOfTeam } from '../services/api';
-import { FaEdit, FaTrash } from 'react-icons/fa';
-import HeaderBar from '../includes/header';
-import Footer from '../includes/footer';
-import Team from '../components/team_form';
-import '../assets/styles.css';
-import '../assets/tableStyling.css';
+import React, { Component } from "react";
+import { getTeams, getCoachNameOfTeam } from "../services/api";
+import { FaEdit, FaTrash } from "react-icons/fa";
+import HeaderBar from "../includes/header";
+import Footer from "../includes/footer";
+import Sidebar from "../includes/sidebar";
+import Team from "../components/team_form";
+import "../assets/styles.css";
+import "../assets/tableStyling.css";
 
 export default class TeamsList extends Component {
   constructor(props) {
@@ -21,9 +22,11 @@ export default class TeamsList extends Component {
   async componentDidMount() {
     try {
       const teams = await getTeams();
-      this.setState({ teams }, ()=>{this.getCoachNames();});
+      this.setState({ teams }, () => {
+        this.getCoachNames();
+      });
     } catch (error) {
-      console.error('Error loading teams:', error);
+      console.error("Error loading teams:", error);
     }
   }
 
@@ -44,7 +47,7 @@ export default class TeamsList extends Component {
 
       this.setState({ coachNames });
     } catch (error) {
-      console.error('Error loading coach names:', error);
+      console.error("Error loading coach names:", error);
     }
   };
 
@@ -55,8 +58,7 @@ export default class TeamsList extends Component {
     });
   };
 
-  handleDelete = (row) => {
-  };
+  handleDelete = (row) => {};
 
   render() {
     const { teams, coachNames, redirectToTeam, teamId } = this.state;
@@ -64,46 +66,91 @@ export default class TeamsList extends Component {
       return <Team _id={teamId} />;
     }
     return (
-      <div className="page-container">
+      <div>
         <HeaderBar />
-        <div className="content-wrap">
-          <div className="table-info">
-            <h2 className="table-title">Available Teams</h2>
-            <p className="table-description">Showing {teams.length} teams</p>
+        <div style={styles.container}>
+          <Sidebar />
+          <div style={styles.containerMain}>
+            <div className="page-container">
+              <div className="content-wrap">
+                <div className="table-info">
+                  <h2 className="table-title">Available Teams</h2>
+                  <p className="table-description">
+                    Showing {teams.length} teams
+                  </p>
+                </div>
+                <div
+                  style={{
+                    backgroundColor: "#FFFFFF",
+                    padding: "20px",
+                    boxShadow: "0px 2px 3.84px rgba(0, 0, 0, 0.25)",
+                    borderRadius: "10px",
+                    marginBottom: "20px",
+                    width: "100%",
+                    maxWidth: "800px",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "flex-start",
+                  }}
+                >
+                  <table className="table centered smaller">
+                    <thead>
+                      <tr>
+                        <th>ID</th>
+                        <th>Team</th>
+                        <th>Coach Name</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {teams.map((team, index) => {
+                        const coachName = coachNames[team.coach_id] || "";
+                        return (
+                          <tr key={team._id}>
+                            <td>{index + 1}</td>
+                            <td>{team.title}</td>
+                            <td>{coachName}</td>
+                            <td>
+                              <button
+                                className="edit-button"
+                                onClick={() => this.handleEdit(team)}
+                              >
+                                <FaEdit />
+                              </button>
+                              <button
+                                className="delete-button"
+                                onClick={() => this.handleDelete(team)}
+                              >
+                                <FaTrash />
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
           </div>
-          <table className="table centered smaller">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Team</th>
-                <th>Coach Name</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {teams.map((team, index) => {
-                const coachName = coachNames[team.coach_id] || '';
-                return (
-                  <tr key={team._id}>
-                    <td>{index + 1}</td>
-                    <td>{team.title}</td>
-                    <td>{coachName}</td>
-                    <td>
-                      <button className="edit-button" onClick={() => this.handleEdit(team)}>
-                        <FaEdit />
-                      </button>
-                      <button className="delete-button" onClick={() => this.handleDelete(team)}>
-                        <FaTrash />
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
         </div>
         <Footer />
       </div>
     );
   }
 }
+
+const styles = {
+  container: {
+    display: "flex",
+    minHeight: "100vh",
+    backgroundColor: "#f5f5f5",
+  },
+  containerMain: {
+    flex: 1,
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+};

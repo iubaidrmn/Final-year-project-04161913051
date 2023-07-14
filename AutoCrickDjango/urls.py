@@ -42,4 +42,8 @@ urlpatterns = [
     path('api/getTournamentMatches/', getTournamentMatches, name='getTournamentMatches'),
     path('api/getMatcheDetailsById/', getMatcheDetailsById, name='getMatcheDetailsById'),
     path('api/get_top_players/', get_top_players, name='get_top_players'),
+    # get lists by users APIs
+    path('api/getUsersNameByUsername/', getUsersNameByUsername, name='getUsersNameByUsername'),
+    path('api/posts_list_by_user/', posts_list_by_user, name='posts_list_by_user'),
+    path('api/get_team_members/', get_team_members, name='get_team_members'),
 ]

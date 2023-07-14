@@ -1,46 +1,28 @@
 import React, { Component } from "react";
-import { posts_list_by_user } from "../services/api";
-import { FaEdit, FaTrash } from "react-icons/fa";
+import { get_team_members } from "../services/api";
 import HeaderBar from "../includes/header";
 import Footer from "../includes/footer";
 import Sidebar from "../includes/sidebar";
-import Post from "../components/post_form";
 import "../assets/styles.css";
 import "../assets/tableStyling.css";
 
-export default class PostsList extends Component {
+export default class PlayersDetailsList extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      posts: [],
-      redirectToPost: false,
-      postId: null,
+      team_members: [],
     };
   }
 
   async componentDidMount() {
     try {
-      const posts = await posts_list_by_user(localStorage.getItem("username"));
-      this.setState({ posts });
-    } catch (error) {
-      console.error("Error loading posts:", error);
-    }
+      const team_members = await get_team_members();
+      this.setState({ team_members });
+    } catch (error) {}
   }
 
-  handleEdit = (row) => {
-    this.setState({
-      redirectToPost: true,
-      postId: row._id,
-    });
-  };
-
-  handleDelete = (row) => {};
-
   render() {
-    const { posts, redirectToPost, postId } = this.state;
-    if (redirectToPost) {
-      return <Post _id={postId} />;
-    }
+    const { team_members } = this.state;
     return (
       <div>
         <HeaderBar />
@@ -50,9 +32,9 @@ export default class PostsList extends Component {
             <div className="page-container">
               <div className="content-wrap">
                 <div className="table-info">
-                  <h2 className="table-title">Available Posts</h2>
+                  <h2 className="table-title">Players Details</h2>
                   <p className="table-description">
-                    Showing {posts.length} posts
+                    Showing {team_members.length} Players Details
                   </p>
                 </div>
                 <div
@@ -63,7 +45,7 @@ export default class PostsList extends Component {
                     borderRadius: "10px",
                     marginBottom: "20px",
                     width: "100%",
-                    maxWidth: "500px",
+                    maxWidth: "800px",
                     display: "flex",
                     flexDirection: "column",
                     alignItems: "flex-start",
@@ -72,33 +54,20 @@ export default class PostsList extends Component {
                   <table className="table centered smaller">
                     <thead>
                       <tr>
-                        <th>ID</th>
-                        <th>Title</th>
-                        <th>Description</th>
-                        <th>Actions</th>
+                        <th>S#</th>
+                        <th>Player</th>
+                        <th>Team</th>
+                        <th>Matches Played</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {posts.map((post, index) => {
+                      {team_members.map((team_member, index) => {
                         return (
-                          <tr key={post._id}>
+                          <tr key={team_member._id}>
                             <td>{index + 1}</td>
-                            <td>{post.title}</td>
-                            <td>{post.title}</td>
-                            <td>
-                              <button
-                                className="edit-button"
-                                onClick={() => this.handleEdit(post)}
-                              >
-                                <FaEdit />
-                              </button>
-                              <button
-                                className="delete-button"
-                                onClick={() => this.handleDelete(post)}
-                              >
-                                <FaTrash />
-                              </button>
-                            </td>
+                            <td>{team_member.player_name}</td>
+                            <td>{team_member.team_name}</td>
+                            <td>{team_member.total_matches}</td>
                           </tr>
                         );
                       })}

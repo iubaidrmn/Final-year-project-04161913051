@@ -6,9 +6,17 @@ const menuConfig = {
   1: [
     // Admin
     { to: "/NewsFeed", icon: <FaNewspaper />, label: "News Feed" },
+    { to: "/CreatePost", icon: <FaNewspaper />, label: "Create Post" },
+    { to: "/PostsList", icon: <FaNewspaper />, label: "Posts List" },
+    {
+      to: "/Tournaments_TopPlayers",
+      icon: <FaNewspaper />,
+      label: "Tournaments",
+    },
   ],
   2: [
     // Tournament Organizer
+    { to: "/NewsFeed", icon: <FaNewspaper />, label: "News Feed" },
     { to: "/Tournament", icon: <FaTrophy />, label: "Add Tournament" },
     { to: "/TournamentList", icon: <FaTrophy />, label: "Tournaments" },
     { to: "/Match", icon: <FaPlus />, label: "Add Match" },
@@ -18,6 +26,12 @@ const menuConfig = {
     // Player
     { to: "/NewsFeed", icon: <FaNewspaper />, label: "News Feed" },
     { to: "/CreatePost", icon: <FaNewspaper />, label: "Create Post" },
+    { to: "/PostsList", icon: <FaNewspaper />, label: "Posts List" },
+    {
+      to: "/Tournaments_TopPlayers",
+      icon: <FaNewspaper />,
+      label: "Tournaments",
+    },
   ],
   4: [
     // Normal User
@@ -26,16 +40,30 @@ const menuConfig = {
   5: [
     // Coach
     { to: "/NewsFeed", icon: <FaNewspaper />, label: "News Feed" },
-    { to: "/TeamDashboard", icon: <FaUsers />, label: "Team Dashboard" },
+    //{ to: "/TeamDashboard", icon: <FaUsers />, label: "Team Dashboard" },
+    {
+      to: "/Tournaments_TopPlayers",
+      icon: <FaNewspaper />,
+      label: "Tournaments",
+    },
     { to: "/CreatePost", icon: <FaNewspaper />, label: "Create Post" },
+    { to: "/PostsList", icon: <FaNewspaper />, label: "Posts List" },
     { to: "/CreateTeam", icon: <FaUsers />, label: "Create Team" },
+    { to: "/TeamsList", icon: <FaUsers />, label: "Teams List" },
     { to: "/CreateTeamMembers", icon: <FaUsers />, label: "Team Members" },
+    { to: "/Players-Details", icon: <FaUsers />, label: "Players Details" },
   ],
   6: [
     // Umpier
     { to: "/NewsFeed", icon: <FaNewspaper />, label: "News Feed" },
     { to: "/CreatePost", icon: <FaNewspaper />, label: "Create Post" },
+    { to: "/PostsList", icon: <FaNewspaper />, label: "Posts List" },
     { to: "/MatchUpdate", icon: <FaNewspaper />, label: "Match Update" },
+    {
+      to: "/Tournaments_TopPlayers",
+      icon: <FaNewspaper />,
+      label: "Tournaments",
+    },
   ],
 };
 

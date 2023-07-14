@@ -19,16 +19,18 @@ export default class HeaderBar extends React.Component {
   render() {
     const { isProfileMenuOpen } = this.state;
     return (
-      <div className="header-bar">
-        <div className="profile-icon"></div>
-        <div className="logo">
-          AutoCrick | Local Optimized Cricket Automation
+      <>
+        <div className="header-bar">
+          <div className="profile-icon"></div>
+          <div className="logo">
+            AutoCrick | Local Optimized Cricket Automation
+          </div>
+          <div className="profile-icon" onClick={this.handleProfileIconClick}>
+            <FaUserCircle size={24} />
+            {isProfileMenuOpen && <ProfileMenu />}
+          </div>
         </div>
-        <div className="profile-icon" onClick={this.handleProfileIconClick}>
-          <FaUserCircle size={24} />
-          {isProfileMenuOpen && <ProfileMenu />}
-        </div>
-      </div>
+      </>
     );
   }
 }
