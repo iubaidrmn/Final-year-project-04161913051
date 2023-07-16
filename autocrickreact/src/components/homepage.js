@@ -56,10 +56,6 @@ export default class Homepage extends Component {
     alert("Click successfully"); // Show an alert dialog
   };
 
-  handleBoxClick = () => {
-    alert("Click successfully"); // Show an alert dialog
-  };
-
   handleLeftNavigation = () => {
     const { currentImageIndex } = this.state;
     const previousIndex = currentImageIndex > 0 ? currentImageIndex - 1 : 0;
@@ -136,7 +132,6 @@ export default class Homepage extends Component {
                     <div
                       style={styles.box}
                       key={index}
-                      onClick={this.handleBoxClick}
                     >
                       <FaUserCircle size={24} style={styles.roundPic} />
                       <p style={styles.text}>{playerName}</p>

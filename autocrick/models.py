@@ -95,6 +95,7 @@ class Post(models.Model):
 class Team(models.Model):
     _id = djongo_models.ObjectIdField(primary_key=True, default=ObjectId, editable=False)
     title = models.CharField(max_length=30)
+    status = models.IntegerField(default = 0)
     coach_id = models.CharField(max_length=24, primary_key=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -126,3 +127,13 @@ class MatchDetails(models.Model):
 
     class Meta:
         db_table = 'match_details'
+        
+class PendingRequest(models.Model):
+    _id = djongo_models.ObjectIdField(primary_key=True, default=ObjectId, editable=False)
+    team_id = models.CharField(max_length=24, primary_key=False)
+    tournament_id = models.CharField(max_length=24, primary_key=False)
+    status = models.IntegerField(default = 0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'pending_requests'

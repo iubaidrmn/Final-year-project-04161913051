@@ -17,6 +17,14 @@ class RoleSerializer(serializers.ModelSerializer):
     def get__id(self, obj):
         return str(obj._id)
     
+class PendingRequestSerializer(serializers.ModelSerializer):
+    _id = serializers.SerializerMethodField()
+    class Meta:
+        model = PendingRequest
+        fields = ('_id', 'team_id', 'tournament_id', 'status', 'created_at')
+    def get__id(self, obj):
+        return str(obj._id)    
+    
 class TournamentSerializer(serializers.ModelSerializer):
     _id = serializers.SerializerMethodField()
     class Meta:
@@ -63,7 +71,7 @@ class TeamsSerializer(serializers.ModelSerializer):
     _id = serializers.SerializerMethodField()
     class Meta:
         model = Team
-        fields = ('_id', 'title', 'coach_id', 'created_at')
+        fields = ('_id', 'title', 'status', 'coach_id', 'created_at')
     def get__id(self, obj):
         return str(obj._id)
 

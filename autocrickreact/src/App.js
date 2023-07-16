@@ -32,6 +32,7 @@ import MatchSummary from './components/match_summary';
 import CustomKit from './components/custom_kit';
 import SearchPlayer from "./components/search_player";
 import SearchTeam from "./components/search_team";
+import SearchTournaments from "./components/search_tournaments";
 import PendingRequests from "./components/pending_requests";
 
 function App() {
@@ -70,12 +71,13 @@ function App() {
         <Route path="/MatchSummary" element={<MatchSummary />} />
         <Route path="/CustomKit" element={<CustomKit />} />
         <Route path="/Tournaments_TopPlayers" element={<Homepage />} />
-        <Route path="/TournamentScreen" element={<TournamentScreen />} />
+        <Route path="/Tournament-Schedule" element={<TournamentScreen />} />
         <Route path="/MatchScoring" element={<MatchScoring />} />
         <Route path="/Players-Details" element={<PlayersDetailsList />} />
         <Route path="/SearchPlayer" element={<SearchPlayer />} />
         <Route path="/SearchTeam" element={<SearchTeam />} />
-        <Route path="/PendingRequests" element={<PendingRequests />} />
+        <Route path="/Search-Tournaments" element={<SearchTournaments />} />
+        <Route path="/Pending-Requests" element={<PendingRequests />} />
       </Routes>
     </Router>
   );

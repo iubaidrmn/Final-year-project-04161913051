@@ -108,7 +108,7 @@ export default class PostsList extends Component {
         onClose={this.hideSuccessModal}
         onGoToHomepage={() => {
           this.hideSuccessModal();
-          window.location.replace("/MatchesList");
+          window.location.replace("/PostsList");
         }}
       />
     );

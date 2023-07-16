@@ -19,16 +19,73 @@ def matchDetailsSave(request):
     except Exception as e:
         return Response({'response': False, 'error': str(e)})
         
+@api_view(['GET'])
+def pendingRequests(request):
+    try:
+        tournament_id = request.GET.get('tournament_id')
+
+        pendingRequests = PendingRequest.objects.filter(tournament_id=tournament_id, status=0)
+        team_ids = [ObjectId(request.team_id) for request in pendingRequests]
+        teams = Team.objects.filter(_id__in=team_ids)
+
+        data = []
+        for request in pendingRequests:
+            team = teams.get(_id=ObjectId(request.team_id))
+            serialized_data = {
+                'team_id': request.team_id,
+                'team_title': team.title,
+                'created_at': request.created_at
+            }
+            data.append(serialized_data)
+
+        return Response({'response': True, 'pendingRequests': data})
+    except Exception as e:
+        return Response({'response': False, 'error': str(e)})
+
+@api_view(['POST'])
+def pendingRequestSave(request):
+    try:
+        serializer = PendingRequestSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'response': True, 'message': 'Saved Successfully.'})
+        return Response({'response': False, 'error': serializer.errors})
+    except Exception as e:
+        return Response({'response': False, 'error': str(e)})
+
+@api_view(['PATCH'])
+def updatePendingRequest(request):
+    try:
+        teamId = request.GET.get('teamId')
+        if not teamId:
+            return Response({'response': False, 'error': 'Team ID not provided.'})
+        pendingRequest = PendingRequest.objects.filter(Q(team_id = teamId)).first()
+        serializer = PendingRequestSerializer(pendingRequest, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'response': True, 'message': 'Information updated.'})
+        return Response({'response': False, 'error': serializer.errors})
+    except Exception as e:
+        return Response({'response': False, 'error': str(e)})        
+        
+
 @api_view(['POST'])
 def matchInningsSave(request):
     try:
+        match_id = request.data.get('match_id')
+        existing_match = MatchInnings.objects.filter(match_id=match_id).exists()
+
+        if existing_match:
+            return Response({'response': False, 'error': 'Match ID already exists.'})
+
         serializer = MatchInningsSerializer(data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response({'response': True, 'message': 'Saved Successfully.'})
         return Response({'response': False, 'error': serializer.errors})
     except Exception as e:
-        return Response({'response': False, 'error': str(e)})        
+        return Response({'response': False, 'error': str(e)})
+       
 
 @api_view(['PATCH'])
 def matchInningsUpdate(request):
@@ -64,6 +121,16 @@ def get_user_details(request):
         return Response({'users': serializer.data})
     except:
         return Response({'error': 'Can Not Retrieve User List'}, status=400)
+
+@api_view(['GET'])
+def get_tournament_stats(request):
+    try:
+        _id = ObjectId(request.GET.get('_id'))
+        tournament = Tournament.objects.filter(Q(_id=_id))
+        serializer = TournamentSerializer(tournament, many=True)
+        return Response({'tournament': serializer.data})
+    except Exception as e:
+        return Response({'response': False, 'error': str(e)})
 
 @api_view(['GET'])
 def get_tournament_details(request):
@@ -229,6 +296,16 @@ def teams_list(request):
         return Response({'teams': serializer.data})
     except Exception as e:
         return Response({'error': str(e)}, status=400)
+        
+@api_view(['GET'])
+def teams_list_status_active(request):
+    try:
+        teams = Team.objects.filter(status=1)
+        serializer = TeamsSerializer(teams, many=True)
+        return Response({'response': True, 'teams': serializer.data})
+    except Exception as e:
+        return Response({'response': False, 'error': str(e)})
+
 
 @api_view(['GET'])
 def player_in_match_list(request):
@@ -708,11 +785,6 @@ def get_match_details_by_match_id(request):
     except Exception as e:
         return Response({'response': False, 'error': str(e)})
 
-
-from bson import ObjectId
-
-from bson import ObjectId
-
 @api_view(['GET'])
 def get_team_players_by_team_id(request):
     try:
@@ -729,4 +801,103 @@ def get_team_players_by_team_id(request):
     except Exception as e:
         return Response({'response': False, 'error': str(e)})
 
+@api_view(['GET'])
+def get_tournament_schedule(request):
+    try:
+        tournament_id = request.GET.get('tournament_id')
 
+        # Retrieve matches for the given tournament
+        matches = Matches.objects.filter(tournament_id=tournament_id)
+
+        schedule = []
+
+        for match in matches:
+            team1 = Team.objects.get(_id=ObjectId(match.team_id1))
+            team2 = Team.objects.get(_id=ObjectId(match.team_id2))
+
+            # Prepare schedule entry
+            entry = {
+                'team1': team1.title,
+                'team2': team2.title,
+                'date': match.start_date.strftime('%Y-%m-%d'),
+                'time': match.start_time.strftime('%H:%M'),
+            }
+
+            schedule.append(entry)
+
+        return Response({'response': True, 'schedule': schedule})
+
+    except Exception as e:
+        return Response({'response': False, 'error': str(e)})
+
+
+
+
+
+@api_view(['GET'])
+def get_tournament_stats(request):
+    try:
+        tournament_id = request.GET.get('tournament_id')
+
+        # Retrieve all teams in the tournament
+        teams = Team.objects.all()
+
+        # Initialize team statistics dictionary with team IDs as keys
+        team_stats = {team._id: {
+            'team_title': team.title,
+            'total_matches': 0,
+            'won_matches': 0,
+            'lost_matches': 0,
+            'runs': 0,
+            'ratings': 0
+        } for team in teams}
+
+        # Retrieve all matches for the given tournament
+        matches = Matches.objects.filter(tournament_id=tournament_id)
+       
+        for match in matches:
+            match_innings = MatchInnings.objects.filter(Q(match_id=str(match._id)))
+            
+            for inning in match_innings:
+                team_won = inning.team_won
+                team_first_innings = inning.team_first_innings
+                team_second_innings = inning.team_second_innings
+
+                if team_won:
+                    # Update won matches count for the winning team
+                    if team_won in team_stats:
+                        team_stats[team_won]['won_matches'] += 1
+
+                    # Update lost matches count for the losing team
+                    if team_won == team_first_innings and team_second_innings in team_stats:
+                        team_stats[team_second_innings]['lost_matches'] += 1
+                    elif team_won == team_second_innings and team_first_innings in team_stats:
+                        team_stats[team_first_innings]['lost_matches'] += 1
+
+                # Update total matches played for each team
+                if team_first_innings in team_stats:
+                    team_stats[team_first_innings]['total_matches'] += 1
+                if team_second_innings in team_stats:
+                    team_stats[team_second_innings]['total_matches'] += 1
+
+                # Retrieve match details for the current inning
+                match_details = MatchDetails.objects.filter(match_id=str(inning.match_id))
+
+                for detail in match_details:
+                    # Update runs for each team
+                    if team_first_innings in team_stats:
+                        team_stats[team_first_innings]['runs'] += detail.runs
+                    if team_second_innings in team_stats:
+                        team_stats[team_second_innings]['runs'] += detail.runs
+
+        # Calculate lost matches count for each team
+        for team_id, stats in team_stats.items():
+            stats['lost_matches'] = stats['total_matches'] - stats['won_matches']
+
+        # Prepare the final response with team statistics
+        response = list(team_stats.values())
+
+        return Response({'response': True, 'team_stats': response})
+
+    except Exception as e:
+        return Response({'response': False, 'error': str(e)})

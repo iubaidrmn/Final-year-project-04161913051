@@ -1,3 +1,5 @@
+import axios from "axios";
+
 const API_BASE_URL = "http://localhost:8000/api";
 
 // Authentication Registration APIs
@@ -232,6 +234,21 @@ export const get_tournament_details = async (_id) => {
     return data.tournament;
   } catch (error) {
     throw new Error("Error loading users.");
+  }
+};
+
+export const get_match_innings = async (match_id) => {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/get_match_innings/?match_id=${match_id}`
+    );
+    if (!response.ok) {
+      throw new Error("Error loading Innings.");
+    }
+    const data = await response.json();
+    return data.match_innings;
+  } catch (error) {
+    throw new Error("Error loading Innings.");
   }
 };
 
@@ -726,5 +743,163 @@ export const get_team_players_by_team_id = async (team_id) => {
     return data.team_members;
   } catch (error) {
     throw new Error("Error loading details.");
+  }
+};
+
+export const get_tournament_stats = async (tournament_id) => {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/get_tournament_stats/?tournament_id=${tournament_id}`
+    );
+    if (!response.ok) {
+      throw new Error("Error loading details.");
+    }
+    const data = await response.json();
+    return data.team_stats;
+  } catch (error) {
+    throw new Error("Error loading details.");
+  }
+};
+
+
+export const get_tournament_schedule = async (tournament_id) => {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/get_tournament_schedule/?tournament_id=${tournament_id}`
+    );
+    if (!response.ok) {
+      throw new Error("Error loading details.");
+    }
+    const data = await response.json();
+    return data.schedule;
+  } catch (error) {
+    throw new Error("Error loading details.");
+  }
+};
+
+
+export const getByIDGeneric = async (_id, functionName, toUpdate) => {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/${functionName}/?${toUpdate}=${_id}`
+    );
+    if (!response.ok) {
+      throw new Error("Error loading details.");
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    throw new Error("Error loading details.");
+  }
+};
+
+export const get_list = async (functionName) => {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/${functionName}/`
+    );
+    if (!response.ok) {
+      throw new Error("Error loading details.");
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    throw new Error("Error loading details.");
+  }
+};
+
+export const genericSave = async (data, functionName) => {
+  return fetch(`${API_BASE_URL}/${functionName}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  })
+    .then((response) => {
+      if (response.ok) {
+        return response.json();
+      } else {
+        throw new Error("Invalid Input");
+      }
+    })
+    .catch((error) => {
+      throw new Error(error.error);
+    });
+};
+
+// update API
+export const genericUpdate = async (_id, toUpdate, data, functionName) => {
+  return fetch(
+    `${API_BASE_URL}/${functionName}/?${_id}=${toUpdate}`,
+		{
+		  method: "PATCH",
+		  headers: {
+			"Content-Type": "application/json",
+		  },
+		  body: JSON.stringify(data),
+		}
+	)
+    .then((response) => {
+      if (response.ok) {
+        return response.json();
+      } else {
+        throw new Error("Something Went Wrong!");
+      }
+    })
+    .catch((error) => {
+      throw new Error(error.error);
+    });
+};
+
+
+export const postSave1 = async (formData) => {
+  const config = {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+    onUploadProgress: (progressEvent) => {
+      const progress = Math.round(
+        (progressEvent.loaded * 100) / progressEvent.total
+      );
+    },
+  };
+
+  try {
+    const response = await axios.post(
+      "http://localhost:8000/api/postSave",
+      formData,
+      config
+    );
+    return response;
+  } catch (error) {
+    console.error("Error saving post:", error);
+    throw error;
+  }
+};
+
+
+export const tournamentSave1 = async (formData) => {
+  const config = {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+    onUploadProgress: (progressEvent) => {
+      const progress = Math.round(
+        (progressEvent.loaded * 100) / progressEvent.total
+      );
+    },
+  };
+
+  try {
+    const response = await axios.post(
+      "http://localhost:8000/api/tournamentSave",
+      formData,
+      config
+    );
+    return response;
+  } catch (error) {
+    console.error("Error saving tournament:", error);
+    throw error;
   }
 };

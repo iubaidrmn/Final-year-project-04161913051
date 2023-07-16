@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { get_tournament_details, updateTournament } from "../services/api";
+import { get_tournament_details, updateTournament, tournamentSave1 } from "../services/api";
 import HeaderBar from "../includes/header";
 import Footer from "../includes/footer";
 import Sidebar from "../includes/sidebar";
@@ -75,7 +75,8 @@ export default class Tournament extends Component {
     this.setState({ file_path: acceptedFiles[0] });
   };
 
-  handleUpload = async () => {
+handleUpload = async (event) => {
+  event.preventDefault(); // Prevent default form submission behavior
     const {
       title,
       description,
@@ -111,45 +112,33 @@ export default class Tournament extends Component {
             this.showErrorModal(error.message);
           });
       } else {
-        if (file_path !== "") {
-          const formData = new FormData();
-          formData.append("title", title);
-          formData.append("description", description);
-          formData.append("no_of_matches", no_of_matches);
-          formData.append("latitude", latitude);
-          formData.append("longitude", longitude);
-          formData.append("venue", venue);
-          formData.append("start_date", start_date);
-          formData.append("end_date", end_date);
-          formData.append("status", status);
-          formData.append("file_path", file_path);
-
-          const config = {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-            onUploadProgress: (progressEvent) => {
-              const progress = Math.round(
-                (progressEvent.loaded * 100) / progressEvent.total
-              );
-              this.setState({ uploadProgress: progress });
-            },
-          };
-
-          axios
-            .post("http://localhost:8000/api/tournamentSave", formData, config)
-            .then((response) => {
-              if (response.data.response === true) {
-                this.showSuccessModal(response.data.message);
-              } else {
-                this.showErrorModal(response.data.error);
-              }
-            })
-            .catch((error) => {
-              this.showErrorModal(error.message);
-            });
+        if (file_path !== "" && title !== "" && description !== ""
+		&& no_of_matches !== ""&& venue !== ""&& start_date !== ""&& end_date !== "") {
+			const formData = new FormData();
+			formData.append("title", title);
+			formData.append("description", description);
+			formData.append("no_of_matches", no_of_matches);
+			formData.append("latitude", latitude);
+			formData.append("longitude", longitude);
+			formData.append("venue", venue);
+			formData.append("start_date", start_date);
+			formData.append("end_date", end_date);
+			formData.append("status", status);
+			formData.append("file_path", file_path);
+			try {
+			  const response = await tournamentSave1(formData);
+			  if (response.data.response === true) {
+				this.showSuccessModal(response.data.message);
+			  } else {
+				this.showErrorModal(response.data.error);
+			  }
+			} catch (error) {
+			  this.showErrorModal(error.message);
+			}
+		  } else {
+			  this.showErrorModal("Plese fill/upload all the required fields");
+		  }
         }
-      }
     } catch (error) {
       console.error("Error uploading file:", error);
       // this.showErrorModal(error.message);

@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { get_post_details, updatePost } from "../services/api";
+import { get_post_details, updatePost, postSave1 } from "../services/api";
 import HeaderBar from "../includes/header";
 import Footer from "../includes/footer";
 import Sidebar from "../includes/sidebar";
@@ -32,62 +32,50 @@ export default class Post extends Component {
     this.setState({ file_path: acceptedFiles[0] });
   };
 
-  handleUpload = async () => {
-    const { _id, title, description, file_path } = this.state;
-    try {
-      const username = localStorage.getItem("username");
-      if (_id !== null) {
-        const postDataUpdate = { title, description, file_path, username };
-        updatePost(_id, postDataUpdate)
-          .then((response) => {
-            if (response.data.response === true) {
-              this.showSuccessModal(response.data.message);
-            } else {
-              this.showErrorModal(response.data.error);
-            }
-          })
-          .catch((error) => {
-            this.showErrorModal(error.message);
-          });
-      } else {
-        if (file_path !== "") {
-          const formData = new FormData();
-          formData.append("title", title);
-          formData.append("description", description);
-          formData.append("file_path", file_path);
-          formData.append("created_by", username);
-
-          const config = {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-            onUploadProgress: (progressEvent) => {
-              const progress = Math.round(
-                (progressEvent.loaded * 100) / progressEvent.total
-              );
-              this.setState({ uploadProgress: progress });
-            },
-          };
-
-          axios
-            .post("http://localhost:8000/api/postSave", formData, config)
-            .then((response) => {
-              if (response.data.response === true) {
-                this.showSuccessModal(response.data.message);
-              } else {
-                this.showErrorModal(response.data.error);
-              }
-            })
-            .catch((error) => {
-              this.showErrorModal(error.message);
-            });
+handleUpload = async (event) => {
+  event.preventDefault(); // Prevent default form submission behavior
+  
+  const { _id, title, description, file_path } = this.state;
+  try {
+    const username = localStorage.getItem("username");
+    if (_id !== null) {
+      const postDataUpdate = { title, description };
+      try {
+        const response = await updatePost(_id, postDataUpdate);
+        if (response.response === true) {
+          this.showSuccessModal(response.message);
+        } else {
+          this.showErrorModal(response.error);
         }
+      } catch (error) {
+        this.showErrorModal(error.message);
       }
-    } catch (error) {
-      console.error("Error uploading file:", error);
-      // this.showErrorModal(error.message);
+    } else {
+      if (file_path !== "" && title !== "" && description !== "") {
+        const formData = new FormData();
+        formData.append("title", title);
+        formData.append("description", description);
+        formData.append("file_path", file_path);
+        formData.append("created_by", username);
+        try {
+          const response = await postSave1(formData);
+          if (response.data.response === true) {
+            this.showSuccessModal(response.data.message);
+          } else {
+            this.showErrorModal(response.data.error);
+          }
+        } catch (error) {
+          this.showErrorModal(error.message);
+        }
+      } else {
+		  this.showErrorModal("Plese fill/upload all the required fields");
+	  }
     }
-  };
+  } catch (error) {
+    console.error("Error uploading file:", error);
+    // this.showErrorModal(error.message);
+  }
+};
 
   async componentDidMount() {
     try {

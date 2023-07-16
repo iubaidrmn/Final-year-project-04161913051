@@ -5,11 +5,13 @@ from autocrick.views import *
 urlpatterns = [
     path('admin/', admin.site.urls),
     # Show List of all tables in Mongo DB APIs Based on IDs
+    path('api/teams_list_status_active/', teams_list_status_active, name='teams_list_status_active'),
     path('api/get_user_details/', get_user_details, name='get_user_details'),
     path('api/get_team_details/', get_team_details, name='get_team_details'),
     path('api/get_post_details/', get_post_details, name='get_post_details'),
     path('api/get_match_details/', get_match_details, name='get_match_details'),
     path('api/get_tournament_details/', get_tournament_details, name='get_tournament_details'),
+    path('api/get_tournament_schedule/', get_tournament_schedule, name='get_tournament_schedule'),
     path('api/get_match_innings/', get_match_innings, name='get_match_innings'),
     # Show List of all tables in Mongo DB APIs
     path('api/users/', user_list, name='api_user_list'),
@@ -22,6 +24,7 @@ urlpatterns = [
     path('api/tournament_list/', tournament_list, name='tournament_list'),
     path('api/posts_list/', post_list, name='posts_list'),
     path('api/player_in_match_list/', player_in_match_list, name='player_in_match_list'),
+    path('api/pendingRequests/', pendingRequests, name='pendingRequests'),
     # Authentication, Registration Routes / APIs
     path('api/login',  login, name='login'),
     path('api/signup', signup, name='signup'),
@@ -34,6 +37,7 @@ urlpatterns = [
     path('api/playersInMatchSave', playersInMatchSave, name='playersInMatchSave'),
     path('api/matchInningsSave', matchInningsSave, name='matchInningsSave'),
     path('api/matchDetailsSave', matchDetailsSave, name='matchDetailsSave'),
+    path('api/pendingRequestSave', pendingRequestSave, name='pendingRequestSave'),
     # Update Information APIs
     path('api/updateUser', updateUser, name='updateUser'),
     path('api/updateTournament/', updateTournament, name='updateTournament'),
@@ -41,6 +45,7 @@ urlpatterns = [
     path('api/updateMatch/', updateMatch, name='updateMatch'),
     path('api/updatePost/', updatePost, name='updatePost'),
     path('api/matchInningsUpdate/', matchInningsUpdate, name='matchInningsUpdate'),
+    path('api/updatePendingRequest/', updatePendingRequest, name='updatePendingRequest'),
     # Stats APIs
     path('api/getTournamentMatches/', getTournamentMatches, name='getTournamentMatches'),
     path('api/getMatcheDetailsById/', getMatcheDetailsById, name='getMatcheDetailsById'),
@@ -62,4 +67,5 @@ urlpatterns = [
     path('api/get_teams_by_match_id/', get_teams_by_match_id, name='get_teams_by_match_id'),
     path('api/get_match_details_by_match_id/', get_match_details_by_match_id, name='get_match_details_by_match_id'),
     path('api/get_team_players_by_team_id/', get_team_players_by_team_id, name='get_team_players_by_team_id'),
+    path('api/get_tournament_stats/', get_tournament_stats, name='get_tournament_stats'),
 ]

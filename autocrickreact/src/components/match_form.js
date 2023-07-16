@@ -5,6 +5,7 @@ import {
   get_match_details,
   updateMatch,
   getTeams,
+  get_list,
 } from "../services/api";
 import HeaderBar from "../includes/header";
 import Footer from "../includes/footer";
@@ -71,8 +72,9 @@ export default class Match extends Component {
         });
       }
       const tournaments = await getTournaments();
-      const teams = await getTeams();
-      this.setState({ tournaments, teams, isLoading: false });
+      const teams = await get_list("teams_list_status_active");
+	  console.log();
+      this.setState({ tournaments, teams:teams.teams, isLoading: false });
     } catch (error) {
       this.setState({ isError: true, isLoading: false });
     }
@@ -107,6 +109,7 @@ export default class Match extends Component {
         team_id1,
         team_id2,
         status,
+		total_overs,
         created_at,
       };
       matchSave(matchData)

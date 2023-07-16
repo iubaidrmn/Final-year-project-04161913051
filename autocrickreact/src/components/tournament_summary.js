@@ -1,35 +1,65 @@
 import React, { Component } from 'react';
 import HeaderBar from '../includes/header';
 import Footer from '../includes/footer';
+import Sidebar from "../includes/sidebar";
+import { getTournaments, get_tournament_stats } from "../services/api";
 
 export default class TournamentSummary extends Component {
+	  constructor(props) {
+    super(props);
+    this.state = {
+      tournamentName: null,
+      tournament_id: null,
+      tournaments: [],
+	  tournamentDetails: [],
+    };
+  }
+  
+    async componentDidMount() {
+    try {
+      const tournaments = await getTournaments();
+      this.setState({ tournaments });
+    } catch (error) {}
+  }
+  
+    handleChange = async (event) => {
+    this.setState({ [event.target.name]: event.target.value });
+    if (event.target.name === "tournament_id") {
+		const tournamentDetails = await get_tournament_stats(event.target.value);
+      const selectedTournament = this.state.tournaments.find(
+        (tournament) => tournament._id === event.target.value
+      );
+      const tournamentName = selectedTournament ? selectedTournament.title : "";
+      this.setState({ tournamentName, tournamentDetails });
+    }
+  };
+  
   render() {
-    // Sample data for the table
-    const teams = [
-      { name: 'Team A', matchesPlayed: 10, won: 7, lost: 2, NR: 1, score: 14 },
-      { name: 'Team B', matchesPlayed: 9, won: 5, lost: 3, NR: 1, score: 11 },
-      { name: 'Team C', matchesPlayed: 8, won: 4, lost: 4, NR: 0, score: 8 },
-      { name: 'Team D', matchesPlayed: 7, won: 3, lost: 3, NR: 1, score: 7 },
-      { name: 'Team D', matchesPlayed: 11, won: 11, lost: 0, NR: 0, score: 17 },
-    ];
-
-    const tournamentName = "Shaheen Tournament 2023";
-
-    // Change the value below to adjust the box width
+	const { tournaments, tournament_id, tournamentName, tournamentDetails } = this.state;
     const boxWidth = '900px';
-
     return (
       <div>
         <HeaderBar />
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            height: '80vh',
-            flexDirection: 'column',
-          }}
-        >
+        <div style={styles.container}>
+          <Sidebar />
+          <div style={styles.containerMain}>
+		    <div className="row">
+              <div className="col">
+                <div className="form-group">
+                  <label>Tournament:</label>
+                  <select name="tournament_id" value={tournament_id} onChange={this.handleChange}>
+                    <option>Select Tournament</option>
+                    {tournaments.map((tournament) => (
+                      <option value={tournament._id} key={tournament._id}>
+                        {tournament.title}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            </div>
+			{tournament_id && (
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh', flexDirection: 'column', }} >
           <h1 style={{ fontSize: '30px',border: '2px solid rgba(0, 0, 0, 0.2)', borderRadius: '10px',padding: '10px',textAlign: 'center', marginBottom: '20px' }}>{tournamentName}</h1>
           <div
             style={{
@@ -65,28 +95,45 @@ export default class TournamentSummary extends Component {
                 </tr>
               </thead>
               <tbody>
-                {teams.map((team, index) => (
+                {tournamentDetails.map((tournamentDetail, index) => (
                   <tr
                     key={index}
                     style={{
-                      backgroundColor: team.won === Math.max(...teams.map(t => t.won)) ? '#c3f0c8' : '',
+                      backgroundColor: tournamentDetail.won_matches === Math.max(...tournamentDetails.map(t => t.won_matches)) ? '#c3f0c8' : '',
                       borderBottom: '1px solid #ccc',
                     }}
                   >
-                    <td style={{ textAlign: 'center', padding: '10px', border: '1px solid #ccc' }}>{team.name}</td>
-                    <td style={{ textAlign: 'center',padding: '10px', border: '1px solid #ccc' }}>{team.matchesPlayed}</td>
-                    <td style={{ textAlign: 'center',padding: '10px', border: '1px solid #ccc' }}>{team.won}</td>
-                    <td style={{ textAlign: 'center',padding: '10px', border: '1px solid #ccc' }}>{team.lost}</td>
-                    <td style={{ textAlign: 'center',padding: '10px', border: '1px solid #ccc' }}>{team.NR}</td>
-                    <td style={{ textAlign: 'center',padding: '10px', border: '1px solid #ccc' }}>{team.score}</td>
+                    <td style={{ textAlign: 'center', padding: '10px', border: '1px solid #ccc' }}>{tournamentDetail.team_title}</td>
+                    <td style={{ textAlign: 'center',padding: '10px', border: '1px solid #ccc' }}>{tournamentDetail.total_matches}</td>
+                    <td style={{ textAlign: 'center',padding: '10px', border: '1px solid #ccc' }}>{tournamentDetail.won_matches}</td>
+                    <td style={{ textAlign: 'center',padding: '10px', border: '1px solid #ccc' }}>{tournamentDetail.lost_matches}</td>
+                    <td style={{ textAlign: 'center',padding: '10px', border: '1px solid #ccc' }}>{tournamentDetail.ratings}</td>
+                    <td style={{ textAlign: 'center',padding: '10px', border: '1px solid #ccc' }}>{tournamentDetail.runs}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
-        </div>
+			</div>)}
+		</div>
+		</div>
         <Footer />
       </div>
     );
   }
 }
+
+const styles = {
+  container: {
+    display: "flex",
+    minHeight: "100vh",
+    backgroundColor: "#f5f5f5",
+  },
+  containerMain: {
+    flex: 1,
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+};

@@ -115,10 +115,10 @@ export default class MatchUpdate extends Component {
 
 	handleSubmit = (event) => {
 		event.preventDefault();
-		const { team_first_innings, team_second_innings, match_id, batsman_id, bowler_id, runs, wickets, innings, extras, outOption, current_over, current_ball } = this.state;
+		const { match_id, batsman_id, bowler_id, runs, wickets, innings, extras, outOption, current_over, current_ball } = this.state;
 		const matchDetails = { match_id, batsman_id, bowler_id, runs, wickets, innings, extras, outOption, current_over, current_ball };
 		if(match_id !== null){
-			const matchInningsData = { match_id, team_first_innings, team_second_innings};
+			const matchInningsData = { match_id, innings_end_first, target, team_first_innings, team_second_innings};
 			matchInningsSave(matchInningsData)
 			.then((data) => {
 				Promise.all([
@@ -127,12 +127,12 @@ export default class MatchUpdate extends Component {
 					const matchDetailsToUpdateRuns = match_innings[0];
 					let target = 0, achieved = 0, data = {};
 					if(innings === "first"){
-						target = matchDetailsToUpdateRuns.target === null ? target : parseInt(matchDetailsToUpdateRuns.target)
-						target += parseInt(runs, 10);
+						target = matchDetailsToUpdateRuns.target
+						target += runs
 						data = {target}
 					} else if (innings === "second"){
-						achieved = matchDetailsToUpdateRuns.achieved === null ? achieved : parseInt(matchDetailsToUpdateRuns.achieved)
-						achieved += parseInt(runs, 10);
+						achieved = matchDetailsToUpdateRuns.achieved
+						achieved += runs
 						data = {achieved}
 					}		
 					matchInningsUpdate(match_id, data)
@@ -191,12 +191,13 @@ export default class MatchUpdate extends Component {
 		() => {
 			if(match_id !== null){
 				if(this.state.first_innings_end === true && this.state.second_innings_end === false){
-					const matchInningsData = { innings_end_first };
-					matchInningsUpdate(match_id, matchInningsData)
+					const target = total_score + 1;
+					const matchInningsData = { match_id, innings_end_first, target, team_first_innings, team_second_innings};
+					matchInningsSave(matchInningsData)
 					.then((data) => {
 						if (data.response === true) {
-							this.setState({second_innings_end: true})
 							this.showSuccessModal(data.message);
+							this.setState({second_innings_end: true});
 						} else {
 							this.showErrorModal(data.error);
 						}
@@ -205,22 +206,23 @@ export default class MatchUpdate extends Component {
 						this.showErrorModal(error.message);
 					});
 				} else {
-					const matchInningsData = { innings_end_second };
+					const achieved = total_score
+					const matchInningsData = { achieved, innings_end_second, };
 					matchInningsUpdate(match_id, matchInningsData)
 					.then((data) => {
-						if (data.response === true) {
+						if (data.response === true && match_id !== null) {
 							Promise.all([
 								get_match_innings(match_id)
 							]).then(([match_innings]) => {
 								const matchDetailsToFindWinner = match_innings[0];
 								let team_won = null, data = {};
-								if(parseInt(matchDetailsToFindWinner.achieved) >= parseInt(matchDetailsToFindWinner.target)){
+								if(matchDetailsToFindWinner.achieved >= matchDetailsToFindWinner.target){
 									team_won = team_second_innings
 									data = {team_won}
 								} else {
 									team_won = team_first_innings
 									data = {team_won}
-								}
+								}		
 								matchInningsUpdate(match_id, data)
 								.then((data) => {
 									if(data.response === true) {
@@ -229,7 +231,9 @@ export default class MatchUpdate extends Component {
 										this.showErrorModal(data.error);
 									}
 								})
-							}).catch((error) => {});
+							}).catch((error) => {
+								// Handle the error here
+							});
 						} else {
 							this.showErrorModal(data.error);
 						}

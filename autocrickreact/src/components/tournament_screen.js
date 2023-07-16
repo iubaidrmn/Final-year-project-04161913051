@@ -1,36 +1,46 @@
 import React, { Component } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMicrophone } from '@fortawesome/free-solid-svg-icons';
+import HeaderBar from "../includes/header";
+import Footer from "../includes/footer";
+import Sidebar from "../includes/sidebar";
+import { getTournaments, get_tournament_schedule } from "../services/api";
+import { FaUserCircle } from "react-icons/fa";
+import moment from "moment";
 
-export class TournamentScreen extends Component {
-  handleButtonClick = () => {
-    window.alert('Recording has started!');
+export default class TournamentScreen extends Component {
+	
+	  constructor(props) {
+    super(props);
+    this.state = {
+      tournaments: [],
+	  schedule: [],
+	  tournamentName: null,
+	  venue: null,
+    };
+  }
+  
+    handleChange = async (event) => {
+    this.setState({ [event.target.name]: event.target.value });
+    if (event.target.name === "tournament_id") {
+      const selectedTournament = this.state.tournaments.find(
+        (tournament) => tournament._id === event.target.value
+      );
+      const tournamentName = selectedTournament ? selectedTournament.title : "";
+      const venue = selectedTournament ? selectedTournament.venue : "";
+	  const schedule = await get_tournament_schedule(event.target.value);
+      this.setState({ tournamentName, schedule, venue });
+    }
   };
-
+  
+  async componentDidMount() {
+    try {
+      const tournaments = await getTournaments();
+      this.setState({ tournaments });
+    } catch (error) {}
+  }
   render() {
-    const tournamentName = 'shaheen';
-    const matches = [
-      {
-        team1: 'Team A',
-        team2: 'Team B',
-        date: 'July 10, 2023',
-        venue: 'Stadium X',
-        startTime: '10:00 AM',
-        endTime: '12:00 PM',
-      },
-      {
-        team1: 'Team C',
-        team2: 'Team D',
-        date: 'July 12, 2023',
-        venue: 'Stadium Y',
-        startTime: '2:00 PM',
-        endTime: '4:00 PM',
-      },
-      // Add more matches as needed
-    ];
-
     const style = {
-      container: {
+      container1: {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -45,6 +55,7 @@ export class TournamentScreen extends Component {
         borderRadius: '8px',
         boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
         padding: '2rem',
+		backgroundColor: '#fffff',
       },
       heading: {
         fontSize: '2.5rem',
@@ -91,53 +102,72 @@ export class TournamentScreen extends Component {
       },
     };
 
-    const todayMatch = {
-      team1: 'Team E',
-      team2: 'Team F',
-      date: 'July 6, 2023',
-      venue: 'Stadium Z',
-      startTime: '6:00 PM',
-      endTime: '8:00 PM',
-    };
-
-    return (
-      <div style={style.container}>
+    const { tournaments, tournamentName, tournament_id, schedule, venue } = this.state;
+	return (
+	      <div>
+        <HeaderBar />
+        <div style={styles.container}>
+          <Sidebar />
+          <div style={styles.containerMain}>
+		              <div className="row">
+              <div className="col">
+                <div className="form-group">
+                  <label>Tournament:</label>
+                  <select
+                    name="tournament_id"
+                    value={tournament_id}
+                    onChange={this.handleChange}
+                  >
+                    <option>Select Tournament</option>
+                    {tournaments.map((tournament) => (
+                      <option value={tournament._id} key={tournament._id}>
+                        {tournament.title}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              </div>
+			  {tournament_id && (
+      <div style={style.container1}>
         <div style={style.roundedBox}>
-          <h1 style={style.heading}>{tournamentName} Tournament</h1>
+          <h1 style={style.heading}>{tournamentName}</h1>
           <span style={style.label}>All Matches:</span>
-          {matches.map((match, index) => (
+          {schedule.map((match, index) => (
             <div key={index} style={style.matchBox}>
               <div>
                 <div style={style.teamNames}>
                   {match.team1} vs {match.team2}
                 </div>
                 <div style={style.matchDetails}>
-                  Date: {match.date}, Venue: {match.venue}, Start: {match.startTime}, End: {match.endTime}
+                  Date: {moment(match.date).format("MMMM DD, YYYY")}, Venue: {venue} , Start Time: {match.time}
                 </div>
               </div>
             </div>
           ))}
-          <span style={style.label}>Today's Match:</span>
-          <div style={style.matchBox}>
-            <div>
-              <div style={style.teamNames}>
-                {todayMatch.team1} vs {todayMatch.team2}
-              </div>
-              <div style={style.matchDetails}>
-                Date: {todayMatch.date}, Venue: {todayMatch.venue}, Start: {todayMatch.startTime}, End: {todayMatch.endTime}
-              </div>
-            </div>
-          </div>
           <div>
-          <button style={style.button} onClick={this.handleButtonClick}>
-  <FontAwesomeIcon icon={faMicrophone} style={{ marginRight: '0.5rem' }} />
-  Start Recording
-</button>
           </div>
         </div>
+			  </div>)}
+	            </div>
+        </div>
+        <Footer />
       </div>
     );
   }
 }
 
-export default TournamentScreen;
+const styles = {
+  container: {
+    display: "flex",
+    minHeight: "100vh",
+    backgroundColor: "#f5f5f5",
+  },
+  containerMain: {
+    flex: 1,
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+};
