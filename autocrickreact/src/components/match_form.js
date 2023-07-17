@@ -4,7 +4,6 @@ import {
   matchSave,
   get_match_details,
   updateMatch,
-  getTeams,
   get_list,
 } from "../services/api";
 import HeaderBar from "../includes/header";

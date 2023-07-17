@@ -858,11 +858,6 @@ export const postSave1 = async (formData) => {
     headers: {
       "Content-Type": "multipart/form-data",
     },
-    onUploadProgress: (progressEvent) => {
-      const progress = Math.round(
-        (progressEvent.loaded * 100) / progressEvent.total
-      );
-    },
   };
 
   try {
@@ -883,11 +878,6 @@ export const tournamentSave1 = async (formData) => {
   const config = {
     headers: {
       "Content-Type": "multipart/form-data",
-    },
-    onUploadProgress: (progressEvent) => {
-      const progress = Math.round(
-        (progressEvent.loaded * 100) / progressEvent.total
-      );
     },
   };
 
@@ -910,11 +900,6 @@ export const genericUpdatePicture = async (_id=null, toUpdate=null, data, functi
     headers: {
       "Content-Type": "multipart/form-data",
     },
-    onUploadProgress: (progressEvent) => {
-      const progress = Math.round(
-        (progressEvent.loaded * 100) / progressEvent.total
-      );
-    },
   };
   try {
 	   let response = [];
@@ -933,11 +918,6 @@ export const genericUpdatePicture = async (_id=null, toUpdate=null, data, functi
 export const genericSavePicture = async (data, functionName) => {
   const config = {
     headers: { "Content-Type": "multipart/form-data", },
-    onUploadProgress: (progressEvent) => {
-      const progress = Math.round(
-        (progressEvent.loaded * 100) / progressEvent.total
-      );
-    },
   };
 
   try {

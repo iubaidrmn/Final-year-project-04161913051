@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { FaUser, FaUserCircle, FaCheck, FaUsers, FaCalendar } from 'react-icons/fa';
+import { FaUserCircle, FaUsers, FaCalendar } from 'react-icons/fa';
 import HeaderBar from "../includes/header";
 import Footer from "../includes/footer";
 import Sidebar from "../includes/sidebar";
@@ -51,7 +51,7 @@ export default class PendingRequests extends Component {
 			const responseData = await getByIDGeneric(event.target.value, "pendingRequests", "tournament_id")
 			if(responseData.response === true){
 				this.setState({ pendingRequests:responseData.pendingRequests });
-				if(responseData.pendingRequests.length == 0){
+				if(responseData.pendingRequests.length === 0){
 					this.showErrorModal("No Team Requests Available");
 				}
 			}

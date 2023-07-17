@@ -7,18 +7,6 @@ import { FaSearch, FaSave } from "react-icons/fa";
 import SuccessMessage from "../includes/success";
 import ErrorMessage from "../includes/error";
 
-const dialogStyle = {
-  position: 'fixed',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  backgroundColor: '#fff',
-  padding: '16px',
-  borderRadius: '4px',
-  boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
-  width: '400px',
-};
-
 export default class SearchTournament extends Component {
   constructor(props) {
     super(props);
@@ -114,7 +102,7 @@ handleRequest = async (tournament_id) => {
   };
 
 render() {
-  const { tournaments, tournament_id, searchQuery, searchResults, teams, team_id } = this.state;
+  const { tournaments, searchQuery, teams, team_id } = this.state;
 
   return (
       <div>

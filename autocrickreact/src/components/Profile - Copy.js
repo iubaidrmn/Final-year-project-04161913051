@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { FaUpload } from "react-icons/fa";
+import { FaUpload, FaUser } from "react-icons/fa";
 import HeaderBar from "../includes/header";
 import Footer from "../includes/footer";
 import Sidebar from "../includes/sidebar";
@@ -9,6 +9,7 @@ import "../assets/tableStyling.css";
 import SuccessMessage from "../includes/success";
 import ErrorMessage from "../includes/error";
 import Dropzone from "react-dropzone";
+import axios from "axios";
 
 export default class Profile extends Component {
   constructor(props) {
@@ -166,6 +167,7 @@ render() {
     email,
     password,
     contact_no,
+    file_path,
     profilePicture,
 	coverPhoto,
   } = this.state;
@@ -175,11 +177,6 @@ render() {
       <div style={styles.container}>
         <Sidebar />
         <div style={styles.containerMain}>
-		    <div style={{ marginTop: "10px" }}>
-				<button type="button" style={styles.uploadButton}>Statistics</button>
-				<button type="button" style={styles.uploadButton}>Top Bowling Figures</button>
-				<button type="button" style={styles.uploadButton}>Top Batting Figures</button>
-			</div>
           <div className="content"style={styles.scrollContainer}>
             <div className="container">
               <div
@@ -205,7 +202,7 @@ render() {
                 >
                   <img
                     src={coverPhoto}
-                    alt="Cover"
+                    alt="Cover Photo"
                     style={{
                       width: "100%",
                       height: "auto",
@@ -234,7 +231,7 @@ render() {
                     >
                       <img
                         src={profilePicture}
-                        alt="Profile"
+                        alt="Profile Picture"
                         style={{
                           width: "100%",
                           height: "100%",
@@ -259,7 +256,7 @@ render() {
 								</div>
 							  )}
 							</Dropzone>
-							<button onClick={this.handleUpload} style={styles.uploadButton}>
+							<button onClick={this.handleUpload} style={{ marginLeft: "10px" }} style={styles.uploadButton}>
 							  <FaUpload style={{ cursor: "pointer" }} />
 							</button>
 						  </div>
@@ -282,7 +279,7 @@ render() {
 								</div>
 							  )}
 							</Dropzone>
-							<button onClick={this.handleUpload} style={styles.uploadButton}>
+							<button onClick={this.handleUpload} style={{ marginLeft: "10px" }} style={styles.uploadButton}>
 							  <FaUpload style={{ cursor: "pointer" }} />
 							</button>
 						  </div>
@@ -410,15 +407,5 @@ const styles = {
     borderRadius: "5px",
     boxShadow: "0px 2px 3.84px rgba(0, 0, 0, 0.15)",
     outline: "none",
-	marginRight: "10px",
-	marginLeft: "10px",
-  },
-    centeredButton: {
-    backgroundColor: "#4caf50",
-    color: "#ffffff",
-    border: "none",
-    padding: "10px 20px",
-    cursor: "pointer",
-    marginBottom: "10px",
   },
 };
