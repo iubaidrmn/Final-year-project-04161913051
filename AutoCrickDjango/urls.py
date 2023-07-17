@@ -5,6 +5,7 @@ from autocrick.views import *
 urlpatterns = [
     path('admin/', admin.site.urls),
     # Show List of all tables in Mongo DB APIs Based on IDs
+    path('api/get_profile_picture/', get_profile_picture, name='get_profile_picture'),
     path('api/teams_list_status_active/', teams_list_status_active, name='teams_list_status_active'),
     path('api/get_user_details/', get_user_details, name='get_user_details'),
     path('api/get_team_details/', get_team_details, name='get_team_details'),
@@ -29,6 +30,7 @@ urlpatterns = [
     path('api/login',  login, name='login'),
     path('api/signup', signup, name='signup'),
     # Save Data in Mongo DB APIs
+    path('api/userProfileSave', userProfileSave, name='userProfileSave'),
     path('api/postSave', postSave, name='postSave'),
     path('api/teamSave', teamSave, name='teamSave'),
     path('api/matchSave', matchSave, name='matchSave'),

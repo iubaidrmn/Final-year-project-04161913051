@@ -16,6 +16,17 @@ class User(models.Model):
     class Meta:
         db_table = 'users'
 
+
+class UserProfilePic(models.Model):
+    _id = djongo_models.ObjectIdField(primary_key=True, default=ObjectId, editable=False)
+    username = models.CharField(max_length=255)
+    file_path = models.FileField(upload_to='autocrickreact/public/posts/', blank=True, null=True)
+    coverPhoto = models.FileField(upload_to='autocrickreact/public/posts/', blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'user_profile_pic_path'
+
 class Role(models.Model):
     _id = djongo_models.ObjectIdField(primary_key=True, default=ObjectId, editable=False)
     role_id = models.CharField(max_length=2)

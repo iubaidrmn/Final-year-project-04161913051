@@ -153,6 +153,16 @@ def get_team_details(request):
         return Response({'response': False, 'error': str(e)})
 
 @api_view(['GET'])
+def get_profile_picture(request):
+    try:
+        username = request.GET.get('username')
+        profile_picture = UserProfilePic.objects.filter(Q(username=username)).first()
+        serializer = UserProfilePicSerializer(profile_picture)
+        return Response({'response':True, 'profile_picture': serializer.data})
+    except:
+        return Response({'response':False, 'error': 'Can Not Retrieve Data'})
+
+@api_view(['GET'])
 def get_match_details(request):
     try:
         _id = ObjectId(request.GET.get('_id'))
@@ -405,9 +415,33 @@ def teamSave(request):
         if serializer.is_valid():
             serializer.save()
             return Response({'response': True, 'message': 'Team Saved Successfully'}, status=200)
-        return Response({'response': False, 'error': serializer.errors}, status=400)
+        return Response({'response': False, 'error': serializer.errors})
     except Exception as e:
         return Response({'response': False, 'error': str(e)}, status=500)
+        
+@api_view(['POST'])
+def userProfileSave(request):
+    try:
+        username = request.data.get('username')
+        existing_user = UserProfilePic.objects.filter(username=username).first()
+        if existing_user:
+            serializer = UserProfilePicSerializer(existing_user, data=request.data, partial=True)
+        else:
+            serializer = UserProfilePicSerializer(data=request.data, partial=True)
+        if serializer.is_valid():
+            if 'file_path' in request.FILES and request.FILES['file_path'] is not None:
+                serializer.save(file_path=request.FILES['file_path'])
+            elif 'coverPhoto' in request.FILES and request.FILES['coverPhoto'] is not None:
+                serializer.save(coverPhoto=request.FILES['coverPhoto'])
+            else:
+                return Response({'response': False, 'error': 'No file provided'})
+            return Response({'response': True, 'message': 'Saved Successfully'})
+        return Response({'response': False, 'error': serializer.errors})
+
+    except Exception as e:
+        return Response({'response': False, 'error': str(e)})
+
+
 
 @api_view(['POST'])
 def playersInMatchSave(request):
@@ -416,7 +450,7 @@ def playersInMatchSave(request):
         if serializer.is_valid():
             serializer.save()
             return Response({'response': True, 'message': 'player in match Saved Successfully'}, status=200)
-        return Response({'response': False, 'error': serializer.errors}, status=400)
+        return Response({'response': False, 'error': serializer.errors})
     except Exception as e:
         return Response({'response': False, 'error': str(e)}, status=500)
     

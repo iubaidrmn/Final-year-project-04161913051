@@ -2,6 +2,10 @@ html, body {
   height: 100%;
   margin: 0;
 }
+.full-name {
+  margin-right: 5px;
+  font-weight: bold;
+}
 
 .content-wrap {
   flex-grow: 1;

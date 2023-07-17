@@ -8,7 +8,15 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ('_id', 'fullname', 'username', 'email', 'password', 'contact_no', 'role_id', 'created_at')
     def get__id(self, obj):
         return str(obj._id)
-    
+ 
+class UserProfilePicSerializer(serializers.ModelSerializer):
+    _id = serializers.SerializerMethodField()
+    class Meta:
+        model = UserProfilePic
+        fields = ('_id', 'username', 'file_path', 'coverPhoto', 'created_at')
+    def get__id(self, obj):
+        return str(obj._id)
+ 
 class RoleSerializer(serializers.ModelSerializer):
     _id = serializers.SerializerMethodField()
     class Meta:

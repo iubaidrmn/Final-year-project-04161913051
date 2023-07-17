@@ -80,7 +80,7 @@ export default class Sidebar extends React.Component {
         <ul style={styles.navigationList}>
           {allowedMenuItems.map((menuItem, index) => (
             <li style={styles.navigationItem} key={index}>
-              <Link to={menuItem.to}>
+              <Link to={menuItem.to} style={styles.navLink}>
                 {menuItem.icon}
                 <span>&nbsp;&nbsp;{menuItem.label}</span>
               </Link>
@@ -106,7 +106,14 @@ const styles = {
   navigationItem: {
     marginBottom: "10px",
     cursor: "pointer",
-    borderBottom: "1px solid #ccc", // Add a gray border to the bottom of each navigation item
-    padding: "10px", // Add some padding to the navigation items
+    borderBottom: "1px solid #ccc",
+    padding: "10px",
+  },
+    navLink: {
+    display: "flex",
+    alignItems: "center",
+    color: "#333",
+    textDecoration: "none",
+    fontSize: "16px",
   },
 };

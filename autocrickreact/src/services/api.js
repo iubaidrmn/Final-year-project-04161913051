@@ -903,3 +903,48 @@ export const tournamentSave1 = async (formData) => {
     throw error;
   }
 };
+
+
+export const genericUpdatePicture = async (_id=null, toUpdate=null, data, functionName) => {
+  const config = {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+    onUploadProgress: (progressEvent) => {
+      const progress = Math.round(
+        (progressEvent.loaded * 100) / progressEvent.total
+      );
+    },
+  };
+  try {
+	   let response = [];
+	  if(_id === null && toUpdate === null){
+		response = await axios.patch(`http://localhost:8000/api/${functionName}/?${_id}=${toUpdate}`, data, config);
+	  } else {
+		response = await axios.patch(`http://localhost:8000/api/${functionName}`, data, config);
+	  }
+	return response;
+  } catch (error) {
+    console.error("Error saving tournament:", error);
+    throw error;
+  }
+};
+
+export const genericSavePicture = async (data, functionName) => {
+  const config = {
+    headers: { "Content-Type": "multipart/form-data", },
+    onUploadProgress: (progressEvent) => {
+      const progress = Math.round(
+        (progressEvent.loaded * 100) / progressEvent.total
+      );
+    },
+  };
+
+  try {
+    const response = await axios.post(`http://localhost:8000/api/${functionName}`, data, config);
+    return response;
+  } catch (error) {
+    console.error("Error saving:", error);
+    throw error;
+  }
+};

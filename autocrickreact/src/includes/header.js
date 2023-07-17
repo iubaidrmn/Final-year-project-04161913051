@@ -7,6 +7,7 @@ export default class HeaderBar extends React.Component {
     super(props);
     this.state = {
       isProfileMenuOpen: false,
+      fullName: localStorage.getItem('fullname'),
     };
   }
 
@@ -17,7 +18,7 @@ export default class HeaderBar extends React.Component {
   };
 
   render() {
-    const { isProfileMenuOpen } = this.state;
+    const { isProfileMenuOpen, fullName } = this.state;
     return (
       <>
         <div className="header-bar">
@@ -26,7 +27,8 @@ export default class HeaderBar extends React.Component {
             AutoCrick | Local Optimized Cricket Automation
           </div>
           <div className="profile-icon" onClick={this.handleProfileIconClick}>
-            <FaUserCircle size={24} />
+            <span className="full-name">{fullName}</span>
+		   <FaUserCircle size={24} />
             {isProfileMenuOpen && <ProfileMenu />}
           </div>
         </div>
