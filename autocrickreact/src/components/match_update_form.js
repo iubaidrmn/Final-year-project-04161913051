@@ -1,5 +1,16 @@
 import React, { Component } from "react";
-import { get_match_innings, matchInningsUpdate, matchInningsSave, get_team_players_by_team_id, matchDetailsSave, getUsers, getMatches, getTournaments, get_matches_by_tournament_id, getMatcheDetailsById, } from "../services/api";
+import {
+  get_match_innings,
+  matchInningsUpdate,
+  matchInningsSave,
+  get_team_players_by_team_id,
+  matchDetailsSave,
+  getUsers,
+  getMatches,
+  getTournaments,
+  get_matches_by_tournament_id,
+  getMatcheDetailsById,
+} from "../services/api";
 import HeaderBar from "../includes/header";
 import Footer from "../includes/footer";
 import Sidebar from "../includes/sidebar";
@@ -8,246 +19,355 @@ import SuccessMessage from "../includes/success";
 import ErrorMessage from "../includes/error";
 
 export default class MatchUpdate extends Component {
-	constructor(props) {
-		super(props);
-		this.state = {
-			tournament_id: null,
-			tournaments: [],
-			team1: [],
-			team2: [],
-			total_score: 0,
-			team_first_innings: null,
-			team_second_innings: null,
-			first_innings_end: false, 
-			second_innings_end: false,
-			team_won: null,
-			match_id: null,
-			matches: [],
-			batsman_id: "",
-			bowler_id: "",
-			runs: "0",
-			wickets: "0",
-			extras: "0",
-			innings: "first",
-			outOption: "not_out",
-			players: [],
-			matches: [],
-			matchDetailsbyId: [],
-			showSuccessModal: false,
-			showErrorModal: false,
-			successMessage: "",
-			errorMessage: "",
-			isLoading: true,
-			isError: false,
-			current_over: "0",
-			current_ball: "0",
-			maxOverValue: "0",
-		};
-	}
+  constructor(props) {
+    super(props);
+    this.state = {
+      tournament_id: null,
+      tournaments: [],
+      team1: [],
+      team2: [],
+      total_score: 0,
+      team_first_innings: null,
+      team_second_innings: null,
+      first_innings_end: false,
+      second_innings_end: false,
+      team_won: null,
+      match_id: null,
+      matches: [],
+      batsman_id: "",
+      bowler_id: "",
+      runs: "0",
+      wickets: "0",
+      extras: "0",
+      innings: "first",
+      outOption: "not_out",
+      players: [],
+      matches: [],
+      matchDetailsbyId: [],
+      showSuccessModal: false,
+      showErrorModal: false,
+      successMessage: "",
+      errorMessage: "",
+      isLoading: true,
+      isError: false,
+      current_over: "0",
+      current_ball: "0",
+      maxOverValue: "0",
+    };
+  }
 
-	async componentDidMount() {
-		try {
-			const players = await getUsers(3);
-			const tournaments = await getTournaments();
-			this.setState({ tournaments, players, isLoading: false });
-		} catch (error) {
-			this.setState({ isError: true, isLoading: false });
-		}
-	}
+  async componentDidMount() {
+    try {
+      const players = await getUsers(3);
+      const tournaments = await getTournaments();
+      this.setState({ tournaments, players, isLoading: false });
+    } catch (error) {
+      this.setState({ isError: true, isLoading: false });
+    }
+  }
 
-	showSuccessModal = (message) => {
-		this.setState({ successMessage: message, showSuccessModal: true });
-	};
+  showSuccessModal = (message) => {
+    this.setState({ successMessage: message, showSuccessModal: true });
+  };
 
-	hideSuccessModal = () => {
-		this.setState({ showSuccessModal: false });
-	};
+  hideSuccessModal = () => {
+    this.setState({ showSuccessModal: false });
+  };
 
-	showErrorModal = (message) => {
-		this.setState({ errorMessage: message, showErrorModal: true });
-	};
+  showErrorModal = (message) => {
+    this.setState({ errorMessage: message, showErrorModal: true });
+  };
 
-	hideErrorModal = () => {
-		this.setState({ showErrorModal: false });
-	};
+  hideErrorModal = () => {
+    this.setState({ showErrorModal: false });
+  };
 
-	handleChange = async (event) => {
-		const { name, value } = event.target;
-  
-		if (name === "runs" && this.state.first_innings_end === false){
-			const total_score = parseInt(value) + this.state.total_score;
-			this.setState({ total_score });
-		}
-		
-		if (name === "tournament_id") {
-			const matches = await get_matches_by_tournament_id(value);
-			this.setState({ matches });
-		}
-  
-		if (name === "extra") {
-			this.setState({ extra: value === "" ? "0" : "1" });
-		} else {
-			if (name === "match_id") {
-				getMatcheDetailsById(value).then((data) => {
-					this.setState({ matchDetailsbyId: data }, () => {
-					  const selectedMatch = this.state.matches.find(
-						(match) => match._id === value
-					  );
-					  
-					  const maxOverValue = selectedMatch ? selectedMatch.total_overs : "";
-					  const team_first_innings = selectedMatch ? selectedMatch.team_id1 : "";
-					  const team_second_innings = selectedMatch ? selectedMatch.team_id2 : "";
-					  
-					  Promise.all([
-						get_team_players_by_team_id(team_first_innings),
-						get_team_players_by_team_id(team_second_innings)
-					  ]).then(([team1, team2]) => {
-						this.setState({ maxOverValue, team1, team2, team_first_innings, team_second_innings });
-					  }).catch((error) => {
-						// Handle the error here
-					  });
-					});
-				});
-			}
-			this.setState({ [name]: value });
-		}
-	};
+  handleChange = async (event) => {
+    const { name, value } = event.target;
 
-	handleSubmit = (event) => {
-		event.preventDefault();
-		const { team_first_innings, team_second_innings, match_id, batsman_id, bowler_id, runs, wickets, innings, extras, outOption, current_over, current_ball } = this.state;
-		const matchDetails = { match_id, batsman_id, bowler_id, runs, wickets, innings, extras, outOption, current_over, current_ball };
-		if(match_id !== null){
-			const matchInningsData = { match_id, team_first_innings, team_second_innings};
-			matchInningsSave(matchInningsData)
-			.then((data) => {
-				Promise.all([
-					get_match_innings(match_id)
-				]).then(([match_innings]) => {
-					const matchDetailsToUpdateRuns = match_innings[0];
-					let target = 0, achieved = 0, data = {};
-					if(innings === "first"){
-						target = matchDetailsToUpdateRuns.target === null ? target : parseInt(matchDetailsToUpdateRuns.target)
-						target += parseInt(runs, 10);
-						data = {target}
-					} else if (innings === "second"){
-						achieved = matchDetailsToUpdateRuns.achieved === null ? achieved : parseInt(matchDetailsToUpdateRuns.achieved)
-						achieved += parseInt(runs, 10);
-						data = {achieved}
-					}		
-					matchInningsUpdate(match_id, data)
-					.then((data) => {
-						matchDetailsSave(matchDetails)
-						.then((data) => {
-							if (data.response === true) {
-								this.showSuccessModal(data.message);
-								this.setState({ batsman_id: "", bowler_id: "", runs: "0", wickets: "0",
-									innings: "first", extras: "0", outOption: "not_out", current_over: "", 
-									current_ball: "" },
-									() => {
-									  if (this.state.match_id !== null) {
-										getMatcheDetailsById(this.state.match_id).then((data) => {
-										  this.setState({ matchDetailsbyId: data });
-										});
-									  }
-									}
-								);
-							} else {
-								this.showErrorModal(data.error);
-							}
-						})
-						.catch((error) => {
-							this.showErrorModal(error.message);
-						});
-					})
-				}).catch((error) => {});
-			})
-			.catch((error) => {
-				this.showErrorModal(error.message);
-			});
-		}
-	};
+    if (name === "runs" && this.state.first_innings_end === false) {
+      const total_score = parseInt(value) + this.state.total_score;
+      this.setState({ total_score });
+    }
 
-	renderSuccessModal() {
-		const { successMessage } = this.state;
-		return (
-			<SuccessMessage message={successMessage} onClose={this.hideSuccessModal} 
-				onAddAnother={() => { this.hideSuccessModal(); }}
-				onGoToHomepage={() => { this.hideSuccessModal(); window.location.replace("/NewsFeed"); }}
-			/>
-		);
-	}
+    if (name === "tournament_id") {
+      const matches = await get_matches_by_tournament_id(value);
+      this.setState({ matches });
+    }
 
-	renderErrorModal() {
-		const { errorMessage } = this.state;
-		return ( <ErrorMessage message={errorMessage} onClose={this.hideErrorModal} /> );
-	}
-  
-	handleEndFirstInnings = async () => {
-		const { match_id, second_innings_end, total_score, team_won, team1, team2, team_first_innings, team_second_innings } = this.state;
-		const innings_end_first = 1;
-		const innings_end_second = 1;
-		this.setState({ team1: team2, team2: team1, first_innings_end: true, innings: "second" },
-		() => {
-			if(match_id !== null){
-				if(this.state.first_innings_end === true && this.state.second_innings_end === false){
-					const matchInningsData = { innings_end_first };
-					matchInningsUpdate(match_id, matchInningsData)
-					.then((data) => {
-						if (data.response === true) {
-							this.setState({second_innings_end: true})
-							this.showSuccessModal(data.message);
-						} else {
-							this.showErrorModal(data.error);
-						}
-					})
-					.catch((error) => {
-						this.showErrorModal(error.message);
-					});
-				} else {
-					const matchInningsData = { innings_end_second };
-					matchInningsUpdate(match_id, matchInningsData)
-					.then((data) => {
-						if (data.response === true) {
-							Promise.all([
-								get_match_innings(match_id)
-							]).then(([match_innings]) => {
-								const matchDetailsToFindWinner = match_innings[0];
-								let team_won = null, data = {};
-								if(parseInt(matchDetailsToFindWinner.achieved) >= parseInt(matchDetailsToFindWinner.target)){
-									team_won = team_second_innings
-									data = {team_won}
-								} else {
-									team_won = team_first_innings
-									data = {team_won}
-								}
-								matchInningsUpdate(match_id, data)
-								.then((data) => {
-									if(data.response === true) {
-										this.showSuccessModal(data.message);
-									} else {
-										this.showErrorModal(data.error);
-									}
-								})
-							}).catch((error) => {});
-						} else {
-							this.showErrorModal(data.error);
-						}
-					})
-					.catch((error) => {
-						this.showErrorModal(error.message);
-					});
-				}
-			}
-		});
-	};
+    if (name === "extra") {
+      this.setState({ extra: value === "" ? "0" : "1" });
+    } else {
+      if (name === "match_id") {
+        getMatcheDetailsById(value).then((data) => {
+          this.setState({ matchDetailsbyId: data }, () => {
+            const selectedMatch = this.state.matches.find(
+              (match) => match._id === value
+            );
+
+            const maxOverValue = selectedMatch ? selectedMatch.total_overs : "";
+            const team_first_innings = selectedMatch
+              ? selectedMatch.team_id1
+              : "";
+            const team_second_innings = selectedMatch
+              ? selectedMatch.team_id2
+              : "";
+
+            Promise.all([
+              get_team_players_by_team_id(team_first_innings),
+              get_team_players_by_team_id(team_second_innings),
+            ])
+              .then(([team1, team2]) => {
+                this.setState({
+                  maxOverValue,
+                  team1,
+                  team2,
+                  team_first_innings,
+                  team_second_innings,
+                });
+              })
+              .catch((error) => {
+                // Handle the error here
+              });
+          });
+        });
+      }
+      this.setState({ [name]: value });
+    }
+  };
+
+  handleSubmit = (event) => {
+    event.preventDefault();
+    const {
+      team_first_innings,
+      team_second_innings,
+      match_id,
+      batsman_id,
+      bowler_id,
+      runs,
+      wickets,
+      innings,
+      extras,
+      outOption,
+      current_over,
+      current_ball,
+    } = this.state;
+    const matchDetails = {
+      match_id,
+      batsman_id,
+      bowler_id,
+      runs,
+      wickets,
+      innings,
+      extras,
+      outOption,
+      current_over,
+      current_ball,
+    };
+    if (match_id !== null) {
+      const matchInningsData = {
+        match_id,
+        team_first_innings,
+        team_second_innings,
+      };
+      matchInningsSave(matchInningsData)
+        .then((data) => {
+          Promise.all([get_match_innings(match_id)])
+            .then(([match_innings]) => {
+              const matchDetailsToUpdateRuns = match_innings[0];
+              let target = 0,
+                achieved = 0,
+                data = {};
+              if (innings === "first") {
+                target =
+                  matchDetailsToUpdateRuns.target === null
+                    ? target
+                    : parseInt(matchDetailsToUpdateRuns.target);
+                target += parseInt(runs, 10);
+                data = { target };
+              } else if (innings === "second") {
+                achieved =
+                  matchDetailsToUpdateRuns.achieved === null
+                    ? achieved
+                    : parseInt(matchDetailsToUpdateRuns.achieved);
+                achieved += parseInt(runs, 10);
+                data = { achieved };
+              }
+              matchInningsUpdate(match_id, data).then((data) => {
+                matchDetailsSave(matchDetails)
+                  .then((data) => {
+                    if (data.response === true) {
+                      this.showSuccessModal(data.message);
+                      this.setState(
+                        {
+                          batsman_id: "",
+                          bowler_id: "",
+                          runs: "0",
+                          wickets: "0",
+                          innings: "first",
+                          extras: "0",
+                          outOption: "not_out",
+                          current_over: "",
+                          current_ball: "",
+                        },
+                        () => {
+                          if (this.state.match_id !== null) {
+                            getMatcheDetailsById(this.state.match_id).then(
+                              (data) => {
+                                this.setState({ matchDetailsbyId: data });
+                              }
+                            );
+                          }
+                        }
+                      );
+                    } else {
+                      this.showErrorModal(data.error);
+                    }
+                  })
+                  .catch((error) => {
+                    this.showErrorModal(error.message);
+                  });
+              });
+            })
+            .catch((error) => {});
+        })
+        .catch((error) => {
+          this.showErrorModal(error.message);
+        });
+    }
+  };
+
+  renderSuccessModal() {
+    const { successMessage } = this.state;
+    return (
+      <SuccessMessage
+        message={successMessage}
+        onClose={this.hideSuccessModal}
+        onAddAnother={() => {
+          this.hideSuccessModal();
+        }}
+        onGoToHomepage={() => {
+          this.hideSuccessModal();
+          window.location.replace("/NewsFeed");
+        }}
+      />
+    );
+  }
+
+  renderErrorModal() {
+    const { errorMessage } = this.state;
+    return (
+      <ErrorMessage message={errorMessage} onClose={this.hideErrorModal} />
+    );
+  }
+
+  handleEndFirstInnings = async () => {
+    const {
+      match_id,
+      second_innings_end,
+      total_score,
+      team_won,
+      team1,
+      team2,
+      team_first_innings,
+      team_second_innings,
+    } = this.state;
+    const innings_end_first = 1;
+    const innings_end_second = 1;
+    this.setState(
+      {
+        team1: team2,
+        team2: team1,
+        first_innings_end: true,
+        innings: "second",
+      },
+      () => {
+        if (match_id !== null) {
+          if (
+            this.state.first_innings_end === true &&
+            this.state.second_innings_end === false
+          ) {
+            const matchInningsData = { innings_end_first };
+            matchInningsUpdate(match_id, matchInningsData)
+              .then((data) => {
+                if (data.response === true) {
+                  this.setState({ second_innings_end: true });
+                  this.showSuccessModal(data.message);
+                } else {
+                  this.showErrorModal(data.error);
+                }
+              })
+              .catch((error) => {
+                this.showErrorModal(error.message);
+              });
+          } else {
+            const matchInningsData = { innings_end_second };
+            matchInningsUpdate(match_id, matchInningsData)
+              .then((data) => {
+                if (data.response === true) {
+                  Promise.all([get_match_innings(match_id)])
+                    .then(([match_innings]) => {
+                      const matchDetailsToFindWinner = match_innings[0];
+                      let team_won = null,
+                        data = {};
+                      if (
+                        parseInt(matchDetailsToFindWinner.achieved) >=
+                        parseInt(matchDetailsToFindWinner.target)
+                      ) {
+                        team_won = team_second_innings;
+                        data = { team_won };
+                      } else {
+                        team_won = team_first_innings;
+                        data = { team_won };
+                      }
+                      matchInningsUpdate(match_id, data).then((data) => {
+                        if (data.response === true) {
+                          this.showSuccessModal(data.message);
+                        } else {
+                          this.showErrorModal(data.error);
+                        }
+                      });
+                    })
+                    .catch((error) => {});
+                } else {
+                  this.showErrorModal(data.error);
+                }
+              })
+              .catch((error) => {
+                this.showErrorModal(error.message);
+              });
+          }
+        }
+      }
+    );
+  };
 
   render() {
-    const { matchDetailsbyId, match_id, batsman_id, bowler_id, runs, wickets, players, matches, innings, outOption,
-    extras, current_ball, current_over, tournaments, tournament_id, maxOverValue, team1, team2, first_innings_end } = this.state;
+    const {
+      matchDetailsbyId,
+      match_id,
+      batsman_id,
+      bowler_id,
+      runs,
+      wickets,
+      players,
+      matches,
+      innings,
+      outOption,
+      extras,
+      current_ball,
+      current_over,
+      tournaments,
+      tournament_id,
+      maxOverValue,
+      team1,
+      team2,
+      first_innings_end,
+    } = this.state;
     const overOptions = [];
-	var overSummaryRows = [], matchSummaryRows = [];
-	
+    var overSummaryRows = [],
+      matchSummaryRows = [];
+
     for (let i = 1; i <= maxOverValue; i++) {
       overOptions.push(
         <option key={i} value={i}>
@@ -255,63 +375,63 @@ export default class MatchUpdate extends Component {
         </option>
       );
     }
-	
+
     if (matchDetailsbyId.length > 0) {
-		var currentOver = null;
-		var currentOverSummary = null;
+      var currentOver = null;
+      var currentOverSummary = null;
 
-		matchDetailsbyId.forEach((item) => {
-			const overNumber = parseInt(item.current_over);
-			const ballNumber = parseInt(item.current_ball);
+      matchDetailsbyId.forEach((item) => {
+        const overNumber = parseInt(item.current_over);
+        const ballNumber = parseInt(item.current_ball);
 
-			if (overNumber !== currentOver) {
-					currentOver = overNumber;
-					currentOverSummary = {
-					over_number: currentOver,
-					balls: [],
-				};
-				overSummaryRows.push(currentOverSummary);
-			}
-			const ballSummary = {
-				ball_no: ballNumber,
-				sixes: item.runs === "6" ? 1 : 0,
-				fours: item.runs === "4" ? 1 : 0,
-				extra: parseInt(item.extras),
-				type_of_extra: "-",
-				wickets: parseInt(item.wickets),
-				type_of_wicket: "-",
-				total_runs: parseInt(item.runs),
-			};
-			currentOverSummary.balls.push(ballSummary);
-		});
-		var matchSummaryMap = {};
-		matchDetailsbyId.forEach((item) => {
-			const overNumber = parseInt(item.current_over);
-			if (!matchSummaryMap[overNumber]) {
-			  matchSummaryMap[overNumber] = {
-				over_number: overNumber,
-				sixes: 0,
-				fours: 0,
-				extra: 0,
-				type_of_extra: "-",
-				wickets: 0,
-				type_of_wicket: "-",
-				total_runs: 0,
-			  };
-			}
-			const matchSummaryRow = matchSummaryMap[overNumber];
-			matchSummaryRow.total_runs += parseInt(item.runs);
-			if (item.runs === "6") {
-				matchSummaryRow.sixes += 1;
-			} else if (item.runs === "4") {
-				matchSummaryRow.fours += 1;
-			}
-			matchSummaryRow.extra += parseInt(item.extras);
-			matchSummaryRow.wickets += parseInt(item.wickets);
-		});
-		matchSummaryRows = Object.values(matchSummaryMap);
+        if (overNumber !== currentOver) {
+          currentOver = overNumber;
+          currentOverSummary = {
+            over_number: currentOver,
+            balls: [],
+          };
+          overSummaryRows.push(currentOverSummary);
+        }
+        const ballSummary = {
+          ball_no: ballNumber,
+          sixes: item.runs === "6" ? 1 : 0,
+          fours: item.runs === "4" ? 1 : 0,
+          extra: parseInt(item.extras),
+          type_of_extra: "-",
+          wickets: parseInt(item.wickets),
+          type_of_wicket: "-",
+          total_runs: parseInt(item.runs),
+        };
+        currentOverSummary.balls.push(ballSummary);
+      });
+      var matchSummaryMap = {};
+      matchDetailsbyId.forEach((item) => {
+        const overNumber = parseInt(item.current_over);
+        if (!matchSummaryMap[overNumber]) {
+          matchSummaryMap[overNumber] = {
+            over_number: overNumber,
+            sixes: 0,
+            fours: 0,
+            extra: 0,
+            type_of_extra: "-",
+            wickets: 0,
+            type_of_wicket: "-",
+            total_runs: 0,
+          };
+        }
+        const matchSummaryRow = matchSummaryMap[overNumber];
+        matchSummaryRow.total_runs += parseInt(item.runs);
+        if (item.runs === "6") {
+          matchSummaryRow.sixes += 1;
+        } else if (item.runs === "4") {
+          matchSummaryRow.fours += 1;
+        }
+        matchSummaryRow.extra += parseInt(item.extras);
+        matchSummaryRow.wickets += parseInt(item.wickets);
+      });
+      matchSummaryRows = Object.values(matchSummaryMap);
     }
-	
+
     return (
       <div>
         <HeaderBar />
@@ -339,21 +459,24 @@ export default class MatchUpdate extends Component {
                     <form onSubmit={this.handleSubmit}>
                       <div className="row">
                         <div className="col">
-						                <div className="form-group">
-                  <label>Tournament:</label>
-                  <select
-                    name="tournament_id"
-                    value={tournament_id}
-                    onChange={this.handleChange}
-                  >
-                    <option>Select Tournament</option>
-                    {tournaments.map((tournament) => (
-                      <option value={tournament._id} key={tournament._id}>
-                        {tournament.title}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+                          <div className="form-group">
+                            <label>Tournament:</label>
+                            <select
+                              name="tournament_id"
+                              value={tournament_id}
+                              onChange={this.handleChange}
+                            >
+                              <option>Select Tournament</option>
+                              {tournaments.map((tournament) => (
+                                <option
+                                  value={tournament._id}
+                                  key={tournament._id}
+                                >
+                                  {tournament.title}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
                           <div className="form-group">
                             <label>Innings:</label>
                             <select
@@ -492,16 +615,18 @@ export default class MatchUpdate extends Component {
                               <option value="no_ball">No Ball</option>
                             </select>
                           </div>
-						  
-					<div className="submit-button-container">
-                      <button
-                        type="button"
-                        className="submit-button"
-                        onClick={this.handleEndFirstInnings}
-                      >
-					  {first_innings_end === false ? "End First Innings" : "End Game"}
-                      </button>
-                    </div>
+
+                          <div className="submit-button-container">
+                            <button
+                              type="button"
+                              className="submit-button"
+                              onClick={this.handleEndFirstInnings}
+                            >
+                              {first_innings_end === false
+                                ? "End First Innings"
+                                : "End Game"}
+                            </button>
+                          </div>
                         </div>
                       </div>
                       {this.state.showSuccessModal && this.renderSuccessModal()}

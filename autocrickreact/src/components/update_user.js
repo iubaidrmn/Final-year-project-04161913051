@@ -1,25 +1,25 @@
-import React, { Component } from 'react';
-import HeaderBar from '../includes/header';
-import Footer from '../includes/footer';
-import { get_user_details, updateUser } from '../services/api';
-import '../assets/styles.css';
-import SuccessMessage from '../includes/success';
-import ErrorMessage from '../includes/error';
+import React, { Component } from "react";
+import HeaderBar from "../includes/header";
+import Footer from "../includes/footer";
+import { get_user_details, updateUser } from "../services/api";
+import "../assets/styles.css";
+import SuccessMessage from "../includes/success";
+import ErrorMessage from "../includes/error";
 
 class UpdateUser extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      fullname: '',
-      username: '',
-      email: '',
-      password: '',
-      contact_no: '',
-      created_at: '',
+      fullname: "",
+      username: "",
+      email: "",
+      password: "",
+      contact_no: "",
+      created_at: "",
       showSuccessModal: false,
       showErrorModal: false,
-      successMessage: '',
-      errorMessage: '',
+      successMessage: "",
+      errorMessage: "",
       roles: [],
       isError: false,
       isLoading: true,
@@ -44,10 +44,17 @@ class UpdateUser extends Component {
 
   async componentDidMount() {
     try {
-      const userDetails = await get_user_details(localStorage.getItem('username'));
+      const userDetails = await get_user_details(
+        localStorage.getItem("username")
+      );
       // const userDetails = await get_user_details(localStorage.getItem('user_id'));
-      this.setState({ fullname:userDetails[0].fullname, username:userDetails[0].username,
-      contact_no:userDetails[0].contact_no, email:userDetails[0].email, password:userDetails[0].password });
+      this.setState({
+        fullname: userDetails[0].fullname,
+        username: userDetails[0].username,
+        contact_no: userDetails[0].contact_no,
+        email: userDetails[0].email,
+        password: userDetails[0].password,
+      });
     } catch (error) {
       this.setState({ isError: true });
     }
@@ -59,13 +66,13 @@ class UpdateUser extends Component {
 
   handleSubmit = (event) => {
     event.preventDefault();
-  
+
     const { fullname, username, email, password, contact_no } = this.state;
     const userData = { fullname, username, email, password, contact_no };
-  
-    const userId = localStorage.getItem('username');
+
+    const userId = localStorage.getItem("username");
     // const userId = localStorage.getItem('user_id');
-  
+
     updateUser(userId, userData)
       .then((data) => {
         if (data.response === true) {
@@ -78,7 +85,6 @@ class UpdateUser extends Component {
         this.showErrorModal(error.message);
       });
   };
-  
 
   renderSuccessModal() {
     const { successMessage } = this.state;
@@ -88,7 +94,7 @@ class UpdateUser extends Component {
         onClose={this.hideSuccessModal}
         onGoToHomepage={() => {
           this.hideSuccessModal();
-          window.location.replace('/NewsFeed');
+          window.location.replace("/NewsFeed");
         }}
       />
     );
@@ -106,67 +112,69 @@ class UpdateUser extends Component {
 
     return (
       <>
-      <HeaderBar />
-      <div className="container">
-        <h2>Update User</h2>
-        <form onSubmit={this.handleSubmit}>
-          <div className="row">
-            <div className="col">
-              <div className="form-group">
-                <label>Fullname:</label>
-                <input
-                  type="text"
-                  name="fullname"
-                  value={fullname}
-                  onChange={this.handleChange}
-                />
+        <HeaderBar />
+        <div className="container">
+          <h2>Update User</h2>
+          <form onSubmit={this.handleSubmit}>
+            <div className="row">
+              <div className="col">
+                <div className="form-group">
+                  <label>Fullname:</label>
+                  <input
+                    type="text"
+                    name="fullname"
+                    value={fullname}
+                    onChange={this.handleChange}
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Email:</label>
+                  <input
+                    type="text"
+                    name="email"
+                    value={email}
+                    onChange={this.handleChange}
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Contact No:</label>
+                  <input
+                    type="text"
+                    name="contact_no"
+                    value={contact_no}
+                    onChange={this.handleChange}
+                  />
+                </div>
               </div>
-              <div className="form-group">
-                <label>Email:</label>
-                <input
-                  type="text"
-                  name="email"
-                  value={email}
-                  onChange={this.handleChange}
-                />
-              </div>
-              <div className="form-group">
-                <label>Contact No:</label>
-                <input
-                  type="text"
-                  name="contact_no"
-                  value={contact_no}
-                  onChange={this.handleChange}
-                />
+              <div className="col">
+                <div className="form-group">
+                  <label>Username:</label>
+                  <input
+                    type="text"
+                    name="username"
+                    value={username}
+                    onChange={this.handleChange}
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Password:</label>
+                  <input
+                    type="password"
+                    name="password"
+                    value={password}
+                    onChange={this.handleChange}
+                  />
+                </div>
               </div>
             </div>
-            <div className="col">
-              <div className="form-group">
-                <label>Username:</label>
-                <input
-                  type="text"
-                  name="username"
-                  value={username}
-                  onChange={this.handleChange}
-                />
-              </div>
-              <div className="form-group">
-                <label>Password:</label>
-                <input
-                  type="password"
-                  name="password"
-                  value={password}
-                  onChange={this.handleChange}
-                />
-              </div>
-            </div>
-          </div>
-          {this.state.showSuccessModal && this.renderSuccessModal()}
-          {this.state.showErrorModal && this.renderErrorModal()}
-          <button type="submit" className="submit-button">Update Profile</button>
-        </form>
-      </div>
-      <Footer />
+            {this.state.showSuccessModal && this.renderSuccessModal()}
+            {this.state.showErrorModal && this.renderErrorModal()}
+            <button type="submit" className="submit-button">
+              Update Profile
+            </button>
+          </form>
+        </div>
+        <Footer />
       </>
     );
   }

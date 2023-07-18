@@ -129,10 +129,7 @@ export default class Homepage extends Component {
                 {top_players.slice(0, 2).map((player, index) => {
                   const playerName = playerNames[player.batsman_id] || "";
                   return (
-                    <div
-                      style={styles.box}
-                      key={index}
-                    >
+                    <div style={styles.box} key={index}>
                       <FaUserCircle size={24} style={styles.roundPic} />
                       <p style={styles.text}>{playerName}</p>
                       <p style={styles.text}>

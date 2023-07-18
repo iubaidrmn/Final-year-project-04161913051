@@ -32,50 +32,50 @@ export default class Post extends Component {
     this.setState({ file_path: acceptedFiles[0] });
   };
 
-handleUpload = async (event) => {
-  event.preventDefault(); // Prevent default form submission behavior
-  
-  const { _id, title, description, file_path } = this.state;
-  try {
-    const username = localStorage.getItem("username");
-    if (_id !== null) {
-      const postDataUpdate = { title, description };
-      try {
-        const response = await updatePost(_id, postDataUpdate);
-        if (response.response === true) {
-          this.showSuccessModal(response.message);
-        } else {
-          this.showErrorModal(response.error);
-        }
-      } catch (error) {
-        this.showErrorModal(error.message);
-      }
-    } else {
-      if (file_path !== "" && title !== "" && description !== "") {
-        const formData = new FormData();
-        formData.append("title", title);
-        formData.append("description", description);
-        formData.append("file_path", file_path);
-        formData.append("created_by", username);
+  handleUpload = async (event) => {
+    event.preventDefault(); // Prevent default form submission behavior
+
+    const { _id, title, description, file_path } = this.state;
+    try {
+      const username = localStorage.getItem("username");
+      if (_id !== null) {
+        const postDataUpdate = { title, description };
         try {
-          const response = await postSave1(formData);
-          if (response.data.response === true) {
-            this.showSuccessModal(response.data.message);
+          const response = await updatePost(_id, postDataUpdate);
+          if (response.response === true) {
+            this.showSuccessModal(response.message);
           } else {
-            this.showErrorModal(response.data.error);
+            this.showErrorModal(response.error);
           }
         } catch (error) {
           this.showErrorModal(error.message);
         }
       } else {
-		  this.showErrorModal("Plese fill/upload all the required fields");
-	  }
+        if (file_path !== "" && title !== "" && description !== "") {
+          const formData = new FormData();
+          formData.append("title", title);
+          formData.append("description", description);
+          formData.append("file_path", file_path);
+          formData.append("created_by", username);
+          try {
+            const response = await postSave1(formData);
+            if (response.data.response === true) {
+              this.showSuccessModal(response.data.message);
+            } else {
+              this.showErrorModal(response.data.error);
+            }
+          } catch (error) {
+            this.showErrorModal(error.message);
+          }
+        } else {
+          this.showErrorModal("Plese fill/upload all the required fields");
+        }
+      }
+    } catch (error) {
+      console.error("Error uploading file:", error);
+      // this.showErrorModal(error.message);
     }
-  } catch (error) {
-    console.error("Error uploading file:", error);
-    // this.showErrorModal(error.message);
-  }
-};
+  };
 
   async componentDidMount() {
     try {

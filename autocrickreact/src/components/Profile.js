@@ -3,7 +3,12 @@ import { FaUpload } from "react-icons/fa";
 import HeaderBar from "../includes/header";
 import Footer from "../includes/footer";
 import Sidebar from "../includes/sidebar";
-import { get_user_details, updateUser, genericSavePicture, getByIDGeneric } from "../services/api";
+import {
+  get_user_details,
+  updateUser,
+  genericSavePicture,
+  getByIDGeneric,
+} from "../services/api";
 import "../assets/styles.css";
 import "../assets/tableStyling.css";
 import SuccessMessage from "../includes/success";
@@ -17,9 +22,9 @@ export default class Profile extends Component {
       fullname: "",
       username: "",
       email: "",
-	  file_path: "",
-	  coverPhoto: "",
-	  profilePicture: "",
+      file_path: "",
+      coverPhoto: "",
+      profilePicture: "",
       password: "",
       contact_no: "",
       created_at: "",
@@ -32,41 +37,41 @@ export default class Profile extends Component {
       isLoading: true,
     };
   }
-  
+
   handleDrop = (acceptedFiles) => {
     this.setState({ file_path: acceptedFiles[0] });
   };
   handleCoverDrop = (acceptedFiles) => {
-	  this.setState({ coverPhoto: acceptedFiles[0] });
-	};
-  
+    this.setState({ coverPhoto: acceptedFiles[0] });
+  };
+
   handleUpload = async (event) => {
-  event.preventDefault();
-  const { file_path, coverPhoto } = this.state;
-  try {
-    const username = localStorage.getItem("username");
-	let data = {};
-    if (file_path !== "") {
-      data = { username, file_path };
-    } else if(coverPhoto !== ""){
-		data = { username, coverPhoto };
-	} else {
-		this.showErrorModal("Upload Picture!");
-	}
-	try {
+    event.preventDefault();
+    const { file_path, coverPhoto } = this.state;
+    try {
+      const username = localStorage.getItem("username");
+      let data = {};
+      if (file_path !== "") {
+        data = { username, file_path };
+      } else if (coverPhoto !== "") {
+        data = { username, coverPhoto };
+      } else {
+        this.showErrorModal("Upload Picture!");
+      }
+      try {
         const response = await genericSavePicture(data, "userProfileSave");
         if (response.data.response === true) {
           this.showSuccessModal(response.data.message);
         } else {
           this.showErrorModal(response.data.error);
         }
-    } catch (error) {
+      } catch (error) {
         this.showErrorModal(error.message);
+      }
+    } catch (error) {
+      this.showErrorModal(error.message);
     }
-  } catch (error) {
-    this.showErrorModal(error.message);
-  }
-};
+  };
 
   showSuccessModal = (message) => {
     this.setState({ successMessage: message, showSuccessModal: true });
@@ -86,29 +91,46 @@ export default class Profile extends Component {
 
   async componentDidMount() {
     try {
-      const userDetails = await get_user_details(localStorage.getItem("username"));
-	  let profilePicture = await getByIDGeneric(localStorage.getItem("username"), "get_profile_picture", "username");
-	  this.setState({
+      const userDetails = await get_user_details(
+        localStorage.getItem("username")
+      );
+      let profilePicture = await getByIDGeneric(
+        localStorage.getItem("username"),
+        "get_profile_picture",
+        "username"
+      );
+      this.setState({
         fullname: userDetails[0].fullname,
         username: userDetails[0].username,
         contact_no: userDetails[0].contact_no,
         email: userDetails[0].email,
         password: userDetails[0].password,
       });
-	  if(profilePicture.profile_picture.file_path !== null && profilePicture.profile_picture.coverPhoto !== null){
-		this.setState({
-			profilePicture: profilePicture.profile_picture.file_path.substring(profilePicture.profile_picture.file_path.lastIndexOf("posts/")),
-			coverPhoto: profilePicture.profile_picture.coverPhoto.substring(profilePicture.profile_picture.coverPhoto.lastIndexOf("posts/")),
-		})
-	  }else if(profilePicture.profile_picture.file_path !== null){
-		this.setState({
-			profilePicture: profilePicture.profile_picture.file_path.substring(profilePicture.profile_picture.file_path.lastIndexOf("posts/")),
-		})
-	  }else if(profilePicture.profile_picture.coverPhoto !== null){
-		this.setState({
-			coverPhoto: profilePicture.profile_picture.coverPhoto.substring(profilePicture.profile_picture.coverPhoto.lastIndexOf("posts/")),
-		})
-	  }
+      if (
+        profilePicture.profile_picture.file_path !== null &&
+        profilePicture.profile_picture.coverPhoto !== null
+      ) {
+        this.setState({
+          profilePicture: profilePicture.profile_picture.file_path.substring(
+            profilePicture.profile_picture.file_path.lastIndexOf("posts/")
+          ),
+          coverPhoto: profilePicture.profile_picture.coverPhoto.substring(
+            profilePicture.profile_picture.coverPhoto.lastIndexOf("posts/")
+          ),
+        });
+      } else if (profilePicture.profile_picture.file_path !== null) {
+        this.setState({
+          profilePicture: profilePicture.profile_picture.file_path.substring(
+            profilePicture.profile_picture.file_path.lastIndexOf("posts/")
+          ),
+        });
+      } else if (profilePicture.profile_picture.coverPhoto !== null) {
+        this.setState({
+          coverPhoto: profilePicture.profile_picture.coverPhoto.substring(
+            profilePicture.profile_picture.coverPhoto.lastIndexOf("posts/")
+          ),
+        });
+      }
     } catch (error) {
       this.setState({ isError: true });
     }
@@ -159,216 +181,231 @@ export default class Profile extends Component {
     );
   }
 
-render() {
-  const {
-    fullname,
-    username,
-    email,
-    password,
-    contact_no,
-    profilePicture,
-	coverPhoto,
-  } = this.state;
-  return (
-    <div>
-      <HeaderBar />
-      <div style={styles.container}>
-        <Sidebar />
-        <div style={styles.containerMain}>
-		    <div style={{ marginTop: "10px" }}>
-				<button type="button" style={styles.uploadButton}>Statistics</button>
-				<button type="button" style={styles.uploadButton}>Top Bowling Figures</button>
-				<button type="button" style={styles.uploadButton}>Top Batting Figures</button>
-			</div>
-          <div className="content"style={styles.scrollContainer}>
-            <div className="container">
-              <div
-                style={{
-                  backgroundColor: "#FFFFFF",
-                  padding: "20px",
-                  boxShadow: "0px 2px 3.84px rgba(0, 0, 0, 0.25)",
-                  borderRadius: "10px",
-                  marginBottom: "20px",
-                  width: "100%",
-                  maxWidth: "600px",
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                }}
-              >
-                   <div
+  render() {
+    const {
+      fullname,
+      username,
+      email,
+      password,
+      contact_no,
+      profilePicture,
+      coverPhoto,
+    } = this.state;
+    return (
+      <div>
+        <HeaderBar />
+        <div style={styles.container}>
+          <Sidebar />
+          <div style={styles.containerMain}>
+            <div style={{ marginTop: "10px" }}>
+              <button type="button" style={styles.uploadButton}>
+                Statistics
+              </button>
+              <button type="button" style={styles.uploadButton}>
+                Top Bowling Figures
+              </button>
+              <button type="button" style={styles.uploadButton}>
+                Top Batting Figures
+              </button>
+            </div>
+            <div className="content" style={styles.scrollContainer}>
+              <div className="container">
+                <div
                   style={{
-                    position: "relative",
-                    width: "100%",
+                    backgroundColor: "#FFFFFF",
+                    padding: "20px",
+                    boxShadow: "0px 2px 3.84px rgba(0, 0, 0, 0.25)",
+                    borderRadius: "10px",
                     marginBottom: "20px",
+                    width: "100%",
+                    maxWidth: "600px",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
                   }}
                 >
-                  <img
-                    src={coverPhoto}
-                    alt="Cover"
-                    style={{
-                      width: "100%",
-                      height: "auto",
-                      borderRadius: "10px",
-                    }}
-                  />
                   <div
                     style={{
-                      position: "absolute",
-                      top: "50%",
-                      left: "50%",
-                      transform: "translate(-50%, -50%)",
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "center",
+                      position: "relative",
+                      width: "100%",
+                      marginBottom: "20px",
                     }}
                   >
+                    <img
+                      src={coverPhoto}
+                      alt="Cover"
+                      style={{
+                        width: "100%",
+                        height: "auto",
+                        borderRadius: "10px",
+                      }}
+                    />
                     <div
                       style={{
-                        width: "120px",
-                        height: "120px",
-                        borderRadius: "50%",
-                        border: "5px solid #FFFFFF",
-                        overflow: "hidden",
+                        position: "absolute",
+                        top: "50%",
+                        left: "50%",
+                        transform: "translate(-50%, -50%)",
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
                       }}
                     >
-                      <img
-                        src={profilePicture}
-                        alt="Profile"
+                      <div
                         style={{
-                          width: "100%",
-                          height: "100%",
-                          objectFit: "cover",
+                          width: "120px",
+                          height: "120px",
+                          borderRadius: "50%",
+                          border: "5px solid #FFFFFF",
+                          overflow: "hidden",
                         }}
-                      />
-                    </div>
-                    <div style={{ marginTop: "10px" }}>
-						<form encType="multipart/form-data">
-						  <div style={{ display: "flex" }}>
-							<Dropzone
-							  onDrop={this.handleDrop}
-							  accept="image/*"
-							  multiple={false}
-							>
-							  {({ getRootProps, getInputProps }) => (
-								<div {...getRootProps()}>
-								  <input {...getInputProps()} />
-								  <button type="button" style={styles.uploadButton}>
-									Update Profile Photo
-								  </button>
-								</div>
-							  )}
-							</Dropzone>
-							<button onClick={this.handleUpload} style={styles.uploadButton}>
-							  <FaUpload style={{ cursor: "pointer" }} />
-							</button>
-						  </div>
-						</form>
-                    </div>
-					<div style={{ marginTop: "10px" }}>
-						<form encType="multipart/form-data">
-						  <div style={{ display: "flex" }}>
-							<Dropzone
-							  onDrop={this.handleCoverDrop}
-							  accept="image/*"
-							  multiple={false}
-							>
-							  {({ getRootProps, getInputProps }) => (
-								<div {...getRootProps()}>
-								  <input {...getInputProps()} />
-								  <button type="button" style={styles.uploadButton}>
-									Update Cover Photo
-								  </button>
-								</div>
-							  )}
-							</Dropzone>
-							<button onClick={this.handleUpload} style={styles.uploadButton}>
-							  <FaUpload style={{ cursor: "pointer" }} />
-							</button>
-						  </div>
-						</form>
+                      >
+                        <img
+                          src={profilePicture}
+                          alt="Profile"
+                          style={{
+                            width: "100%",
+                            height: "100%",
+                            objectFit: "cover",
+                          }}
+                        />
+                      </div>
+                      <div style={{ marginTop: "10px" }}>
+                        <form encType="multipart/form-data">
+                          <div style={{ display: "flex" }}>
+                            <Dropzone
+                              onDrop={this.handleDrop}
+                              accept="image/*"
+                              multiple={false}
+                            >
+                              {({ getRootProps, getInputProps }) => (
+                                <div {...getRootProps()}>
+                                  <input {...getInputProps()} />
+                                  <button
+                                    type="button"
+                                    style={styles.uploadButton}
+                                  >
+                                    Update Profile Photo
+                                  </button>
+                                </div>
+                              )}
+                            </Dropzone>
+                            <button
+                              onClick={this.handleUpload}
+                              style={styles.uploadButton}
+                            >
+                              <FaUpload style={{ cursor: "pointer" }} />
+                            </button>
+                          </div>
+                        </form>
+                      </div>
+                      <div style={{ marginTop: "10px" }}>
+                        <form encType="multipart/form-data">
+                          <div style={{ display: "flex" }}>
+                            <Dropzone
+                              onDrop={this.handleCoverDrop}
+                              accept="image/*"
+                              multiple={false}
+                            >
+                              {({ getRootProps, getInputProps }) => (
+                                <div {...getRootProps()}>
+                                  <input {...getInputProps()} />
+                                  <button
+                                    type="button"
+                                    style={styles.uploadButton}
+                                  >
+                                    Update Cover Photo
+                                  </button>
+                                </div>
+                              )}
+                            </Dropzone>
+                            <button
+                              onClick={this.handleUpload}
+                              style={styles.uploadButton}
+                            >
+                              <FaUpload style={{ cursor: "pointer" }} />
+                            </button>
+                          </div>
+                        </form>
+                      </div>
                     </div>
                   </div>
+                  <form onSubmit={this.handleSubmit}>
+                    <div className="row">
+                      <div className="col">
+                        <div className="form-group">
+                          <label>Fullname:</label>
+                          <input
+                            type="text"
+                            name="fullname"
+                            value={fullname}
+                            onChange={this.handleChange}
+                          />
+                        </div>
+                        <div className="form-group">
+                          <label>Email:</label>
+                          <input
+                            type="text"
+                            name="email"
+                            value={email}
+                            onChange={this.handleChange}
+                          />
+                        </div>
+                        <div className="form-group">
+                          <label>Contact No:</label>
+                          <input
+                            type="text"
+                            name="contact_no"
+                            value={contact_no}
+                            onChange={this.handleChange}
+                          />
+                        </div>
+                      </div>
+                      <div className="col">
+                        <div className="form-group">
+                          <label>Username:</label>
+                          <input
+                            type="text"
+                            name="username"
+                            value={username}
+                            onChange={this.handleChange}
+                          />
+                        </div>
+                        <div className="form-group">
+                          <label>Password:</label>
+                          <input
+                            type="password"
+                            name="password"
+                            value={password}
+                            onChange={this.handleChange}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    {this.state.showSuccessModal && this.renderSuccessModal()}
+                    {this.state.showErrorModal && this.renderErrorModal()}
+                    <button
+                      type="submit"
+                      style={{
+                        backgroundColor: "#4caf50",
+                        color: "#ffffff",
+                        border: "none",
+                        padding: "10px 20px",
+                        cursor: "pointer",
+                      }}
+                    >
+                      Update Profile
+                    </button>
+                  </form>
                 </div>
-    <form onSubmit={this.handleSubmit}>
-                  <div className="row">
-                    <div className="col">
-                      <div className="form-group">
-                        <label>Fullname:</label>
-                        <input
-                          type="text"
-                          name="fullname"
-                          value={fullname}
-                          onChange={this.handleChange}
-                        />
-                      </div>
-                      <div className="form-group">
-                        <label>Email:</label>
-                        <input
-                          type="text"
-                          name="email"
-                          value={email}
-                          onChange={this.handleChange}
-                        />
-                      </div>
-                      <div className="form-group">
-                        <label>Contact No:</label>
-                        <input
-                          type="text"
-                          name="contact_no"
-                          value={contact_no}
-                          onChange={this.handleChange}
-                        />
-                      </div>
-                    </div>
-                    <div className="col">
-                      <div className="form-group">
-                        <label>Username:</label>
-                        <input
-                          type="text"
-                          name="username"
-                          value={username}
-                          onChange={this.handleChange}
-                        />
-                      </div>
-                      <div className="form-group">
-                        <label>Password:</label>
-                        <input
-                          type="password"
-                          name="password"
-                          value={password}
-                          onChange={this.handleChange}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  {this.state.showSuccessModal && this.renderSuccessModal()}
-                  {this.state.showErrorModal && this.renderErrorModal()}
-                  <button
-                    type="submit"
-                    style={{
-                      backgroundColor: "#4caf50",
-                      color: "#ffffff",
-                      border: "none",
-                      padding: "10px 20px",
-                      cursor: "pointer",
-                    }}
-                  >
-                    Update Profile
-                  </button>
-                </form>
               </div>
             </div>
           </div>
         </div>
+        <Footer />
       </div>
-      <Footer />
-    </div>
-  );
-}
-
-
-
+    );
+  }
 }
 
 const styles = {
@@ -384,7 +421,6 @@ const styles = {
     alignItems: "center",
     justifyContent: "center",
   },
-  
 
   scrollContainer: {
     flex: 1,
@@ -399,7 +435,7 @@ const styles = {
     maxWidth: "600px", // Adjust the width as needed
     margin: "0 auto", // Center the container horizontally
   },
-    uploadButton: {
+  uploadButton: {
     backgroundColor: "#FFFFFF",
     border: "none",
     padding: "10px 20px",
@@ -410,10 +446,10 @@ const styles = {
     borderRadius: "5px",
     boxShadow: "0px 2px 3.84px rgba(0, 0, 0, 0.15)",
     outline: "none",
-	marginRight: "10px",
-	marginLeft: "10px",
+    marginRight: "10px",
+    marginLeft: "10px",
   },
-    centeredButton: {
+  centeredButton: {
     backgroundColor: "#4caf50",
     color: "#ffffff",
     border: "none",

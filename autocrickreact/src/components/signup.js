@@ -1,25 +1,25 @@
-import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
-import { getRoles, signup } from '../services/api';
-import '../assets/styles.css';
-import SuccessMessage from '../includes/success';
-import ErrorMessage from '../includes/error';
+import React, { Component } from "react";
+import { Link } from "react-router-dom";
+import { getRoles, signup } from "../services/api";
+import "../assets/styles.css";
+import SuccessMessage from "../includes/success";
+import ErrorMessage from "../includes/error";
 
 class Signup extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      fullname: '',
-      username: '',
-      email: '',
-      password: '',
-      contact_no: '',
-      role_id: '',
-      created_at: '',
+      fullname: "",
+      username: "",
+      email: "",
+      password: "",
+      contact_no: "",
+      role_id: "",
+      created_at: "",
       showSuccessModal: false,
       showErrorModal: false,
-      successMessage: '',
-      errorMessage: '',
+      successMessage: "",
+      errorMessage: "",
       roles: [],
       isError: false,
       isLoading: true,
@@ -45,9 +45,9 @@ class Signup extends Component {
   async componentDidMount() {
     try {
       const roles = await getRoles();
-      this.setState({ roles, isLoading: false});
+      this.setState({ roles, isLoading: false });
     } catch (error) {
-      this.setState({ isError: true, isLoading: false});
+      this.setState({ isError: true, isLoading: false });
     }
   }
 
@@ -58,8 +58,24 @@ class Signup extends Component {
   handleSubmit = (event) => {
     event.preventDefault();
 
-    const { fullname, username, email, password, contact_no, role_id, created_at } = this.state;
-    const userData = { fullname, username, email, password, contact_no, role_id, created_at };
+    const {
+      fullname,
+      username,
+      email,
+      password,
+      contact_no,
+      role_id,
+      created_at,
+    } = this.state;
+    const userData = {
+      fullname,
+      username,
+      email,
+      password,
+      contact_no,
+      role_id,
+      created_at,
+    };
 
     signup(userData)
       .then((data) => {
@@ -83,7 +99,7 @@ class Signup extends Component {
         onGoToHomepage={() => {
           this.hideSuccessModal();
           // Redirect to the Login Page
-          window.location.replace('/login');
+          window.location.replace("/login");
         }}
       />
     );
@@ -97,7 +113,16 @@ class Signup extends Component {
   }
 
   render() {
-    const { fullname, username, email, password, contact_no, role_id, roles, isError } = this.state;
+    const {
+      fullname,
+      username,
+      email,
+      password,
+      contact_no,
+      role_id,
+      roles,
+      isError,
+    } = this.state;
 
     if (isError) {
       return <div>Error loading roles.</div>;
@@ -155,13 +180,19 @@ class Signup extends Component {
                   value={password}
                   onChange={this.handleChange}
                 />
-              </div>              
+              </div>
               <div className="form-group">
                 <label>Role:</label>
-                <select name="role_id" value={role_id} onChange={this.handleChange}>
+                <select
+                  name="role_id"
+                  value={role_id}
+                  onChange={this.handleChange}
+                >
                   <option value="">Select Role</option>
                   {roles.map((role) => (
-                    <option key={role.role_id} value={role.role_id}>{role.role}</option>
+                    <option key={role.role_id} value={role.role_id}>
+                      {role.role}
+                    </option>
                   ))}
                 </select>
               </div>

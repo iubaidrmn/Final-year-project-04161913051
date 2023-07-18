@@ -86,16 +86,13 @@ export const updateUser = async (userId, userData) => {
 };
 
 export const matchInningsUpdate = async (match_id, inningsData) => {
-  return fetch(
-    `${API_BASE_URL}/matchInningsUpdate/?match_id=${match_id}`,
-    {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(inningsData),
-    }
-  )
+  return fetch(`${API_BASE_URL}/matchInningsUpdate/?match_id=${match_id}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(inningsData),
+  })
     .then((response) => {
       if (response.ok) {
         return response.json();
@@ -684,7 +681,6 @@ export const delete_info = async (_id, functionName) => {
   }
 };
 
-
 export const get_matches_by_tournament_id = async (tournament_id) => {
   try {
     const response = await fetch(
@@ -699,7 +695,6 @@ export const get_matches_by_tournament_id = async (tournament_id) => {
     throw new Error("Error loading Matches.");
   }
 };
-
 
 export const get_teams_by_match_id = async (_id) => {
   try {
@@ -761,7 +756,6 @@ export const get_tournament_stats = async (tournament_id) => {
   }
 };
 
-
 export const get_tournament_schedule = async (tournament_id) => {
   try {
     const response = await fetch(
@@ -776,7 +770,6 @@ export const get_tournament_schedule = async (tournament_id) => {
     throw new Error("Error loading details.");
   }
 };
-
 
 export const getByIDGeneric = async (_id, functionName, toUpdate) => {
   try {
@@ -795,9 +788,7 @@ export const getByIDGeneric = async (_id, functionName, toUpdate) => {
 
 export const get_list = async (functionName) => {
   try {
-    const response = await fetch(
-      `${API_BASE_URL}/${functionName}/`
-    );
+    const response = await fetch(`${API_BASE_URL}/${functionName}/`);
     if (!response.ok) {
       throw new Error("Error loading details.");
     }
@@ -830,16 +821,13 @@ export const genericSave = async (data, functionName) => {
 
 // update API
 export const genericUpdate = async (_id, toUpdate, data, functionName) => {
-  return fetch(
-    `${API_BASE_URL}/${functionName}/?${_id}=${toUpdate}`,
-		{
-		  method: "PATCH",
-		  headers: {
-			"Content-Type": "application/json",
-		  },
-		  body: JSON.stringify(data),
-		}
-	)
+  return fetch(`${API_BASE_URL}/${functionName}/?${_id}=${toUpdate}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  })
     .then((response) => {
       if (response.ok) {
         return response.json();
@@ -851,7 +839,6 @@ export const genericUpdate = async (_id, toUpdate, data, functionName) => {
       throw new Error(error.error);
     });
 };
-
 
 export const postSave1 = async (formData) => {
   const config = {
@@ -873,7 +860,6 @@ export const postSave1 = async (formData) => {
   }
 };
 
-
 export const tournamentSave1 = async (formData) => {
   const config = {
     headers: {
@@ -894,21 +880,33 @@ export const tournamentSave1 = async (formData) => {
   }
 };
 
-
-export const genericUpdatePicture = async (_id=null, toUpdate=null, data, functionName) => {
+export const genericUpdatePicture = async (
+  _id = null,
+  toUpdate = null,
+  data,
+  functionName
+) => {
   const config = {
     headers: {
       "Content-Type": "multipart/form-data",
     },
   };
   try {
-	   let response = [];
-	  if(_id === null && toUpdate === null){
-		response = await axios.patch(`http://localhost:8000/api/${functionName}/?${_id}=${toUpdate}`, data, config);
-	  } else {
-		response = await axios.patch(`http://localhost:8000/api/${functionName}`, data, config);
-	  }
-	return response;
+    let response = [];
+    if (_id === null && toUpdate === null) {
+      response = await axios.patch(
+        `http://localhost:8000/api/${functionName}/?${_id}=${toUpdate}`,
+        data,
+        config
+      );
+    } else {
+      response = await axios.patch(
+        `http://localhost:8000/api/${functionName}`,
+        data,
+        config
+      );
+    }
+    return response;
   } catch (error) {
     console.error("Error saving tournament:", error);
     throw error;
@@ -917,11 +915,15 @@ export const genericUpdatePicture = async (_id=null, toUpdate=null, data, functi
 
 export const genericSavePicture = async (data, functionName) => {
   const config = {
-    headers: { "Content-Type": "multipart/form-data", },
+    headers: { "Content-Type": "multipart/form-data" },
   };
 
   try {
-    const response = await axios.post(`http://localhost:8000/api/${functionName}`, data, config);
+    const response = await axios.post(
+      `http://localhost:8000/api/${functionName}`,
+      data,
+      config
+    );
     return response;
   } catch (error) {
     console.error("Error saving:", error);

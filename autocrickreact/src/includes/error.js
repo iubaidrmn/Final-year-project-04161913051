@@ -1,6 +1,6 @@
-import React from 'react';
-import Modal from 'react-modal';
-import '../assets/styles.css';
+import React from "react";
+import Modal from "react-modal";
+import "../assets/styles.css";
 
 const ErrorMessage = ({ message, onClose }) => {
   return (

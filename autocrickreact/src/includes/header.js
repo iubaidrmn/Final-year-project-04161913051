@@ -7,7 +7,7 @@ export default class HeaderBar extends React.Component {
     super(props);
     this.state = {
       isProfileMenuOpen: false,
-      fullName: localStorage.getItem('fullname'),
+      fullName: localStorage.getItem("fullname"),
     };
   }
 
@@ -28,7 +28,7 @@ export default class HeaderBar extends React.Component {
           </div>
           <div className="profile-icon" onClick={this.handleProfileIconClick}>
             <span className="full-name">{fullName}</span>
-		   <FaUserCircle size={24} />
+            <FaUserCircle size={24} />
             {isProfileMenuOpen && <ProfileMenu />}
           </div>
         </div>

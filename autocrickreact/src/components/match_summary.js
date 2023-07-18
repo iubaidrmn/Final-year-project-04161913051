@@ -2,7 +2,12 @@ import React, { Component } from "react";
 import HeaderBar from "../includes/header";
 import Footer from "../includes/footer";
 import Sidebar from "../includes/sidebar";
-import { get_match_details_by_match_id, getTournaments, get_matches_by_tournament_id, get_teams_by_match_id, } from "../services/api";
+import {
+  get_match_details_by_match_id,
+  getTournaments,
+  get_matches_by_tournament_id,
+  get_teams_by_match_id,
+} from "../services/api";
 import "../assets/styles.css";
 
 export default class MatchSummary extends Component {
@@ -26,40 +31,38 @@ export default class MatchSummary extends Component {
     } catch (error) {}
   }
 
-summarizeData = (data) => {
-  // Sum each batsman's runs in first and second innings
-  const batsmanRuns = { first: {}, second: {} };
-  data.forEach((player) => {
-    const { batsman_name, runs, innings } = player;
-    if (batsmanRuns[innings][batsman_name]) {
-      batsmanRuns[innings][batsman_name] += runs;
-    } else {
-      batsmanRuns[innings][batsman_name] = runs;
-    }
-  });
+  summarizeData = (data) => {
+    // Sum each batsman's runs in first and second innings
+    const batsmanRuns = { first: {}, second: {} };
+    data.forEach((player) => {
+      const { batsman_name, runs, innings } = player;
+      if (batsmanRuns[innings][batsman_name]) {
+        batsmanRuns[innings][batsman_name] += runs;
+      } else {
+        batsmanRuns[innings][batsman_name] = runs;
+      }
+    });
 
-  // Count each bowler's wickets in first and second innings
-  const bowlerWickets = { first: {}, second: {} };
-  const bowlerRuns = { first: {}, second: {} };
-  data.forEach((player) => {
-    const { bowler_name, wickets, innings, runs } = player;
-    if (bowlerWickets[innings][bowler_name]) {
-      bowlerWickets[innings][bowler_name] += parseInt(wickets);
-    } else {
-      bowlerWickets[innings][bowler_name] = parseInt(wickets);
-    }
+    // Count each bowler's wickets in first and second innings
+    const bowlerWickets = { first: {}, second: {} };
+    const bowlerRuns = { first: {}, second: {} };
+    data.forEach((player) => {
+      const { bowler_name, wickets, innings, runs } = player;
+      if (bowlerWickets[innings][bowler_name]) {
+        bowlerWickets[innings][bowler_name] += parseInt(wickets);
+      } else {
+        bowlerWickets[innings][bowler_name] = parseInt(wickets);
+      }
 
-    if (bowlerRuns[innings][bowler_name]) {
-      bowlerRuns[innings][bowler_name] += runs;
-    } else {
-      bowlerRuns[innings][bowler_name] = runs;
-    }
-  });
+      if (bowlerRuns[innings][bowler_name]) {
+        bowlerRuns[innings][bowler_name] += runs;
+      } else {
+        bowlerRuns[innings][bowler_name] = runs;
+      }
+    });
 
-  return { batsmanRuns, bowlerWickets, bowlerRuns };
-};
-
-
+    return { batsmanRuns, bowlerWickets, bowlerRuns };
+  };
 
   handleChange = async (event) => {
     this.setState({ [event.target.name]: event.target.value });
@@ -90,67 +93,67 @@ summarizeData = (data) => {
       teams,
       matches_details,
     } = this.state;
-	let firstInningData = [];
-	let secondInningData = [];
-if (match_id !== null && matches_details.length > 0) {
-  const data = matches_details;
-  firstInningData = data
-    .filter((item) => item.innings === "first")
-    .reduce((acc, item) => {
-      const playerIndex = acc.findIndex(
-        (player) => player.player === item.batsman_name
-      );
-      if (playerIndex === -1) {
-        acc.push({
-          player: item.batsman_name,
-          score: item.runs,
-          bowler: item.bowler_name,
-          runs: item.runs,
-          out: item.outOption !== "not_out" ? 1 : 0,
-        });
-      } else {
-        acc[playerIndex].score += item.runs;
-        acc[playerIndex].runs += item.runs;
-        if (item.outOption !== "not_out") {
-          acc[playerIndex].out += 1;
-        }
-      }
-      return acc;
-    }, []);
+    let firstInningData = [];
+    let secondInningData = [];
+    if (match_id !== null && matches_details.length > 0) {
+      const data = matches_details;
+      firstInningData = data
+        .filter((item) => item.innings === "first")
+        .reduce((acc, item) => {
+          const playerIndex = acc.findIndex(
+            (player) => player.player === item.batsman_name
+          );
+          if (playerIndex === -1) {
+            acc.push({
+              player: item.batsman_name,
+              score: item.runs,
+              bowler: item.bowler_name,
+              runs: item.runs,
+              out: item.outOption !== "not_out" ? 1 : 0,
+            });
+          } else {
+            acc[playerIndex].score += item.runs;
+            acc[playerIndex].runs += item.runs;
+            if (item.outOption !== "not_out") {
+              acc[playerIndex].out += 1;
+            }
+          }
+          return acc;
+        }, []);
 
-  secondInningData = data
-    .filter((item) => item.innings === "second")
-    .reduce((acc, item) => {
-      const playerIndex = acc.findIndex(
-        (player) => player.player === item.batsman_name
-      );
-      if (playerIndex === -1) {
-        acc.push({
-          player: item.batsman_name,
-          score: item.runs,
-          bowler: item.bowler_name,
-          runs: item.runs,
-          out: item.outOption !== "not_out" ? 1 : 0,
-        });
-      } else {
-        acc[playerIndex].score += item.runs;
-        acc[playerIndex].runs += item.runs;
-        if (item.outOption !== "not_out") {
-          acc[playerIndex].out += 1;
-        }
-      }
-      return acc;
-    }, []);
-}
-      // Calculate total scores for each inning
-	  const firstInningTotalScore = firstInningData.reduce(
-		(total, player) => total + player.score,
-		0
-	  );
-	  const secondInningTotalScore = secondInningData.reduce(
-		(total, player) => total + player.score,
-		0
-	  );
+      secondInningData = data
+        .filter((item) => item.innings === "second")
+        .reduce((acc, item) => {
+          const playerIndex = acc.findIndex(
+            (player) => player.player === item.batsman_name
+          );
+          if (playerIndex === -1) {
+            acc.push({
+              player: item.batsman_name,
+              score: item.runs,
+              bowler: item.bowler_name,
+              runs: item.runs,
+              out: item.outOption !== "not_out" ? 1 : 0,
+            });
+          } else {
+            acc[playerIndex].score += item.runs;
+            acc[playerIndex].runs += item.runs;
+            if (item.outOption !== "not_out") {
+              acc[playerIndex].out += 1;
+            }
+          }
+          return acc;
+        }, []);
+    }
+    // Calculate total scores for each inning
+    const firstInningTotalScore = firstInningData.reduce(
+      (total, player) => total + player.score,
+      0
+    );
+    const secondInningTotalScore = secondInningData.reduce(
+      (total, player) => total + player.score,
+      0
+    );
     return (
       <div>
         <HeaderBar />
@@ -193,186 +196,289 @@ if (match_id !== null && matches_details.length > 0) {
                 </div>
               </div>
             </div>
-			{tournament_id && (
-            <div
-              style={{
-                backgroundColor: "#FFFFFF",
-                padding: "20px",
-                boxShadow: "0px 2px 3.84px rgba(0, 0, 0, 0.25)",
-                borderRadius: "10px",
-                marginBottom: "20px",
-                width: "100%",
-                maxWidth: "800px",
-                display: "flex",
-                alignItems: "flex-start",
-              }}
-            >
+            {tournament_id && (
               <div
                 style={{
-                  textAlign: "center",
-                  margin: "20px auto",
-                  width: "800px",
-                  border: "1px solid #ddd",
+                  backgroundColor: "#FFFFFF",
+                  padding: "20px",
+                  boxShadow: "0px 2px 3.84px rgba(0, 0, 0, 0.25)",
                   borderRadius: "10px",
-                  boxShadow: "0 0 5px rgba(0, 0, 0, 0.3)",
+                  marginBottom: "20px",
+                  width: "100%",
+                  maxWidth: "800px",
+                  display: "flex",
+                  alignItems: "flex-start",
                 }}
               >
-                <h2
+                <div
                   style={{
-                    border: "2px solid rgba(0, 0, 0, 0.2)",
+                    textAlign: "center",
+                    margin: "20px auto",
+                    width: "800px",
+                    border: "1px solid #ddd",
                     borderRadius: "10px",
-                    padding: "10px",
+                    boxShadow: "0 0 5px rgba(0, 0, 0, 0.3)",
                   }}
                 >
-                  {tournamentName}
-                </h2>
+                  <h2
+                    style={{
+                      border: "2px solid rgba(0, 0, 0, 0.2)",
+                      borderRadius: "10px",
+                      padding: "10px",
+                    }}
+                  >
+                    {tournamentName}
+                  </h2>
 
-                {match_id && (
-                  <h3>
-                    Match: {teams[0]} Vs {teams[1]}
-                  </h3>
-                )}
-                <div style={{ padding: "10px" }}>
-                  <h4>First Inning</h4>
-                  <table style={{ borderCollapse: "collapse", width: "100%" }}>
-                    <thead>
-                      <tr>
-                        <th style={{ border: "1px solid black", padding: "8px", backgroundColor: "#F2F2F2", }}>Player</th>
-                        <th style={{ border: "1px solid black", padding: "8px", backgroundColor: "#F2F2F2", }}>Score</th>
-                        <th style={{ border: "1px solid black", padding: "8px", backgroundColor: "#F2F2F2", }}>Bowler</th>
-                        <th style={{ border: "1px solid black", padding: "8px", backgroundColor: "#F2F2F2", }}>Runs</th>
-                        <th style={{ border: "1px solid black", padding: "8px", backgroundColor: "#F2F2F2", }}>Out</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {firstInningData.map((data, index) => (
-                        <tr key={index}>
+                  {match_id && (
+                    <h3>
+                      Match: {teams[0]} Vs {teams[1]}
+                    </h3>
+                  )}
+                  <div style={{ padding: "10px" }}>
+                    <h4>First Inning</h4>
+                    <table
+                      style={{ borderCollapse: "collapse", width: "100%" }}
+                    >
+                      <thead>
+                        <tr>
+                          <th
+                            style={{
+                              border: "1px solid black",
+                              padding: "8px",
+                              backgroundColor: "#F2F2F2",
+                            }}
+                          >
+                            Player
+                          </th>
+                          <th
+                            style={{
+                              border: "1px solid black",
+                              padding: "8px",
+                              backgroundColor: "#F2F2F2",
+                            }}
+                          >
+                            Score
+                          </th>
+                          <th
+                            style={{
+                              border: "1px solid black",
+                              padding: "8px",
+                              backgroundColor: "#F2F2F2",
+                            }}
+                          >
+                            Bowler
+                          </th>
+                          <th
+                            style={{
+                              border: "1px solid black",
+                              padding: "8px",
+                              backgroundColor: "#F2F2F2",
+                            }}
+                          >
+                            Runs
+                          </th>
+                          <th
+                            style={{
+                              border: "1px solid black",
+                              padding: "8px",
+                              backgroundColor: "#F2F2F2",
+                            }}
+                          >
+                            Out
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {firstInningData.map((data, index) => (
+                          <tr key={index}>
+                            <td
+                              style={{
+                                border: "1px solid black",
+                                padding: "8px",
+                              }}
+                            >
+                              {data.player}
+                            </td>
+                            <td
+                              style={{
+                                border: "1px solid black",
+                                padding: "8px",
+                              }}
+                            >
+                              {data.score}
+                            </td>
+                            <td
+                              style={{
+                                border: "1px solid black",
+                                padding: "8px",
+                              }}
+                            >
+                              {data.bowler}
+                            </td>
+                            <td
+                              style={{
+                                border: "1px solid black",
+                                padding: "8px",
+                              }}
+                            >
+                              {data.runs}
+                            </td>
+                            <td
+                              style={{
+                                border: "1px solid black",
+                                padding: "8px",
+                              }}
+                            >
+                              {data.out}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                      <tfoot>
+                        <tr>
                           <td
+                            colSpan="5"
                             style={{
                               border: "1px solid black",
                               padding: "8px",
                             }}
                           >
-                            {data.player}
-                          </td>
-                          <td
-                            style={{
-                              border: "1px solid black",
-                              padding: "8px",
-                            }}
-                          >
-                            {data.score}
-                          </td>
-                          <td
-                            style={{
-                              border: "1px solid black",
-                              padding: "8px",
-                            }}
-                          >
-                            {data.bowler}
-                          </td>
-                          <td
-                            style={{
-                              border: "1px solid black",
-                              padding: "8px",
-                            }}
-                          >
-                            {data.runs}
-                          </td>
-                          <td
-                            style={{
-                              border: "1px solid black",
-                              padding: "8px",
-                            }}
-                          >
-                            {data.out}
+                            Total Score: {firstInningTotalScore}
                           </td>
                         </tr>
-                      ))}
-                    </tbody>
-                    <tfoot>
-                      <tr><td colSpan="5" style={{ border: "1px solid black", padding: "8px" }}>Total Score: {firstInningTotalScore}</td></tr>
-                    </tfoot>
-                  </table>
-                </div>
+                      </tfoot>
+                    </table>
+                  </div>
 
-                <div style={{ padding: "10px" }}>
-                  <h4>Second Inning</h4>
-                  <table style={{ borderCollapse: "collapse", width: "100%" }}>
-                    <thead>
-                      <tr>
-					    <th style={{ border: "1px solid black", padding: "8px", backgroundColor: "#F2F2F2", }}>Player</th>
-                        <th style={{ border: "1px solid black", padding: "8px", backgroundColor: "#F2F2F2", }}>Score</th>
-                        <th style={{ border: "1px solid black", padding: "8px", backgroundColor: "#F2F2F2", }}>Bowler</th>
-                        <th style={{ border: "1px solid black", padding: "8px", backgroundColor: "#F2F2F2", }}>Runs</th>
-                        <th style={{ border: "1px solid black", padding: "8px", backgroundColor: "#F2F2F2", }}>Out</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                    {secondInningData.map((data, index) => (
-                        <tr key={index}>
+                  <div style={{ padding: "10px" }}>
+                    <h4>Second Inning</h4>
+                    <table
+                      style={{ borderCollapse: "collapse", width: "100%" }}
+                    >
+                      <thead>
+                        <tr>
+                          <th
+                            style={{
+                              border: "1px solid black",
+                              padding: "8px",
+                              backgroundColor: "#F2F2F2",
+                            }}
+                          >
+                            Player
+                          </th>
+                          <th
+                            style={{
+                              border: "1px solid black",
+                              padding: "8px",
+                              backgroundColor: "#F2F2F2",
+                            }}
+                          >
+                            Score
+                          </th>
+                          <th
+                            style={{
+                              border: "1px solid black",
+                              padding: "8px",
+                              backgroundColor: "#F2F2F2",
+                            }}
+                          >
+                            Bowler
+                          </th>
+                          <th
+                            style={{
+                              border: "1px solid black",
+                              padding: "8px",
+                              backgroundColor: "#F2F2F2",
+                            }}
+                          >
+                            Runs
+                          </th>
+                          <th
+                            style={{
+                              border: "1px solid black",
+                              padding: "8px",
+                              backgroundColor: "#F2F2F2",
+                            }}
+                          >
+                            Out
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {secondInningData.map((data, index) => (
+                          <tr key={index}>
+                            <td
+                              style={{
+                                border: "1px solid black",
+                                padding: "8px",
+                              }}
+                            >
+                              {data.player}
+                            </td>
+                            <td
+                              style={{
+                                border: "1px solid black",
+                                padding: "8px",
+                              }}
+                            >
+                              {data.score}
+                            </td>
+                            <td
+                              style={{
+                                border: "1px solid black",
+                                padding: "8px",
+                              }}
+                            >
+                              {data.bowler}
+                            </td>
+                            <td
+                              style={{
+                                border: "1px solid black",
+                                padding: "8px",
+                              }}
+                            >
+                              {data.runs}
+                            </td>
+                            <td
+                              style={{
+                                border: "1px solid black",
+                                padding: "8px",
+                              }}
+                            >
+                              {data.out}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                      <tfoot>
+                        <tr>
                           <td
+                            colSpan="5"
                             style={{
                               border: "1px solid black",
                               padding: "8px",
                             }}
                           >
-                            {data.player}
-                          </td>
-                          <td
-                            style={{
-                              border: "1px solid black",
-                              padding: "8px",
-                            }}
-                          >
-                            {data.score}
-                          </td>
-                          <td
-                            style={{
-                              border: "1px solid black",
-                              padding: "8px",
-                            }}
-                          >
-                            {data.bowler}
-                          </td>
-                          <td
-                            style={{
-                              border: "1px solid black",
-                              padding: "8px",
-                            }}
-                          >
-                            {data.runs}
-                          </td>
-                          <td
-                            style={{
-                              border: "1px solid black",
-                              padding: "8px",
-                            }}
-                          >
-                            {data.out}
+                            Total Score: {secondInningTotalScore}
                           </td>
                         </tr>
-                      ))}
-                    </tbody>
-                    <tfoot>
-                      <tr>
-                        <td
-                          colSpan="5"
-                          style={{ border: "1px solid black", padding: "8px" }}
-                        >
-                          Total Score: {secondInningTotalScore}
-                        </td>
-                      </tr>
-                    </tfoot>
-                  </table>
-                </div>
+                      </tfoot>
+                    </table>
+                  </div>
 
-                <div style={{ padding: "10px" }}>
-                  <p>Winning Team: {firstInningTotalScore > secondInningTotalScore ? teams[0] : teams[1]}</p>
-                  <p>Target: {firstInningTotalScore+1}</p>
+                  <div style={{ padding: "10px" }}>
+                    <p>
+                      Winning Team:{" "}
+                      {firstInningTotalScore > secondInningTotalScore
+                        ? teams[0]
+                        : teams[1]}
+                    </p>
+                    <p>Target: {firstInningTotalScore + 1}</p>
+                  </div>
                 </div>
               </div>
-            </div> )}
+            )}
           </div>
         </div>
         <Footer />
