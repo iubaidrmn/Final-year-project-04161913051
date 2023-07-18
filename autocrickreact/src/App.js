@@ -34,6 +34,7 @@ import SearchPlayer from "./components/search_player";
 import SearchTeam from "./components/search_team";
 import SearchTournaments from "./components/search_tournaments";
 import PendingRequests from "./components/pending_requests";
+import PlayerStats from "./components/PlayerStats";
 
 function App() {
   return (
@@ -78,6 +79,7 @@ function App() {
         <Route path="/SearchTeam" element={<SearchTeam />} />
         <Route path="/Search-Tournaments" element={<SearchTournaments />} />
         <Route path="/Pending-Requests" element={<PendingRequests />} />
+        <Route path="/Player-Statistics" element={<PlayerStats />} />
       </Routes>
     </Router>
   );

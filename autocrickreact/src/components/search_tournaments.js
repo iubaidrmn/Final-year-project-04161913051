@@ -47,7 +47,7 @@ export default class SearchTournament extends Component {
         onClose={this.hideSuccessModal}
         onGoToHomepage={() => {
           this.hideSuccessModal();
-          window.location.replace("/MatchesList");
+          window.location.replace("/Search-Tournaments");
         }}
       />
     );

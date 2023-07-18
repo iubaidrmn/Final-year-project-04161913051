@@ -11,6 +11,7 @@ class User(models.Model):
     password = models.CharField(max_length=255)
     contact_no = models.CharField(max_length=255)
     role_id = models.CharField(max_length=255)
+    player_type = models.CharField(max_length=15, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

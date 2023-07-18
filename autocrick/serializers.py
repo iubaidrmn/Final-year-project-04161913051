@@ -5,7 +5,7 @@ class UserSerializer(serializers.ModelSerializer):
     _id = serializers.SerializerMethodField()
     class Meta:
         model = User
-        fields = ('_id', 'fullname', 'username', 'email', 'password', 'contact_no', 'role_id', 'created_at')
+        fields = ('_id', 'fullname', 'username', 'email', 'password', 'contact_no', 'role_id', 'player_type', 'created_at')
     def get__id(self, obj):
         return str(obj._id)
  

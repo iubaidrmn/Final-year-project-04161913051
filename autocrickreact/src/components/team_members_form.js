@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { teamMembersSave, getTeams, getUsers } from "../services/api";
+import { FaPlus } from "react-icons/fa";
 import HeaderBar from "../includes/header";
 import Footer from "../includes/footer";
 import Sidebar from "../includes/sidebar";
@@ -94,7 +95,8 @@ export default class TeamMembers extends Component {
           <tr>
             <th>S#</th>
             <th>Name</th>
-            <th>Action</th>
+            <th>Player Type</th>
+            <th>Add to Team</th>
           </tr>
         </thead>
         <tbody>
@@ -102,12 +104,13 @@ export default class TeamMembers extends Component {
             <tr key={player._id}>
               <td>{index + 1}</td>
               <td>{player.fullname}</td>
+              <td>{player.player_type == "batsman" ? "Batsman" : "Bowler"}</td>
               <td>
                 <button
                   className="submit-button"
                   onClick={() => this.handleCandidateClick(player)}
                 >
-                  Add to Team
+                  <FaPlus />
                 </button>
               </td>
             </tr>

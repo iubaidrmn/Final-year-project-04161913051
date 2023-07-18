@@ -6,6 +6,7 @@ const menuConfig = {
   1: [
     // Admin
     { to: "/NewsFeed", icon: <FaNewspaper />, label: "News Feed" },
+    { to: "/Player-Statistics", icon: <FaNewspaper />, label: "Players' Stats" },
     { to: "/CreatePost", icon: <FaNewspaper />, label: "Create Post" },
     { to: "/PostsList", icon: <FaNewspaper />, label: "Posts List" },
     { to: "/MatchSummary", icon: <FaNewspaper />, label: "Match Summary" },
@@ -28,6 +29,9 @@ const menuConfig = {
   2: [
     // Tournament Organizer
     { to: "/NewsFeed", icon: <FaNewspaper />, label: "News Feed" },
+	{ to: "/Player-Statistics", icon: <FaNewspaper />, label: "Players' Stats" },
+	{ to: "/CreatePost", icon: <FaNewspaper />, label: "Create Post" },
+    { to: "/PostsList", icon: <FaNewspaper />, label: "Posts List" },
     { to: "/Tournament", icon: <FaNewspaper />, label: "Add Tournament" },
     { to: "/TournamentList", icon: <FaNewspaper />, label: "Tournaments" },
     { to: "/Match", icon: <FaNewspaper />, label: "Add Match" },
@@ -48,6 +52,7 @@ const menuConfig = {
   3: [
     // Player
     { to: "/NewsFeed", icon: <FaNewspaper />, label: "News Feed" },
+	{ to: "/Player-Statistics", icon: <FaNewspaper />, label: "Players' Stats" },
     { to: "/CreatePost", icon: <FaNewspaper />, label: "Create Post" },
     { to: "/PostsList", icon: <FaNewspaper />, label: "Posts List" },
     {
@@ -71,6 +76,7 @@ const menuConfig = {
     // Normal User
     { to: "/NewsFeed", icon: <FaNewspaper />, label: "News Feed" },
     { to: "/MatchSummary", icon: <FaNewspaper />, label: "Match Summary" },
+	{ to: "/Player-Statistics", icon: <FaNewspaper />, label: "Players' Stats" },
     {
       to: "/TournamentSummary",
       icon: <FaNewspaper />,
@@ -85,6 +91,7 @@ const menuConfig = {
   5: [
     // Coach
     { to: "/NewsFeed", icon: <FaNewspaper />, label: "News Feed" },
+	{ to: "/Player-Statistics", icon: <FaNewspaper />, label: "Players' Stats" },
     {
       to: "/Tournaments_TopPlayers",
       icon: <FaNewspaper />,
@@ -116,6 +123,7 @@ const menuConfig = {
   6: [
     // Umpier
     { to: "/NewsFeed", icon: <FaNewspaper />, label: "News Feed" },
+	{ to: "/Player-Statistics", icon: <FaNewspaper />, label: "Players' Stats" },
     { to: "/CreatePost", icon: <FaNewspaper />, label: "Create Post" },
     { to: "/PostsList", icon: <FaNewspaper />, label: "Posts List" },
     { to: "/MatchUpdate", icon: <FaNewspaper />, label: "Match Update" },
@@ -163,25 +171,28 @@ export default class Sidebar extends React.Component {
 const styles = {
   navigationMenu: {
     width: "200px",
-    backgroundColor: "#f0f0f0",
+    backgroundColor: "#4CAF50",
     padding: "20px",
   },
   navigationList: {
     listStyleType: "none",
     padding: 0,
     margin: 0,
+	color: "#FFFFFF"
   },
   navigationItem: {
     marginBottom: "10px",
     cursor: "pointer",
     borderBottom: "1px solid #ccc",
     padding: "10px",
+    color: "#FFFFFF", // Updated to white
   },
   navLink: {
     display: "flex",
     alignItems: "center",
-    color: "#333",
     textDecoration: "none",
     fontSize: "16px",
+	color: "#FFFFFF"
   },
 };
+

@@ -5,6 +5,7 @@ from autocrick.views import *
 urlpatterns = [
     path('admin/', admin.site.urls),
     # Show List of all tables in Mongo DB APIs Based on IDs
+    path('api/player_stats/', player_stats, name='player_stats'),
     path('api/get_profile_picture/', get_profile_picture, name='get_profile_picture'),
     path('api/teams_list_status_active/', teams_list_status_active, name='teams_list_status_active'),
     path('api/get_user_details/', get_user_details, name='get_user_details'),

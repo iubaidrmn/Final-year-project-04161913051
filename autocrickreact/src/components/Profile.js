@@ -3,6 +3,7 @@ import { FaUpload } from "react-icons/fa";
 import HeaderBar from "../includes/header";
 import Footer from "../includes/footer";
 import Sidebar from "../includes/sidebar";
+import { Link } from "react-router-dom";
 import {
   get_user_details,
   updateUser,
@@ -22,12 +23,14 @@ export default class Profile extends Component {
       fullname: "",
       username: "",
       email: "",
+      player_type: "",
       file_path: "",
       coverPhoto: "",
       profilePicture: "",
       password: "",
       contact_no: "",
       created_at: "",
+      role_id: localStorage.getItem("role_id"),
       showSuccessModal: false,
       showErrorModal: false,
       successMessage: "",
@@ -131,6 +134,9 @@ export default class Profile extends Component {
           ),
         });
       }
+	  if (this.state.role_id == '3'){
+		  this.setState({ player_type:userDetails[0].player_type })
+	  }
     } catch (error) {
       this.setState({ isError: true });
     }
@@ -143,8 +149,8 @@ export default class Profile extends Component {
   handleSubmit = (event) => {
     event.preventDefault();
 
-    const { fullname, username, email, password, contact_no } = this.state;
-    const userData = { fullname, username, email, password, contact_no };
+    const { fullname, username, email, password, contact_no, player_type } = this.state;
+    const userData = { fullname, username, email, password, contact_no, player_type };
 
     const userId = localStorage.getItem("username");
 
@@ -190,6 +196,8 @@ export default class Profile extends Component {
       contact_no,
       profilePicture,
       coverPhoto,
+	  player_type,
+	  role_id,
     } = this.state;
     return (
       <div>
@@ -197,17 +205,9 @@ export default class Profile extends Component {
         <div style={styles.container}>
           <Sidebar />
           <div style={styles.containerMain}>
-            <div style={{ marginTop: "10px" }}>
-              <button type="button" style={styles.uploadButton}>
-                Statistics
-              </button>
-              <button type="button" style={styles.uploadButton}>
-                Top Bowling Figures
-              </button>
-              <button type="button" style={styles.uploadButton}>
-                Top Batting Figures
-              </button>
-            </div>
+            {role_id == '3' && (<div style={{ marginTop: "10px" }}>
+			    <Link to="/Player-Statistics" style={styles.uploadButton}>Statistics</Link>
+            </div>)}
             <div className="content" style={styles.scrollContainer}>
               <div className="container">
                 <div
@@ -380,6 +380,19 @@ export default class Profile extends Component {
                             onChange={this.handleChange}
                           />
                         </div>
+						{role_id === '3' && (<div className="form-group">
+							<label>Player Type:</label>
+							<select
+							  name="player_type"
+							  value={player_type}
+							  onChange={this.handleChange}
+							>
+							  <option value="">Select Player Type</option>
+							  <option value="all-rounder">All Rounder</option>
+							  <option value="batsman">Batsman</option>
+							  <option value="bowler">Bowler</option>
+							</select>
+						</div>)}
                       </div>
                     </div>
                     {this.state.showSuccessModal && this.renderSuccessModal()}
@@ -448,6 +461,7 @@ const styles = {
     outline: "none",
     marginRight: "10px",
     marginLeft: "10px",
+	textDecoration: "none",
   },
   centeredButton: {
     backgroundColor: "#4caf50",

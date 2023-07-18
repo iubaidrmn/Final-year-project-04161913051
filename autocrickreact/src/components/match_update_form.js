@@ -95,10 +95,10 @@ export default class MatchUpdate extends Component {
       this.setState({ matches });
     }
 
-    if (name === "extra") {
-      this.setState({ extra: value === "" ? "0" : "1" });
-    } else {
-      if (name === "match_id") {
+    if (name === "extras") {
+      this.setState({ extras: value === "" ? "0" : "1" });
+    }
+    if (name === "match_id") {
         getMatcheDetailsById(value).then((data) => {
           this.setState({ matchDetailsbyId: data }, () => {
             const selectedMatch = this.state.matches.find(
@@ -126,14 +126,11 @@ export default class MatchUpdate extends Component {
                   team_second_innings,
                 });
               })
-              .catch((error) => {
-                // Handle the error here
-              });
+              .catch((error) => {});
           });
         });
-      }
-      this.setState({ [name]: value });
     }
+    this.setState({ [name]: value });
   };
 
   handleSubmit = (event) => {
@@ -245,10 +242,6 @@ export default class MatchUpdate extends Component {
         onClose={this.hideSuccessModal}
         onAddAnother={() => {
           this.hideSuccessModal();
-        }}
-        onGoToHomepage={() => {
-          this.hideSuccessModal();
-          window.location.replace("/NewsFeed");
         }}
       />
     );
@@ -365,8 +358,7 @@ export default class MatchUpdate extends Component {
       first_innings_end,
     } = this.state;
     const overOptions = [];
-    var overSummaryRows = [],
-      matchSummaryRows = [];
+    var overSummaryRows = [], matchSummaryRows = [];
 
     for (let i = 1; i <= maxOverValue; i++) {
       overOptions.push(
@@ -375,62 +367,135 @@ export default class MatchUpdate extends Component {
         </option>
       );
     }
+	
+	var firstInningsMatchDetails = [];
+	var secondInningsMatchDetails = [];
+	var firstInningsOverSummaryRows = [];
+	var secondInningsOverSummaryRows = [];
+	var firstInningsMatchSummaryMap = {};
+	var secondInningsMatchSummaryMap = [];
 
+	// First Innings Calculations
     if (matchDetailsbyId.length > 0) {
-      var currentOver = null;
-      var currentOverSummary = null;
+		var currentOver = null;
+		var currentOverSummary = null;
+		var matchSummaryMap = {};
+				
+		matchDetailsbyId.forEach((item) => {
+			if (item.innings === "first") {
+				firstInningsMatchDetails.push(item);
+			}
+		});
+		
+		firstInningsMatchDetails.forEach((item) => {
+			const overNumber = parseInt(item.current_over);
+			const ballNumber = parseInt(item.current_ball);
 
-      matchDetailsbyId.forEach((item) => {
-        const overNumber = parseInt(item.current_over);
-        const ballNumber = parseInt(item.current_ball);
+			if (overNumber !== currentOver) {
+			  currentOver = overNumber;
+			  currentOverSummary = {
+				over_number: currentOver,
+				balls: [],
+			  };
+			  firstInningsOverSummaryRows.push(currentOverSummary);
+			}
+			const ballSummary = {
+			  ball_no: ballNumber,
+			  sixes: item.runs === 6 ? 1 : 0,
+			  fours: item.runs === 4 ? 1 : 0,
+			  extra: parseInt(item.extras),
+			  wickets: parseInt(item.wickets),
+			  total_runs: parseInt(item.runs) + parseInt(item.extras),
+			};
+			currentOverSummary.balls.push(ballSummary);
+		});
+		
+		firstInningsMatchDetails.forEach((item) => {
+			const overNumber = parseInt(item.current_over);
+			if (!matchSummaryMap[overNumber]) {
+				matchSummaryMap[overNumber] = {
+					over_number: overNumber,
+					sixes: 0,
+					fours: 0,
+					extra: 0,
+					wickets: 0,
+					total_runs: 0,
+				};
+			}
+			const matchSummaryRow = matchSummaryMap[overNumber];
+			matchSummaryRow.total_runs += parseInt(item.runs);
+			matchSummaryRow.total_runs += parseInt(item.extras);
+			if (item.runs === 6) {
+			  matchSummaryRow.sixes += 1;
+			} else if (item.runs === 4) {
+			  matchSummaryRow.fours += 1;
+			}
+			matchSummaryRow.extra += parseInt(item.extras);
+			matchSummaryRow.wickets += parseInt(item.wickets);
+		});
+		firstInningsMatchSummaryMap = Object.values(matchSummaryMap);
+	}
+	
+	// Second Innings Calculations
+	if (matchDetailsbyId.length > 0) {
+		var currentOver = null;
+		var currentOverSummary = null;
+		var matchSummaryMap = {};
+				
+		matchDetailsbyId.forEach((item) => {
+			if (item.innings === "second") {
+				secondInningsMatchDetails.push(item);
+			}
+		});
+		
+		secondInningsMatchDetails.forEach((item) => {
+			const overNumber = parseInt(item.current_over);
+			const ballNumber = parseInt(item.current_ball);
 
-        if (overNumber !== currentOver) {
-          currentOver = overNumber;
-          currentOverSummary = {
-            over_number: currentOver,
-            balls: [],
-          };
-          overSummaryRows.push(currentOverSummary);
-        }
-        const ballSummary = {
-          ball_no: ballNumber,
-          sixes: item.runs === "6" ? 1 : 0,
-          fours: item.runs === "4" ? 1 : 0,
-          extra: parseInt(item.extras),
-          type_of_extra: "-",
-          wickets: parseInt(item.wickets),
-          type_of_wicket: "-",
-          total_runs: parseInt(item.runs),
-        };
-        currentOverSummary.balls.push(ballSummary);
-      });
-      var matchSummaryMap = {};
-      matchDetailsbyId.forEach((item) => {
-        const overNumber = parseInt(item.current_over);
-        if (!matchSummaryMap[overNumber]) {
-          matchSummaryMap[overNumber] = {
-            over_number: overNumber,
-            sixes: 0,
-            fours: 0,
-            extra: 0,
-            type_of_extra: "-",
-            wickets: 0,
-            type_of_wicket: "-",
-            total_runs: 0,
-          };
-        }
-        const matchSummaryRow = matchSummaryMap[overNumber];
-        matchSummaryRow.total_runs += parseInt(item.runs);
-        if (item.runs === "6") {
-          matchSummaryRow.sixes += 1;
-        } else if (item.runs === "4") {
-          matchSummaryRow.fours += 1;
-        }
-        matchSummaryRow.extra += parseInt(item.extras);
-        matchSummaryRow.wickets += parseInt(item.wickets);
-      });
-      matchSummaryRows = Object.values(matchSummaryMap);
-    }
+			if (overNumber !== currentOver) {
+			  currentOver = overNumber;
+			  currentOverSummary = {
+				over_number: currentOver,
+				balls: [],
+			  };
+			  secondInningsOverSummaryRows.push(currentOverSummary);
+			}
+			const ballSummary = {
+			  ball_no: ballNumber,
+			  sixes: item.runs === 6 ? 1 : 0,
+			  fours: item.runs === 4 ? 1 : 0,
+			  extra: parseInt(item.extras),
+			  wickets: parseInt(item.wickets),
+			  total_runs: parseInt(item.runs) + parseInt(item.extras),
+			};
+			currentOverSummary.balls.push(ballSummary);
+		});
+		
+		secondInningsMatchDetails.forEach((item) => {
+			const overNumber = parseInt(item.current_over);
+			if (!matchSummaryMap[overNumber]) {
+				matchSummaryMap[overNumber] = {
+					over_number: overNumber,
+					sixes: 0,
+					fours: 0,
+					extra: 0,
+					wickets: 0,
+					total_runs: 0,
+				};
+			}
+			const matchSummaryRow = matchSummaryMap[overNumber];
+			matchSummaryRow.total_runs += parseInt(item.runs);
+			matchSummaryRow.total_runs += parseInt(item.extras);
+			if (item.runs === 6) {
+			  matchSummaryRow.sixes += 1;
+			} else if (item.runs === 4) {
+			  matchSummaryRow.fours += 1;
+			}
+			matchSummaryRow.extra += parseInt(item.extras);
+			matchSummaryRow.wickets += parseInt(item.wickets);
+		});
+		secondInningsMatchSummaryMap = Object.values(matchSummaryMap);
+	}
 
     return (
       <div>
@@ -605,14 +670,14 @@ export default class MatchUpdate extends Component {
                           <div className="form-group">
                             <label>Extra:</label>
                             <select
-                              id="extra"
-                              name="extra"
+                              id="extras"
+                              name="extras"
                               value={extras}
                               onChange={this.handleChange}
                             >
                               <option value="0">Select Extra</option>
-                              <option value="wide">Wide</option>
-                              <option value="no_ball">No Ball</option>
+                              <option value="1">Wide</option>
+                              <option value="1">No Ball</option>
                             </select>
                           </div>
 
@@ -640,10 +705,11 @@ export default class MatchUpdate extends Component {
                   </div>
                 </div>
               </div>
+			  
               {matchDetailsbyId.length > 0 && (
                 <div className="match-summary">
-                  <h2>Over Summary</h2>
-                  {overSummaryRows.map((over, index) => (
+                  <h2>Over Summary (First Innings)</h2>
+                  {firstInningsOverSummaryRows.map((over, index) => (
                     <div key={index}>
                       <h3>Over {over.over_number}</h3>
                       <table>
@@ -653,9 +719,7 @@ export default class MatchUpdate extends Component {
                             <th>Sixes</th>
                             <th>Fours</th>
                             <th>Extra</th>
-                            <th>Type of Extra</th>
                             <th>Wickets</th>
-                            <th>Type of Wicket</th>
                             <th>Total Runs</th>
                           </tr>
                         </thead>
@@ -666,9 +730,7 @@ export default class MatchUpdate extends Component {
                               <td>{ball.sixes}</td>
                               <td>{ball.fours}</td>
                               <td>{ball.extra}</td>
-                              <td>{ball.type_of_extra}</td>
                               <td>{ball.wickets}</td>
-                              <td>{ball.type_of_wicket}</td>
                               <td>{ball.total_runs}</td>
                             </tr>
                           ))}
@@ -678,7 +740,7 @@ export default class MatchUpdate extends Component {
                   ))}
                   <div className="over-summary"></div>
 
-                  <h2>Match Summary</h2>
+                  <h2>Match Summary (First Innings)</h2>
                   <table>
                     <thead>
                       <tr>
@@ -686,67 +748,165 @@ export default class MatchUpdate extends Component {
                         <th>Sixes</th>
                         <th>Fours</th>
                         <th>Extra</th>
-                        <th>Type of Extra</th>
                         <th>Wickets</th>
-                        <th>Type of Wicket</th>
                         <th>Total Runs</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {matchSummaryRows.map((row, index) => (
+                      {firstInningsMatchSummaryMap.map((row, index) => (
                         <tr key={index}>
                           <td>{row.over_number}</td>
                           <td>{row.sixes}</td>
                           <td>{row.fours}</td>
                           <td>{row.extra}</td>
-                          <td>{row.type_of_extra}</td>
                           <td>{row.wickets}</td>
-                          <td>{row.type_of_wicket}</td>
                           <td>{row.total_runs}</td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
 
-                  <style>
-                    {`
-        .match-summary {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-        }
+					<style>
+					{`
+						.match-summary {
+						  display: flex;
+						  flex-direction: column;
+						  align-items: center;
+						}
 
-        table {
-          border-collapse: collapse;
-          width: 100%;
-          max-width: 600px;
-          margin-top: 20px;
-        }
+						table {
+						  border-collapse: collapse;
+						  width: 100%;
+						  max-width: 600px;
+						  margin-top: 20px;
+						}
 
-        th, td {
-          padding: 10px;
-          text-align: center;
-          border: 1px solid #ccc;
-        }
+						th, td {
+						  padding: 10px;
+						  text-align: center;
+						  border: 1px solid #ccc;
+						}
 
-        thead {
-          background-color: #f2f2f2;
-          font-weight: bold;
-        }
+						thead {
+						  background-color: #f2f2f2;
+						  font-weight: bold;
+						}
 
-        tbody tr:nth-child(even) {
-          background-color: #f9f9f9;
-        }
+						tbody tr:nth-child(even) {
+						  background-color: #f9f9f9;
+						}
 
-        tbody tr:hover {
-          background-color: #eaeaea;
-        }
+						tbody tr:hover {
+						  background-color: #eaeaea;
+						}
 
-        .over-summary {
-          margin-top: 20px;
-        }
-      `}
-                  </style>
+						.over-summary {
+						  margin-top: 20px;
+						}
+					`}
+					</style>
+                </div>
+              )}
+			  
+              {matchDetailsbyId.length > 0 && (
+                <div className="match-summary">
+                  <h2>Over Summary (Second Innings)</h2>
+                  {secondInningsOverSummaryRows.map((over, index) => (
+                    <div key={index}>
+                      <h3>Over {over.over_number}</h3>
+                      <table>
+                        <thead>
+                          <tr>
+                            <th>Ball No</th>
+                            <th>Sixes</th>
+                            <th>Fours</th>
+                            <th>Extra</th>
+                            <th>Wickets</th>
+                            <th>Total Runs</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {over.balls.map((ball, ballIndex) => (
+                            <tr key={ballIndex}>
+                              <td>{ball.ball_no}</td>
+                              <td>{ball.sixes}</td>
+                              <td>{ball.fours}</td>
+                              <td>{ball.extra}</td>
+                              <td>{ball.wickets}</td>
+                              <td>{ball.total_runs}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  ))}
+                  <div className="over-summary"></div>
+
+                  <h2>Match Summary (Second Innings)</h2>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Over Number</th>
+                        <th>Sixes</th>
+                        <th>Fours</th>
+                        <th>Extra</th>
+                        <th>Wickets</th>
+                        <th>Total Runs</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {secondInningsMatchSummaryMap.map((row, index) => (
+                        <tr key={index}>
+                          <td>{row.over_number}</td>
+                          <td>{row.sixes}</td>
+                          <td>{row.fours}</td>
+                          <td>{row.extra}</td>
+                          <td>{row.wickets}</td>
+                          <td>{row.total_runs}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+
+					<style>
+					{`
+						.match-summary {
+						  display: flex;
+						  flex-direction: column;
+						  align-items: center;
+						}
+
+						table {
+						  border-collapse: collapse;
+						  width: 100%;
+						  max-width: 600px;
+						  margin-top: 20px;
+						}
+
+						th, td {
+						  padding: 10px;
+						  text-align: center;
+						  border: 1px solid #ccc;
+						}
+
+						thead {
+						  background-color: #f2f2f2;
+						  font-weight: bold;
+						}
+
+						tbody tr:nth-child(even) {
+						  background-color: #f9f9f9;
+						}
+
+						tbody tr:hover {
+						  background-color: #eaeaea;
+						}
+
+						.over-summary {
+						  margin-top: 20px;
+						}
+					`}
+					</style>
                 </div>
               )}
               <br></br>

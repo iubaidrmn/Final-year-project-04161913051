@@ -1,4 +1,4 @@
-from django.db.models import Sum
+from django.db.models import Sum, Max
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from .models import *
@@ -7,6 +7,44 @@ from django.db.models import Q
 from bson import ObjectId
 from rest_framework.parsers import FileUploadParser
 from pymongo import MongoClient
+
+@api_view(['GET'])
+def player_stats(request):
+    try:
+        player_id = request.GET.get('player_id')
+        
+        matches_played = len(MatchDetails.objects.filter(batsman_id=player_id).values('match_id').distinct())
+        total_runs = MatchDetails.objects.filter(batsman_id=player_id).aggregate(total=Sum('runs'))['total']
+        average_runs = total_runs / matches_played if matches_played != 0 else 0
+        best_runs = MatchDetails.objects.filter(batsman_id=player_id).aggregate(best=Sum('runs'))['best']
+        hundreds = MatchDetails.objects.filter(batsman_id=player_id, runs__gte=100).count()
+        fifties = MatchDetails.objects.filter(batsman_id=player_id, runs__gte=50, runs__lt=100).count()
+        thirties_plus = MatchDetails.objects.filter(batsman_id=player_id, runs__gte=30).count()
+        fours = MatchDetails.objects.filter(batsman_id=player_id, runs=4).count()
+        sixes = MatchDetails.objects.filter(batsman_id=player_id, runs=6).count()
+
+        stats = {
+            'Overall': {
+                'matches_played': matches_played,
+                'total_runs': total_runs,
+                'average_runs': average_runs,
+                'best_runs': best_runs,
+                'hundreds': hundreds,
+                'fifties': fifties,
+                'thirties_plus': thirties_plus,
+                'fours': fours,
+                'sixes': sixes
+            },
+            '5 overs': {},
+            '8 overs': {},
+            '10 overs': {},
+            '12 overs': {},
+            '15 overs': {},
+            '20 overs': {},
+        }
+        return Response({'response': True, 'player_stats': stats})
+    except Exception as e:
+        return Response({'response': False, 'error': str(e)})
 
 @api_view(['POST'])
 def matchDetailsSave(request):

@@ -106,14 +106,14 @@ export default class MatchSummary extends Component {
           if (playerIndex === -1) {
             acc.push({
               player: item.batsman_name,
-              score: item.runs,
+              score: parseInt(item.runs) + parseInt(item.extras),
               bowler: item.bowler_name,
-              runs: item.runs,
+              runs: parseInt(item.runs) + parseInt(item.extras),
               out: item.outOption !== "not_out" ? 1 : 0,
             });
           } else {
-            acc[playerIndex].score += item.runs;
-            acc[playerIndex].runs += item.runs;
+            acc[playerIndex].score = acc[playerIndex].score + item.runs + parseInt(item.extras);
+            acc[playerIndex].runs = acc[playerIndex].runs + item.runs + parseInt(item.extras);
             if (item.outOption !== "not_out") {
               acc[playerIndex].out += 1;
             }
@@ -130,14 +130,14 @@ export default class MatchSummary extends Component {
           if (playerIndex === -1) {
             acc.push({
               player: item.batsman_name,
-              score: item.runs,
+              score: parseInt(item.runs) + parseInt(item.extras),
               bowler: item.bowler_name,
-              runs: item.runs,
+              runs: parseInt(item.runs) + parseInt(item.extras),
               out: item.outOption !== "not_out" ? 1 : 0,
             });
           } else {
-            acc[playerIndex].score += item.runs;
-            acc[playerIndex].runs += item.runs;
+            acc[playerIndex].score = acc[playerIndex].score + item.runs + parseInt(item.extras);
+            acc[playerIndex].runs = acc[playerIndex].runs + item.runs + parseInt(item.extras);
             if (item.outOption !== "not_out") {
               acc[playerIndex].out += 1;
             }

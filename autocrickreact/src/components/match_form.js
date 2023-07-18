@@ -72,7 +72,6 @@ export default class Match extends Component {
       }
       const tournaments = await getTournaments();
       const teams = await get_list("teams_list_status_active");
-      console.log();
       this.setState({ tournaments, teams: teams.teams, isLoading: false });
     } catch (error) {
       this.setState({ isError: true, isLoading: false });

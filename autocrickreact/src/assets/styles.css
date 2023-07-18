@@ -130,7 +130,7 @@ label {
 /* Header Bar */
 
 .header-bar {
-  background-color: #333;
+  background-color: #2ECC71;
   color: #fff;
   display: flex;
   justify-content: space-between;
@@ -257,7 +257,7 @@ label {
 /* Footer bar */
 
 .footer {
-  background-color: #333;
+  background-color: #1B5E20;
   color: #fff;
   padding: 10px;
   text-align: center;
