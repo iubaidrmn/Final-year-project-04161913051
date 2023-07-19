@@ -3,6 +3,7 @@ import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 // Components Import
 import Login from "./components/login";
+// import Login from "./components/auth_screens/login";
 import TeamsList from "./components/TeamsList";
 import Signup from "./components/signup";
 import NewsFeed from "./components/newsfeed";
