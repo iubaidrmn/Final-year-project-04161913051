@@ -22,7 +22,9 @@ export default class HeaderBar extends React.Component {
     return (
       <>
         <div className="header-bar">
-          <div className="profile-icon"></div>
+          <div>
+			<img  style={{ maxWidth: "100px" }} src={`posts/logo.png`} />
+		  </div>
           <div className="logo">
             AutoCrick | Local Optimized Cricket Automation
           </div>

@@ -3,7 +3,7 @@ import HeaderBar from "../includes/header";
 import Footer from "../includes/footer";
 import Sidebar from "../includes/sidebar";
 import { FaUserCircle } from "react-icons/fa";
-import { getPosts, getUsersNameByUsername } from "../services/api";
+import { getPosts } from "../services/api";
 import moment from "moment";
 
 export default class NewsFeed extends Component {
@@ -11,40 +11,15 @@ export default class NewsFeed extends Component {
     super(props);
     this.state = {
       posts: [],
-      userNames: {},
     };
   }
 
   async componentDidMount() {
     try {
       const posts = await getPosts();
-      this.setState({ posts }, () => {
-        this.getUserNames();
-      });
-    } catch (error) {
-      console.log("error", error);
-    }
+      this.setState({ posts });
+    } catch (error) {}
   }
-
-  getUserNames = async () => {
-    const { posts } = this.state;
-    const userIds = posts.map((post) => post.created_by);
-    const userNames = {};
-
-    try {
-      const promises = userIds.map((userId) => getUsersNameByUsername(userId));
-      const responses = await Promise.all(promises);
-
-      responses.forEach((response, index) => {
-        const userId = userIds[index];
-        const userName = response[0].fullname;
-        userNames[userId] = userName;
-      });
-      this.setState({ userNames });
-    } catch (error) {
-      console.error("Error loading user names:", error);
-    }
-  };
 
   render() {
     const { posts, userNames } = this.state;
@@ -96,6 +71,13 @@ export default class NewsFeed extends Component {
                             marginRight: "10px",
                           }}
                         >
+						{post.user_profile_picture !== null ? 
+							<img style={{
+                              width: "100%",
+                              height: "100%",
+                              borderRadius: "50%",
+                            }} src={`${post.user_profile_picture.substring(post.user_profile_picture.lastIndexOf("posts/"))}`} alt="Profile" />
+						:
                           <FaUserCircle
                             style={{
                               width: "100%",
@@ -103,6 +85,7 @@ export default class NewsFeed extends Component {
                               borderRadius: "50%",
                             }}
                           />
+						}
                         </div>
                         <div>
                           <h2
@@ -112,10 +95,7 @@ export default class NewsFeed extends Component {
                               margin: 0,
                             }}
                           >
-                            {(() => {
-                              const un = userNames[post.created_by];
-                              return <span>{un}</span>;
-                            })()}
+							{post.created_by}
                           </h2>
                           <p
                             style={{

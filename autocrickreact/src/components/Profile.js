@@ -1,15 +1,10 @@
 import React, { Component } from "react";
-import { FaUpload } from "react-icons/fa";
+import { FaUpload, FaUser } from "react-icons/fa";
 import HeaderBar from "../includes/header";
 import Footer from "../includes/footer";
 import Sidebar from "../includes/sidebar";
 import { Link } from "react-router-dom";
-import {
-  get_user_details,
-  updateUser,
-  genericSavePicture,
-  getByIDGeneric,
-} from "../services/api";
+import { get_user_details, updateUser, genericSavePicture, getByIDGeneric, } from "../services/api";
 import "../assets/styles.css";
 import "../assets/tableStyling.css";
 import SuccessMessage from "../includes/success";
@@ -231,15 +226,11 @@ export default class Profile extends Component {
                       marginBottom: "20px",
                     }}
                   >
-                    <img
-                      src={coverPhoto}
-                      alt="Cover"
-                      style={{
-                        width: "100%",
-                        height: "auto",
-                        borderRadius: "10px",
-                      }}
-                    />
+					{coverPhoto !== "" ?
+                        <img src={coverPhoto} alt="Cover" style={{ width: "100%", height: "auto", borderRadius: "10px", }}/>
+						:
+						<img src={`posts/cover.jpg`} alt="Cover" style={{ width: "100%", height: "auto", borderRadius: "10px", }}/>
+					}
                     <div
                       style={{
                         position: "absolute",
@@ -260,15 +251,11 @@ export default class Profile extends Component {
                           overflow: "hidden",
                         }}
                       >
-                        <img
-                          src={profilePicture}
-                          alt="Profile"
-                          style={{
-                            width: "100%",
-                            height: "100%",
-                            objectFit: "cover",
-                          }}
-                        />
+					  {profilePicture !== "" ?
+                        <img src={profilePicture} alt="Profile" style={{ width: "100%", height: "100%", objectFit: "cover", }} />
+						:
+						<FaUser style={{ width: "100%", height: "100%", objectFit: "cover", }} />
+					  }
                       </div>
                       <div style={{ marginTop: "10px" }}>
                         <form encType="multipart/form-data">

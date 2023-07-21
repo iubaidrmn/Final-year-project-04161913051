@@ -153,7 +153,8 @@ export default class Sidebar extends React.Component {
 
     return (
       <div style={styles.navigationMenu}>
-        <ul style={styles.navigationList}>
+        <ul className="navigationlist"
+        style={styles.navigationList}>
           {allowedMenuItems.map((menuItem, index) => (
             <li style={styles.navigationItem} key={index}>
               <Link to={menuItem.to} style={styles.navLink}>
@@ -171,28 +172,29 @@ export default class Sidebar extends React.Component {
 const styles = {
   navigationMenu: {
     width: "200px",
-    backgroundColor: "#4CAF50",
-    padding: "20px",
+    backgroundColor: "#023020",
+    padding: "15px",
   },
   navigationList: {
     listStyleType: "none",
-    padding: 0,
+    padding: 5,
     margin: 0,
-	color: "#FFFFFF"
+	color: "#000000"
   },
   navigationItem: {
     marginBottom: "10px",
     cursor: "pointer",
     borderBottom: "1px solid #ccc",
     padding: "10px",
-    color: "#FFFFFF", // Updated to white
+    color: "#000000", // Updated to white
   },
+
   navLink: {
     display: "flex",
     alignItems: "center",
     textDecoration: "none",
-    fontSize: "16px",
-	color: "#FFFFFF"
+    fontSize: "20px",
+	color: "#ffffff"
   },
 };
 

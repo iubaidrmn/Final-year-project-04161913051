@@ -114,7 +114,7 @@ export default class Post extends Component {
         onClose={this.hideSuccessModal}
         onGoToHomepage={() => {
           this.hideSuccessModal();
-          window.location.replace("/PostsList");
+          window.location.replace("/NewsFeed");
         }}
       />
     );

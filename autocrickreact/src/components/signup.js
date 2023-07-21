@@ -4,8 +4,10 @@ import { getRoles, signup } from "../services/api";
 import "../assets/styles.css";
 import SuccessMessage from "../includes/success";
 import ErrorMessage from "../includes/error";
+import HeaderBar from "../includes/headerAuth";
+import Footer from "../includes/footer";
 
-class Signup extends Component {
+export default class Signup extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -55,41 +57,68 @@ class Signup extends Component {
     this.setState({ [event.target.name]: event.target.value });
   };
 
-  handleSubmit = (event) => {
-    event.preventDefault();
 
-    const {
-      fullname,
-      username,
-      email,
-      password,
-      contact_no,
-      role_id,
-      created_at,
-    } = this.state;
-    const userData = {
-      fullname,
-      username,
-      email,
-      password,
-      contact_no,
-      role_id,
-      created_at,
-    };
+handleSubmit = (event) => {
+  event.preventDefault();
 
-    signup(userData)
-      .then((data) => {
-        if (data.response === true) {
-          this.showSuccessModal(data.message);
-        } else {
-          this.showErrorModal(data.error);
-        }
-      })
-      .catch((error) => {
-        this.showErrorModal(error.message);
-      });
+  const {
+    fullname,
+    username,
+    email,
+    password,
+    contact_no,
+    role_id,
+    created_at,
+  } = this.state;
+
+  // Basic validation checks
+  if (!fullname || !username || !email || !password || !contact_no || !role_id) {
+    this.showErrorModal('Please fill in all required fields.');
+    return;
+  }
+
+  // Email validation
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailPattern.test(email)) {
+    this.showErrorModal('Please enter a valid email address.');
+    return;
+  }
+
+  // Password strength validation (you can implement your own logic)
+  if (password.length < 4) {
+    this.showErrorModal('Password must be at least 4 characters long.');
+    return;
+  }
+
+  // Contact number validation
+  const contactNoPattern = /^\d{11}$/;
+  if (!contactNoPattern.test(contact_no)) {
+    this.showErrorModal('Please enter a valid 11-digit contact number.');
+    return;
+  }
+
+  const userData = {
+    fullname,
+    username,
+    email,
+    password,
+    contact_no,
+    role_id,
+    created_at,
   };
 
+  signup(userData)
+    .then((data) => {
+      if (data.response === true) {
+        this.showSuccessModal(data.message);
+      } else {
+        this.showErrorModal(data.error);
+      }
+    })
+    .catch((error) => {
+      this.showErrorModal(error.message);
+    });
+};
   renderSuccessModal() {
     const { successMessage } = this.state;
     return (
@@ -129,7 +158,25 @@ class Signup extends Component {
     }
 
     return (
+		      <div>
+        <HeaderBar />
+        <div style={styles.container}>
+          <div style={styles.containerMain}>
       <div className="container">
+	  	                    <div
+                    style={{
+                      backgroundColor: "#FFFFFF",
+                      padding: "20px",
+                      boxShadow: "0px 2px 3.84px rgba(0, 0, 0, 0.25)",
+                      borderRadius: "10px",
+                      marginBottom: "20px",
+                      width: "100%",
+                      maxWidth: "475px",
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "flex-start",
+                    }}
+                  >
         <h2>Register</h2>
         <form onSubmit={this.handleSubmit}>
           <div className="row">
@@ -146,7 +193,7 @@ class Signup extends Component {
               <div className="form-group">
                 <label>Email:</label>
                 <input
-                  type="text"
+                  type="email"
                   name="email"
                   value={email}
                   onChange={this.handleChange}
@@ -208,8 +255,32 @@ class Signup extends Component {
           </p>
         </form>
       </div>
+      </div>
+	  </div>
+      </div>
+	   <Footer />
+      </div>
     );
   }
 }
 
-export default Signup;
+
+const styles = {
+  container: {
+    display: "flex",
+    minHeight: "100vh",
+    /* backgroundColor: "#f5f5f5", */
+	backgroundImage: `url('posts/background.jpg')`,
+    backgroundSize: "cover",
+    backgroundRepeat: "no-repeat",
+    backgroundPosition: "center",
+    backgroundColor: "#f5f5f5",
+  },
+  containerMain: {
+    flex: 1,
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+};

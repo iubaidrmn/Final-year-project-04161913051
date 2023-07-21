@@ -54,7 +54,7 @@ html, body {
   width: 100%;
   padding: 0.5rem;
   font-size: 16px;
-  border: 1px solid #ccc;
+  border: 1px solid #057603;
   border-radius: 4px;
 }
 
@@ -130,12 +130,15 @@ label {
 /* Header Bar */
 
 .header-bar {
-  background-color: #2ECC71;
-  color: #fff;
+  background-color: #042117;
+  color: #ffffff;
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items:flex-start;
   padding: 10px;
+  font-size: 23px;
+  font-family: 'Arial Narrow Bold', sans-serif;
+  ;
 }
 
 .menu-icon {
@@ -143,8 +146,13 @@ label {
 }
 
 .logo {
-  font-size: 20px;
-  font-weight: bold;
+  display: flex;
+  font-size: 35px;
+  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  font-style: italic;
+  color: #ffffff;
+  align-items: center;
+ 
 }
 
 .profile-icon {
@@ -153,7 +161,7 @@ label {
 }
 
 .profile-icon img {
-  width: 40px;
+  width: 50px;
   height: 40px;
   border-radius: 50%;
 }
@@ -162,7 +170,7 @@ label {
   position: absolute;
   top: 100%;
   right: 0;
-  background-color: #333;
+  background-color: #140f0f;
   padding: 10px;
   list-style-type: none;
   margin: 0;
@@ -174,7 +182,7 @@ label {
   position: absolute;
   top: 100%;
   right: -140px;
-  background-color: #333;
+  background-color: #0e3e0b;
   padding: 10px;
   list-style-type: none;
   margin: 0;
@@ -195,13 +203,18 @@ label {
 
 .profile-menu li:hover {
   /* background-color: #f4f4f4; */
-  color: #ff3636;
+  color: #073e10;
+}
+
+.navigationlist li:hover {
+  color: "#000000";
 }
 
 /* Side bar */
 
 .sidebar {
-  background-color: #f4f4f4;
+  background-color: #931111;
+  color: #0056b3;
   width: 200px;
   padding: 10px;
   transition: transform 0.3s ease;
@@ -242,22 +255,22 @@ label {
 .menu-item {
   margin-bottom: 10px;
   text-decoration: none;
-  color: #ffffff;
+  color: #060404;
 }
 
 .menu-item a {
   text-decoration: none;
-  color: #ffffff;
+  color: #110404;
 }
 
 .menu-item a:hover {
-  color: #ff3636;
+  color: #ff0202;
 }
 
 /* Footer bar */
 
 .footer {
-  background-color: #1B5E20;
+  background-color: #000000;
   color: #fff;
   padding: 10px;
   text-align: center;
@@ -470,3 +483,4 @@ select {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   padding: 16px;
 }
+

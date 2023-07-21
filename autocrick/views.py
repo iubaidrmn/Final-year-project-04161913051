@@ -7,6 +7,8 @@ from django.db.models import Q
 from bson import ObjectId
 from rest_framework.parsers import FileUploadParser
 from pymongo import MongoClient
+from django.utils.timezone import make_aware
+
 
 @api_view(['GET'])
 def player_stats(request):
@@ -327,12 +329,33 @@ def matches_list(request):
     except Exception as e:
         return Response({'error': str(e)}, status=400)
     
+
 @api_view(['GET'])
 def post_list(request):
     try:
-        posts = Post.objects.all()
-        serializer = PostSerializer(posts, many=True)
-        return Response({'posts': serializer.data})
+        posts = Post.objects.all().order_by('-created_at')  # Sort posts by 'created_at' field in descending order
+        data = []
+        for post in posts:
+            user = User.objects.get(username=post.created_by)
+            try:
+                profile_pic = UserProfilePic.objects.get(username=post.created_by)
+                profile_pic_url = profile_pic.file_path.url if profile_pic.file_path else None
+            except UserProfilePic.DoesNotExist:
+                profile_pic_url = None
+
+            # Convert the post's 'created_at' field to the user's timezone (if needed)
+            created_at = make_aware(post.created_at) if post.created_at.tzinfo is None else post.created_at
+
+            serialized_post = {
+                'title': post.title,
+                'description': post.description,
+                'file_path': post.file_path.url if post.file_path else None,
+                'created_by': user.fullname,
+                'created_at': created_at,  # Use the converted 'created_at' field
+                'user_profile_picture': profile_pic_url
+            }
+            data.append(serialized_post)
+        return Response({'posts': data})
     except Exception as e:
         return Response({'error': str(e)}, status=400)
 
@@ -353,7 +376,6 @@ def teams_list_status_active(request):
         return Response({'response': True, 'teams': serializer.data})
     except Exception as e:
         return Response({'response': False, 'error': str(e)})
-
 
 @api_view(['GET'])
 def player_in_match_list(request):
@@ -479,8 +501,6 @@ def userProfileSave(request):
     except Exception as e:
         return Response({'response': False, 'error': str(e)})
 
-
-
 @api_view(['POST'])
 def playersInMatchSave(request):
     try:
@@ -507,7 +527,6 @@ def teamMembersSave(request):
         return Response({'response': False, 'error': serializer.errors})
     except Exception as e:
         return Response({'response': False, 'error': str(e)})
-
 
 @api_view(['POST'])
 def matchDetailsSave(request):
@@ -702,7 +721,6 @@ def get_team_members(request):
     except Exception as e:
         return Response({'error': str(e)}, status=400)
         
-        
 @api_view(['DELETE'])
 def delete_team_member(request):
     try:
@@ -717,7 +735,6 @@ def delete_team_member(request):
     except Exception as e:
         return Response({'response': False, 'error': str(e)})
         
-
 @api_view(['DELETE'])
 def delete_team(request):
     try:
@@ -731,7 +748,6 @@ def delete_team(request):
         return Response({'response': True, 'message': 'Team Deleted.'})
     except Exception as e:
         return Response({'response': False, 'error': str(e)})
-
 
 @api_view(['DELETE'])
 def delete_tournament(request):
@@ -747,7 +763,6 @@ def delete_tournament(request):
     except Exception as e:
         return Response({'response': False, 'error': str(e)})
         
-
 @api_view(['DELETE'])
 def delete_post(request):
     try:
@@ -761,7 +776,6 @@ def delete_post(request):
         return Response({'response': True, 'message': 'Post Deleted.'})
     except Exception as e:
         return Response({'response': False, 'error': str(e)})
-        
         
 @api_view(['DELETE'])
 def delete_match(request):
@@ -777,7 +791,6 @@ def delete_match(request):
     except Exception as e:
         return Response({'response': False, 'error': str(e)})
         
-
 @api_view(['GET'])
 def match_summary_by_id(request):
     try:
@@ -817,7 +830,6 @@ def get_teams_by_match_id(request):
         return Response({'response': False, 'error': 'Team not found'})
     except Exception as e:
         return Response({'response': False, 'error': str(e)})
-
 
 @api_view(['GET'])
 def get_match_details_by_match_id(request):
@@ -902,65 +914,38 @@ def get_tournament_schedule(request):
     except Exception as e:
         return Response({'response': False, 'error': str(e)})
 
-
-
-
-
 @api_view(['GET'])
 def get_tournament_stats(request):
     try:
         tournament_id = request.GET.get('tournament_id')
 
-        # Retrieve all teams in the tournament
-        teams = Team.objects.all()
+        # Retrieve team IDs from pending requests for the given tournament ID
+        pending_requests = PendingRequest.objects.filter(tournament_id=tournament_id, status=1)
+        serialized_pending_requests = PendingRequestSerializer(pending_requests, many=True).data
 
-        # Initialize team statistics dictionary with team IDs as keys
-        team_stats = {team._id: {
-            'team_title': team.title,
-            'total_matches': 0,
-            'won_matches': 0,
-            'lost_matches': 0,
-            'runs': 0,
-            'ratings': 0
-        } for team in teams}
+        team_stats = {}  # Initialize an empty dictionary
 
-        # Retrieve all matches for the given tournament
-        matches = Matches.objects.filter(tournament_id=tournament_id)
-       
-        for match in matches:
-            match_innings = MatchInnings.objects.filter(Q(match_id=str(match._id)))
-            
-            for inning in match_innings:
-                team_won = inning.team_won
-                team_first_innings = inning.team_first_innings
-                team_second_innings = inning.team_second_innings
+        serialized_teams = []  # Store serialized teams data in a list
+        
+        for pr in serialized_pending_requests:
+            team_id = ObjectId(pr['team_id'])
+            # Filter teams based on the retrieved team IDs
+            teams = Team.objects.filter(_id=team_id)
 
-                if team_won:
-                    # Update won matches count for the winning team
-                    if team_won in team_stats:
-                        team_stats[team_won]['won_matches'] += 1
+            serialized_team = TeamsSerializer(teams[0]).data  # Assuming there's only one team for each ID
+            serialized_teams.append(serialized_team)
 
-                    # Update lost matches count for the losing team
-                    if team_won == team_first_innings and team_second_innings in team_stats:
-                        team_stats[team_second_innings]['lost_matches'] += 1
-                    elif team_won == team_second_innings and team_first_innings in team_stats:
-                        team_stats[team_first_innings]['lost_matches'] += 1
+            # Initialize team statistics dictionary with team IDs as keys
+            team_stats[team_id] = {
+                'team_title': serialized_team['title'],
+                'total_matches': 0,
+                'won_matches': 0,
+                'lost_matches': 0,
+                'runs': 0,
+                'ratings': 0
+            }
 
-                # Update total matches played for each team
-                if team_first_innings in team_stats:
-                    team_stats[team_first_innings]['total_matches'] += 1
-                if team_second_innings in team_stats:
-                    team_stats[team_second_innings]['total_matches'] += 1
-
-                # Retrieve match details for the current inning
-                match_details = MatchDetails.objects.filter(match_id=str(inning.match_id))
-
-                for detail in match_details:
-                    # Update runs for each team
-                    if team_first_innings in team_stats:
-                        team_stats[team_first_innings]['runs'] += detail.runs
-                    if team_second_innings in team_stats:
-                        team_stats[team_second_innings]['runs'] += detail.runs
+        # Rest of the code remains the same
 
         # Calculate lost matches count for each team
         for team_id, stats in team_stats.items():
@@ -973,3 +958,4 @@ def get_tournament_stats(request):
 
     except Exception as e:
         return Response({'response': False, 'error': str(e)})
+
